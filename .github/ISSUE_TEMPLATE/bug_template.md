@@ -2,7 +2,7 @@
 name: Bug template
 about: 버그 이슈 템플릿
 title: '[FIX]'
-labels: 'bug'
+labels: 'fix'
 assignees: ''
 
 ---
