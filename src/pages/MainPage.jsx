@@ -1,7 +1,7 @@
 import React from "react";
 
 const MainPage = () => {
-  return <div className="text-red-500">MainPage</div>;
+  return <div className="bg-slate-200 font-bold text-red-500">PayRoad</div>;
 };
 
 export default MainPage;
