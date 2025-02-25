@@ -6,7 +6,9 @@ html,
 body,
 #root {
   height: 100%;
+  -ms-overflow-style: none;
 }
+
 #root {
   margin: 0 auto;
   max-width: 500px;
@@ -19,4 +21,8 @@ body,
     font-weight: normal;
     color: #333333;
   }
+}
+
+::-webkit-scrollbar {
+  display: none;
 }
