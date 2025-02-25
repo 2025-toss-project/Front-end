@@ -61,6 +61,11 @@ module.exports = {
           light: "#E7DEDB",
         },
       },
+      dropShadow: {
+        5: "0 16px 40px rgba(0, 0, 0, 0.05)",
+        10: "4px 4px 4px rgba(0, 0, 0, 0.10)",
+        50: "0 2px 4px rgba(0, 0, 0, 0.50)",
+      },
     },
   },
   plugins: [],
