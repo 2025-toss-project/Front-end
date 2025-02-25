@@ -1,3 +1,4 @@
+import { Camera } from "lucide-react";
 import React from "react";
 
 const MainPage: React.FC = () => {
@@ -8,6 +9,7 @@ const MainPage: React.FC = () => {
       <div className="text-marker-food font-medium">A</div>
       <div className="text-marker-food-light font-semibold">A</div>
       <div className="font-bold">A</div>
+      <Camera color="red" size={48} />
     </>
   );
 };
