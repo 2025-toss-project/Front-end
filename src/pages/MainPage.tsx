@@ -1,16 +1,42 @@
-import { Camera } from "lucide-react";
-import React from "react";
+import { useEffect, useRef, useState } from "react";
+import { CustomOverlayMap, Map, MapMarker } from "react-kakao-maps-sdk";
+import CategoryList from "../components/CategoryList";
 
 const MainPage: React.FC = () => {
+  const [location, setLocation] = useState({ latitude: 0, longitude: 0 }); // 현재 위치의 좌표값을 저장할 상태
+  const mapRef = useRef(null);
+
+  const handleSuccess = (pos: GeolocationPosition) => {
+    const { latitude, longitude } = pos.coords;
+
+    console.log(latitude, longitude);
+    setLocation({
+      latitude,
+      longitude,
+    });
+  };
+
+  const handleError = (error: GeolocationPositionError) => {
+    console.log("error");
+  };
+
+  useEffect(() => {
+    const { geolocation } = navigator;
+
+    geolocation.getCurrentPosition(handleSuccess, handleError);
+  }, []);
   return (
-    <>
-      <div className="text-main font-light">A</div>
-      <div className="bg-main font-normal">A</div>
-      <div className="text-marker-food font-medium">A</div>
-      <div className="text-marker-food-light font-semibold">A</div>
-      <div className="font-bold">A</div>
-      <Camera color="red" size={48} />
-    </>
+    <Map
+      center={{ lat: location.latitude, lng: location.longitude }}
+      style={{ width: "100%", height: "100%", position: "relative" }}
+      level={3}
+      ref={mapRef}
+    >
+      <CategoryList />
+      <MapMarker
+        position={{ lat: location.latitude, lng: location.longitude }}
+      ></MapMarker>
+    </Map>
   );
 };
 
