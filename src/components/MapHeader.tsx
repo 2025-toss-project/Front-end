@@ -74,7 +74,7 @@ const MyProperty: React.FC<{ name: string; property: string }> = ({
 const MapHeader: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   return (
-    <div className="flex max-w-full flex-col">
+    <div className="z-10 flex max-w-full flex-col">
       <CategoryList />
       <div className="flex items-center justify-between py-1">
         <MyProperty name="희연" property="플렉스" />

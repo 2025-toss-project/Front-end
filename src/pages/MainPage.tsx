@@ -1,22 +1,21 @@
 import { useEffect, useRef, useState } from "react";
-import { CustomOverlayMap, Map, MapMarker } from "react-kakao-maps-sdk";
+import { Map } from "react-kakao-maps-sdk";
 import MapHeader from "../components/MapHeader";
 import IconMyLocation from "../assets/IconMyLocation";
-import { Icon, LucidePlus } from "lucide-react";
-import IconFood from "../assets/categoryIcons/IconFood";
+import { LucidePlus } from "lucide-react";
 import "../assets/bubble.css";
 import MapBubble from "../components/MapBubble";
 
 const IconMoveMyLocation: React.FC = () => {
   return (
-    <div className="grid w-10 bg-white rounded-full aspect-square place-items-center drop-shadow-50">
+    <div className="z-10 grid aspect-square w-10 place-items-center rounded-full bg-white drop-shadow-50">
       <IconMyLocation />
     </div>
   );
 };
 const IconFastInputPay: React.FC = () => {
   return (
-    <div className="grid rounded-full aspect-square w-11 place-items-center bg-main drop-shadow-50">
+    <div className="z-10 grid aspect-square w-11 place-items-center rounded-full bg-main drop-shadow-50">
       <LucidePlus size={24} color="#FFF" />
     </div>
   );
@@ -75,7 +74,6 @@ const MainPage: React.FC = () => {
           width: "100%",
           height: "100%",
           position: "absolute",
-          zIndex: -10,
         }}
         level={3}
         ref={mapRef}
@@ -93,7 +91,7 @@ const MainPage: React.FC = () => {
           />
         ))}
       </Map>
-      <div className="flex flex-col justify-between w-full h-full px-6 pt-10 pb-5">
+      <div className="flex h-full w-full flex-col justify-between px-6 pb-5 pt-10">
         <MapHeader />
 
         <MapBottomIcons />
