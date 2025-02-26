@@ -4,7 +4,7 @@ import InputDefault from "./InputDefault";
 const AddPayInput = () => {
   return (
     <div>
-      <form className="flex flex-col px-8 py-6">
+      <form className="flex flex-col gap-[12px] px-8 py-6 last:py-0">
         <InputDefault
           label="금액"
           type="number"

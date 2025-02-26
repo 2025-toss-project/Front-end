@@ -15,13 +15,12 @@ const InputDefault: React.FC<PayInputProps> = ({
   placeholder,
 }) => {
   return (
-    <div>
-      <div className="flex flex-col py-3 mb-5">
+    <div className="h-[60px]">
+      <div className="flex flex-col py-3 mb-5 border-b">
         <div className="flex gap-5">
           <label> {label} </label>
           <input type={type} placeholder={placeholder} />
         </div>
-        <hr className="w-full border-second" />
       </div>
     </div>
   );
