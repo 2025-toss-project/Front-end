@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { CustomOverlayMap, Map, MapMarker } from "react-kakao-maps-sdk";
-import CategoryList from "../components/CategoryList";
+import MapHeader from "../components/MapHeader";
 
 const MainPage: React.FC = () => {
   const [location, setLocation] = useState({ latitude: 0, longitude: 0 }); // 현재 위치의 좌표값을 저장할 상태
@@ -32,7 +32,7 @@ const MainPage: React.FC = () => {
       level={3}
       ref={mapRef}
     >
-      <CategoryList />
+      <MapHeader />
       <MapMarker
         position={{ lat: location.latitude, lng: location.longitude }}
       ></MapMarker>
