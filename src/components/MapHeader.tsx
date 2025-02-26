@@ -14,7 +14,7 @@ const Category: React.FC<CategoryProps> = ({ text, icon }) => {
 
 const CategoryList: React.FC = () => {
   return (
-    <div className="flex gap-2 py-2 overflow-x-scroll w-svw">
+    <div className="flex w-[calc(100vw-24px)] gap-2 overflow-x-scroll py-2">
       {categoryList.map(({ text, icon }) => (
         <Category key={text} text={text} icon={icon} />
       ))}
