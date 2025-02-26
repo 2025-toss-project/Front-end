@@ -1,6 +1,6 @@
 import React from "react";
 
-import AddExpenditureInput from "../components/AddExpenditureInput";
+import AddPayInput from "../components/AddPayInput";
 import MainLayout from "../layouts/MainLayout";
 import SelectCategory from "../components/SelectCategory";
 
@@ -8,7 +8,7 @@ const AddExpenditurePage = () => {
   return (
     <div>
       <MainLayout>
-        <AddExpenditureInput />
+        <AddPayInput />
         <SelectCategory />
       </MainLayout>
     </div>
