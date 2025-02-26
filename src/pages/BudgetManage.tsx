@@ -1,10 +1,4 @@
-import {
-  ChevronLeft,
-  ChevronRight,
-  LucideAArrowDown,
-  LucideForkKnife,
-} from "lucide-react";
-import React from "react";
+import { ChevronRight } from "lucide-react";
 import IconFood from "../assets/categoryIcons/IconFood";
 import IconEvent from "../assets/categoryIcons/IconEvent";
 
