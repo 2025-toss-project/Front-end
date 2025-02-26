@@ -12,8 +12,10 @@ module.exports = {
         // 회색
         second: {
           DEFAULT: "#AAAAAA",
+          dark: "#333333",
           light: "#D9D9D9",
           lighter: "#F4F4F5",
+          lightest: "#EEEEEE,",
         },
         // 마커들의 색상 DEFAULT -> border, light -> fill
         // 식비
@@ -71,6 +73,7 @@ module.exports = {
           DEFAULT: "#86584A",
           light: "#E7DEDB",
         },
+        //
       },
       dropShadow: {
         5: "0 16px 40px rgba(0, 0, 0, 0.05)",
