@@ -5,16 +5,14 @@ import MainLayout from "../layouts/MainLayout";
 import SelectCategory from "../components/SelectCategory";
 import { SaveButton } from "../components/common/Buttons";
 
-const AddExpenditurePage = () => {
+const AddPayPage = () => {
   return (
-    <div className="flex flex-col">
-      <MainLayout>
-        <AddPayInput />
-        <SelectCategory />
-        <SaveButton title="저장하기" />
-      </MainLayout>
+    <div className="flex w-full flex-col">
+      <AddPayInput />
+      <SelectCategory />
+      <SaveButton title="저장하기" />
     </div>
   );
 };
 
-export default AddExpenditurePage;
+export default AddPayPage;
