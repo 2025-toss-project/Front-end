@@ -32,7 +32,8 @@ const MapBottomIcons = () => {
 
 const MainPage: React.FC = () => {
   const [location, setLocation] = useState({ latitude: 0, longitude: 0 }); // 현재 위치의 좌표값을 저장할 상태
-  const mapRef = useRef(null);
+  const [level, setLevel] = useState(3);
+  const mapRef = useRef<kakao.maps.Map | null>(null);
 
   const handleSuccess = (pos: GeolocationPosition) => {
     const { latitude, longitude } = pos.coords;
@@ -52,7 +53,32 @@ const MainPage: React.FC = () => {
     const { geolocation } = navigator;
 
     geolocation.getCurrentPosition(handleSuccess, handleError);
+
+    // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+    var zoomControl = new kakao.maps.ZoomControl();
+    mapRef.current?.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
   }, []);
+
+  const getMapInfo = () => {
+    var level = mapRef.current?.getLevel() || 0;
+    console.log("zoomLevel : " + level);
+    setLevel(level);
+  };
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+    kakao.maps.event.addListener(mapRef.current, "zoom_changed", getMapInfo);
+
+    return () => {
+      if (!mapRef.current) return;
+
+      kakao.maps.event.removeListener(
+        mapRef.current,
+        "zoom_changed",
+        getMapInfo,
+      );
+    };
+  }, [mapRef.current]);
 
   const dummyDatas = [
     {
@@ -66,6 +92,8 @@ const MainPage: React.FC = () => {
       count: 2,
     },
   ];
+  //
+
   return (
     <>
       <Map
@@ -75,7 +103,7 @@ const MainPage: React.FC = () => {
           height: "100%",
           position: "absolute",
         }}
-        level={3}
+        level={level}
         ref={mapRef}
       >
         {dummyDatas.map((data, index) => (
