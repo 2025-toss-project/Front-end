@@ -1,4 +1,4 @@
-import { LucideChevronLeft, LucideTrash } from "lucide-react";
+import { LucideChevronLeft } from "lucide-react";
 import React from "react";
 
 interface HeaderProps {
@@ -8,14 +8,14 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({
-  leftIcon = <LucideChevronLeft />,
+  leftIcon = <LucideChevronLeft size={24} />,
   title,
-  rightIcon = <div className="h-[24px] w-[24px]"></div>,
+  rightIcon = <div className="w-6 h-6" />, // h-6, w-6 → 24px
 }) => {
   return (
-    <div className="flex h-[64px] flex-row items-center justify-between px-[12px]">
+    <div className="flex items-center justify-between h-16 px-3">
       {leftIcon}
-      <p className="text-[16px] font-medium"> {title} </p>
+      <p className="text-base font-medium">{title}</p>
       {rightIcon}
     </div>
   );

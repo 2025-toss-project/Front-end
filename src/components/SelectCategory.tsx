@@ -14,7 +14,7 @@ import IconEtc from "../assets/categoryIcons/IconEtc";
 
 const SelectCategory = () => {
   return (
-    <div className="y-[354px] grid grid-flow-row grid-cols-4 gap-[10px] py-[12px] pb-[10px]">
+    <div className="grid grid-flow-row grid-cols-4 gap-2.5 py-2 pb-2">
       {/* TODO: 카테고리 map으로 동적 구현  */}
       <CategorySection icon={<IconFood size={28} />} name="식비" />
       <CategorySection icon={<IconEducation size={28} />} name="주거" />

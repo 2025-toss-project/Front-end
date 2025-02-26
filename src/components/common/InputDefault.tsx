@@ -17,10 +17,10 @@ const InputDefault: React.FC<PayInputProps> = ({
   const [inputType, setInputType] = useState("type"); // 초기 상태를 저장
 
   return (
-    <div className="h-[60px]">
+    <div className="h-15">
       <div className="flex flex-col py-3 mb-5 border-b">
         <div className="flex gap-5">
-          <label className="w-[60px]"> {label} </label>
+          <label className="w-15"> {label} </label>
           <input
             type={inputType}
             placeholder={placeholder}

@@ -4,11 +4,11 @@ interface MainButtonProps {
   title: string;
 }
 
-// 저장하기 버튼(todo: onclick submit)
+// 저장하기 버튼 (TODO: onclick submit)
 export const SaveButton: React.FC<MainButtonProps> = ({ title }) => {
   return (
-    <div className="flex justify-center">
-      <button className="my-[20px] flex h-[48px] w-[324px] items-center justify-center rounded-[8px] bg-main px-4 text-[18px] font-medium text-white">
+    <div className="flex justify-center px-4">
+      <button className="flex items-center justify-center w-full h-12 my-5 text-lg font-medium text-white rounded-lg bg-main">
         {title}
       </button>
     </div>
