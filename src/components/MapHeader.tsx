@@ -14,7 +14,7 @@ const Category: React.FC<CategoryProps> = ({ text, icon }) => {
 
 const CategoryList: React.FC = () => {
   return (
-    <div className="flex w-[calc(100vw-24px)] gap-2 overflow-x-scroll py-2">
+    <div className="flex w-[calc(100vw-24px)] max-w-[476px] gap-2 overflow-x-scroll py-2 pr-6">
       {categoryList.map(({ text, icon }) => (
         <Category key={text} text={text} icon={icon} />
       ))}
@@ -50,7 +50,7 @@ const DropDown: React.FC<DropDownProps> = ({ isOpen, setIsOpen }) => {
           <div
             key={type}
             onClick={() => setType(type)}
-            className="py-2 border-b border-b-second last:border-none"
+            className="border-b border-b-second py-2 last:border-none"
           >
             {type}
           </div>
@@ -74,7 +74,7 @@ const MyProperty: React.FC<{ name: string; property: string }> = ({
 const MapHeader: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   return (
-    <div className="flex flex-col max-w-full">
+    <div className="flex max-w-full flex-col">
       <CategoryList />
       <div className="flex items-center justify-between py-1">
         <MyProperty name="희연" property="플렉스" />
