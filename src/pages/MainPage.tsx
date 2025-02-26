@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { Map, MapMarker } from "react-kakao-maps-sdk";
+import { CustomOverlayMap, Map, MapMarker } from "react-kakao-maps-sdk";
 import MapHeader from "../components/MapHeader";
 import IconMyLocation from "../assets/IconMyLocation";
-import { LucidePlus } from "lucide-react";
+import { Icon, LucidePlus } from "lucide-react";
+import IconFood from "../assets/categoryIcons/IconFood";
+import "../assets/bubble.css";
+import MapBubble from "../components/MapBubble";
 
 const IconMoveMyLocation: React.FC = () => {
   return (
@@ -51,6 +54,19 @@ const MainPage: React.FC = () => {
 
     geolocation.getCurrentPosition(handleSuccess, handleError);
   }, []);
+
+  const dummyDatas = [
+    {
+      category: "식비",
+      price: 2000,
+      count: 3,
+    },
+    {
+      category: "주거",
+      price: 50000,
+      count: 2,
+    },
+  ];
   return (
     <>
       <Map
@@ -64,12 +80,22 @@ const MainPage: React.FC = () => {
         level={3}
         ref={mapRef}
       >
-        <MapMarker
-          position={{ lat: location.latitude, lng: location.longitude }}
-        ></MapMarker>
+        {dummyDatas.map((data, index) => (
+          <MapBubble
+            key={index}
+            position={{
+              lat: location.latitude + index * 0.001,
+              lng: location.longitude + index * 0.001,
+            }}
+            category={data.category}
+            price={data.price}
+            count={data.count}
+          />
+        ))}
       </Map>
       <div className="flex flex-col justify-between w-full h-full px-6 pt-10 pb-5">
         <MapHeader />
+
         <MapBottomIcons />
       </div>
     </>
