@@ -3,7 +3,7 @@ import React from "react";
 import AddPayInput from "../components/AddPayInput";
 import MainLayout from "../layouts/MainLayout";
 import SelectCategory from "../components/SelectCategory";
-import { SaveButton } from "../components/Buttons";
+import { SaveButton } from "../components/common/Buttons";
 
 const AddExpenditurePage = () => {
   return (

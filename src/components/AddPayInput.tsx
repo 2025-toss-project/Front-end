@@ -1,5 +1,5 @@
 import React from "react";
-import InputDefault from "./InputDefault";
+import InputDefault from "./common/InputDefault";
 
 const AddPayInput = () => {
   return (

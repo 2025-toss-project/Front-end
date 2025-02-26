@@ -15,23 +15,23 @@ const navbar = () => {
         <div className="flex-col justify-items-center">
           {/* <IconRecords className="text-second" /> */}
           <LucideWallet color="#aaa" strokeWidth={1.5} />
-          <p className="text-sm text-second">소비기록</p>
+          <p className="text-[10px] text-second">소비기록</p>
         </div>
         <div className="flex-col justify-items-center">
           <LucideChartPie color="#aaa" strokeWidth={1.5} />
-          <p className="text-sm text-second">통계</p>
+          <p className="text-[10px] text-second">통계</p>
         </div>
         <div className="flex-col justify-items-center">
           <LucideHouse color="#aaa" strokeWidth={1.5} />
-          <p className="text-sm text-second">홈</p>
+          <p className="text-[10px] text-second">홈</p>
         </div>
         <div className="flex-col justify-items-center">
           <LucideCircleDollarSign color="#aaa" strokeWidth={1.5} />
-          <p className="text-sm text-second">예산관리</p>
+          <p className="text-[10px] text-second">예산관리</p>
         </div>
         <div className="flex-col justify-items-center">
           <LucideUserRound color="#aaa" strokeWidth={1.5} />
-          <p className="text-sm text-second">내정보</p>
+          <p className="text-[10px] text-second">내정보</p>
         </div>
       </div>
     </div>

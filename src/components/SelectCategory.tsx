@@ -1,6 +1,6 @@
 import { LucideArrowUpNarrowWide } from "lucide-react";
 import React from "react";
-import CategorySection from "./CategorySection";
+import CategorySection from "./sections/CategorySection";
 import IconFood from "../assets/categoryIcons/IconFood";
 import IconEducation from "../assets/categoryIcons/IconEducation";
 import IconTraffic from "../assets/categoryIcons/IconTraffic";
@@ -15,6 +15,7 @@ import IconEtc from "../assets/categoryIcons/IconEtc";
 const SelectCategory = () => {
   return (
     <div className="y-[354px] grid grid-flow-row grid-cols-4 gap-[10px] py-[12px] pb-[10px]">
+      {/* TODO: 카테고리 map으로 동적 구현  */}
       <CategorySection icon={<IconFood size={28} />} name="식비" />
       <CategorySection icon={<IconEducation size={28} />} name="주거" />
       <CategorySection icon={<IconTraffic size={28} />} name="교통" />
