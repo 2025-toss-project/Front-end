@@ -1,10 +1,11 @@
 import React from "react";
 import Navbar from "../components/Navbar";
+import Header from "../components/Header";
 
 const MainLayout = (props: { children: React.ReactNode }) => {
   return (
     <>
-      <div> 헤더들어갈 자리 </div>
+      <Header title="지출 내역 추가" />
       <main>{props.children}</main>
       <Navbar />
     </>
