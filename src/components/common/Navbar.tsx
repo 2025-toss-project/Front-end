@@ -1,10 +1,16 @@
 import React from "react";
 import { NAV_ITEMS } from "../../constants/NavItem";
 
-const Navbar = () => {
+interface NavbarProps {
+  bgcolor?: string;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ bgcolor = "bg-white" }) => {
   return (
-    <div className="h-16 border-t border-lightest rounded-2xl">
-      <div className="flex items-center justify-between h-full px-5">
+    <div className="border-lightest h-16 rounded-2xl border-t">
+      <div
+        className={`${bgcolor} flex h-full items-center justify-between px-5`}
+      >
         {NAV_ITEMS.map(({ icon: Icon, label }, index) => (
           <div key={index} className="flex flex-col items-center">
             <Icon color="#aaa" strokeWidth={1.5} />

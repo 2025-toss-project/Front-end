@@ -18,13 +18,13 @@ const InputDefault: React.FC<PayInputProps> = ({
 
   return (
     <div className="h-15">
-      <div className="flex flex-col py-3 mb-5 border-b">
+      <div className="mb-5 flex flex-col border-b py-3 focus-within:border-pink-500">
         <div className="flex gap-5">
-          <label className="w-15"> {label} </label>
+          <label className="w-20"> {label} </label>
           <input
             type={inputType}
             placeholder={placeholder}
-            className="text-default"
+            className="text-default outline-none focus:outline-none focus:ring-0"
             onFocus={() => type === "date" && setInputType("date")} // 클릭하면 date로 변경
             onBlur={(e) =>
               type === "date" && !e.target.value && setInputType("text")
