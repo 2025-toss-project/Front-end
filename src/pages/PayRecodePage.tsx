@@ -1,14 +1,12 @@
 import React from "react";
-import MainLayout from "../layouts/MainLayout";
-import Calendar from "../components/Calendar";
+import CustomCalendar from "../components/CustomCalendar";
 
 const PayRecodePage = () => {
   return (
-    <MainLayout>
-      <div>
-        <Calendar />
-      </div>
-    </MainLayout>
+    <div className="flex w-full flex-col">
+      <p>테스트</p>
+      <CustomCalendar />
+    </div>
   );
 };
 
