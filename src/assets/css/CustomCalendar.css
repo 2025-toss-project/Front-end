@@ -114,10 +114,20 @@ react-calendar__navigation__label {
 /* 개별 날짜 스타일 */
 .react-calendar__tile {
   max-width: 100%;
-  padding: 10px 6.6667px;
+  padding: 12px 6.6667px;
   background: none;
   text-align: center;
   font-size: 0.833em;
+}
+
+/* 토요일 스타일 (파란색) */
+.react-calendar__month-view__days__day:nth-child(7n + 6) {
+  color: #0038d1;
+}
+
+/* 일요일 스타일 (빨간색) */
+.react-calendar__month-view__days__day:nth-child(7n + 7) {
+  color: #d10000;
 }
 
 /* 주말 스타일 */
@@ -137,12 +147,14 @@ react-calendar__navigation__label {
 
 /* 선택한 날짜 스타일 */
 .react-calendar__tile--active {
-  background: #c80150;
-  border-radius: 60px;
+  background-color: #c80150;
   color: white;
+  border-radius: 60px;
 }
 
 .react-calendar__tile--active:enabled:hover,
 .react-calendar__tile--active:enabled:focus {
-  background: #c80150;
+  border-radius: 60px;
+  background-color: #c80150;
+  color: white;
 }
