@@ -4,10 +4,12 @@ import IconEvent from "../assets/categoryIcons/IconEvent";
 
 const BudgetManage = () => {
   return (
-    <div className="flex h-full flex-col bg-[#f8f8f8] px-6 py-5">
+    <div className="bg-second-bg flex h-full w-full flex-col">
+      {/*}
       <div className="flex h-16 w-full items-center justify-center">
         목표예산관리
       </div>
+      */}
       {/* 1. 목표예산 설정 */}
       <div className="1px mb-4 mt-5 flex items-center justify-between rounded-2xl border border-second-light bg-white px-4 py-3">
         <div>
@@ -53,7 +55,7 @@ const BudgetManage = () => {
         </div>
 
         {/* 예: 식비 카테고리 */}
-        <div className="mb-5 rounded-2xl bg-[#f8f8f8] px-2 py-2.5">
+        <div className="bg-second-bg mb-5 rounded-2xl px-2 py-2.5">
           <div className="mb-1 flex items-center justify-between pb-2">
             <div className="flex items-center space-x-2">
               <div className="flex rounded-full bg-second-lighter">
@@ -79,7 +81,7 @@ const BudgetManage = () => {
 
         {/* ////초과 예시 */}
 
-        <div className="mb-5 rounded-2xl bg-[#f8f8f8] px-2 py-2.5">
+        <div className="bg-second-bg mb-5 rounded-2xl px-2 py-2.5">
           <div className="mb-1 flex items-center justify-between pb-2">
             <div className="flex items-center space-x-2">
               <div className="flex rounded-full bg-second-lighter">
@@ -105,7 +107,7 @@ const BudgetManage = () => {
 
         {/*  */}
 
-        <div className="mb-5 rounded-2xl bg-[#f8f8f8] px-2 py-2.5">
+        <div className="bg-second-bg mb-5 rounded-2xl px-2 py-2.5">
           <div className="mb-1 flex items-center justify-between pb-2">
             <div className="flex items-center space-x-2">
               <div className="flex rounded-full bg-second-lighter">
