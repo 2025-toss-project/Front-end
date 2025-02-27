@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { CustomOverlayMap } from "react-kakao-maps-sdk";
 import "../assets/bubble.css";
-import { categoryList, CategoryProps } from "../constants/category";
+import { findCategory } from "../utils/findTypeOrCategory";
+import { formatPrice } from "../utils/formatPrice";
 
 const MapBubble: React.FC<{
   position: { lat: number; lng: number };
@@ -9,35 +10,33 @@ const MapBubble: React.FC<{
   price: number;
   count: number;
 }> = ({ position, category, price, count }) => {
-  const findCategory: CategoryProps | undefined = categoryList.find(
-    (item) => item.text === category,
-  );
+  const bubbleCategory = findCategory(category);
   const bubbleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (bubbleRef.current) {
       const el = bubbleRef.current;
-      el.style.setProperty("--border-color", findCategory?.border ?? "");
+      el.style.setProperty("--border-color", bubbleCategory?.border ?? "");
       el.style.setProperty(
         "--background-color",
-        findCategory?.background ?? "",
+        bubbleCategory?.background ?? "",
       );
     }
-  }, [findCategory]);
+  }, [bubbleCategory]);
 
   return (
     <CustomOverlayMap position={position}>
       <div
         ref={bubbleRef}
         style={{
-          backgroundColor: findCategory?.background,
-          borderColor: findCategory?.border,
+          backgroundColor: bubbleCategory?.background,
+          borderColor: bubbleCategory?.border,
         }}
         className={`bubble flex items-end gap-1 border text-sm`}
       >
-        {findCategory?.icon}
+        {bubbleCategory?.icon}
         <div>
-          ₩{price}
+          ₩{formatPrice(price)}
           <span className="text-[10px]">({count})</span>
         </div>
       </div>
