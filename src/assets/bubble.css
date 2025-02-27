@@ -3,9 +3,7 @@
   width: fit-content;
   height: fit-content;
   padding: 0px;
-  background: #e9f1f8;
   border-radius: 8px;
-  border: #aad6ff solid 1px;
   padding: 6px 4px;
 }
 
@@ -14,7 +12,7 @@
   position: absolute;
   border-style: solid;
   border-width: 14px 11px 0;
-  border-color: #e9f1f8 transparent;
+  border-color: var(--background-color) transparent;
   display: block;
   width: 0;
   z-index: 1;
@@ -27,7 +25,7 @@
   position: absolute;
   border-style: solid;
   border-width: 14px 11px 0;
-  border-color: #aad6ff transparent;
+  border-color: var(--border-color) transparent;
   display: block;
   width: 0;
   z-index: 0;
