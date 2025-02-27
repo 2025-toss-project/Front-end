@@ -8,6 +8,7 @@ const useGetMyCurrentLocation = (
     const { latitude, longitude } = pos.coords;
     setLocation({ lat: latitude, lng: longitude });
     setMapCenter({ lat: latitude, lng: longitude });
+    console.log(latitude, longitude);
   };
 
   const handleError = (error: GeolocationPositionError) => {

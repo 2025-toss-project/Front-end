@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { CustomOverlayMap, Map, MapMarker } from "react-kakao-maps-sdk";
+import React, { useRef, useState } from "react";
+import { CustomOverlayMap, Map } from "react-kakao-maps-sdk";
 import MapHeader from "../components/MapHeader";
 import IconMyLocation from "../assets/IconMyLocation";
 import { LucidePlus } from "lucide-react";
@@ -7,6 +7,7 @@ import "../assets/bubble.css";
 import MapBubble from "../components/MapBubble";
 import { useMovePage } from "../hooks/useMovePage";
 import useGetMyCurrentLocation from "../hooks/useGetMyCurrentLocation";
+import MapIconMarker from "../components/MapIconMarker";
 
 const IconMoveMyLocation: React.FC<{ moveToCurrentLocation: () => void }> = ({
   moveToCurrentLocation,
@@ -62,34 +63,6 @@ const MainPage: React.FC = () => {
     setMapCenter({ lat: location.lat, lng: location.lng });
   };
 
-  // location 업데이트 후에 zoom Control 추가함
-  useEffect(() => {
-    if (!mapRef.current || !location) return;
-
-    var zoomControl = new kakao.maps.ZoomControl();
-    mapRef.current.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
-  }, [location]);
-
-  const getMapInfo = () => {
-    var level = mapRef.current?.getLevel() || 0;
-    console.log("zoomLevel : " + level);
-    setLevel(level);
-  };
-
-  useEffect(() => {
-    if (!mapRef.current) return;
-    kakao.maps.event.addListener(mapRef.current, "zoom_changed", getMapInfo);
-
-    return () => {
-      if (!mapRef.current) return;
-      kakao.maps.event.removeListener(
-        mapRef.current,
-        "zoom_changed",
-        getMapInfo,
-      );
-    };
-  }, [mapRef.current]);
-
   const dummyDatas = [
     {
       category: "식비",
@@ -116,24 +89,37 @@ const MainPage: React.FC = () => {
         isPanto={true}
         level={level}
         ref={mapRef}
+        onZoomChanged={(map) => {
+          const level = map.getLevel();
+          setLevel(level);
+        }}
       >
         <MyCurrentLocation
           location={{ lat: location.lat, lng: location.lng }}
         />
-
-        {dummyDatas.map((data, index) => (
-          <MapBubble
-            key={index}
-            // TODO : 위치 임시로 지정
-            position={{
-              lat: location.lat + (index + 1) * 0.001,
-              lng: location.lng + (index + 1) * 0.001,
-            }}
-            category={data.category}
-            price={data.price}
-            count={data.count}
-          />
-        ))}
+        {dummyDatas.map((data, index) =>
+          level >= 5 ? (
+            <MapIconMarker
+              key={index}
+              position={{
+                lat: location.lat + (index + 1) * 0.001,
+                lng: location.lng + (index + 1) * 0.001,
+              }}
+              category={data.category}
+            />
+          ) : (
+            <MapBubble
+              key={index}
+              position={{
+                lat: location.lat + (index + 1) * 0.001,
+                lng: location.lng + (index + 1) * 0.001,
+              }}
+              category={data.category}
+              price={data.price}
+              count={data.count}
+            />
+          ),
+        )}
       </Map>
       <div className="flex flex-col justify-between w-full h-full px-6 pt-10 pb-5">
         <MapHeader />
