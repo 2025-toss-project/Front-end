@@ -6,9 +6,24 @@ import { payTypeList, PayTypeProps } from "../constants/payType";
 import useUserInfo from "../stores/userInfo";
 import { findType } from "../utils/findTypeOrCategory";
 
-const Category: React.FC<CategoryProps> = ({ text, icon }) => {
+const Category: React.FC<
+  CategoryProps & {
+    selectedCategory: string;
+    setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
+  }
+> = ({ text, icon, selectedCategory, setSelectedCategory }) => {
+  const handleClickCategory = (text: string) => {
+    text === selectedCategory
+      ? setSelectedCategory("")
+      : setSelectedCategory(text);
+  };
   return (
-    <div className="flex w-fit flex-shrink-0 items-center gap-1 rounded-full bg-white px-2.5 py-2 font-medium drop-shadow-10">
+    <div
+      onClick={() => {
+        handleClickCategory(text);
+      }}
+      className={`flex w-fit flex-shrink-0 items-center gap-1 rounded-full border bg-white px-2.5 py-2 font-medium drop-shadow-10 ${selectedCategory === text ? "border-main" : "border-white"}`}
+    >
       {icon}
       <div>{text}</div>
     </div>
@@ -16,10 +31,17 @@ const Category: React.FC<CategoryProps> = ({ text, icon }) => {
 };
 
 const CategoryList: React.FC = () => {
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   return (
     <div className="flex w-[calc(100vw-24px)] max-w-[476px] gap-2 overflow-x-scroll py-2 pr-6">
       {categoryList.map(({ text, icon }) => (
-        <Category key={text} text={text} icon={icon} />
+        <Category
+          key={text}
+          text={text}
+          icon={icon}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+        />
       ))}
     </div>
   );
