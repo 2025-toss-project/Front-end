@@ -1,6 +1,11 @@
+import { LucideChevronDown } from "lucide-react";
 import React from "react";
 
 interface MainButtonProps {
+  title: string;
+}
+
+interface DropButtonProps {
   title: string;
 }
 
@@ -8,9 +13,18 @@ interface MainButtonProps {
 export const SaveButton: React.FC<MainButtonProps> = ({ title }) => {
   return (
     <div className="flex justify-center px-4">
-      <button className="flex items-center justify-center w-full h-12 my-5 text-lg font-medium text-white rounded-lg bg-main">
+      <button className="my-5 flex h-12 w-full items-center justify-center rounded-lg bg-main text-lg font-medium text-white">
         {title}
       </button>
+    </div>
+  );
+};
+
+export const DropButton: React.FC<DropButtonProps> = ({ title }) => {
+  return (
+    <div className="m-3 flex h-7 w-24 flex-row items-center justify-center gap-1 rounded-sm bg-second-lighter">
+      <p className="text-sm">{title}</p>
+      <LucideChevronDown size={18} />
     </div>
   );
 };
