@@ -16,7 +16,9 @@ module.exports = {
           light: "#D9D9D9",
           lighter: "#F4F4F5",
           lightest: "#EEEEEE,",
+          bg: "#F8F8F8",
         },
+
         // 마커들의 색상 DEFAULT -> border, light -> fill
         // 식비
         "marker-food": {
