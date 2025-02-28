@@ -4,13 +4,13 @@
 import React, { useState } from "react";
 
 interface PayInputProps {
-  label: string;
+  label?: string;
   type?: string;
   placeholder: string;
 }
 
 const InputDefault: React.FC<PayInputProps> = ({
-  label,
+  label = "",
   type = "text",
   placeholder,
 }) => {
@@ -20,7 +20,7 @@ const InputDefault: React.FC<PayInputProps> = ({
     <div className="h-15">
       <div className="mb-5 flex flex-col border-b py-3 focus-within:border-pink-500">
         <div className="flex gap-5">
-          <label className="w-20"> {label} </label>
+          {label && <label className="w-20"> {label} </label>}
           <input
             type={inputType}
             placeholder={placeholder}
