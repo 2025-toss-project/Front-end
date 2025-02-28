@@ -5,6 +5,7 @@ import InputDefault from "../components/common/InputDefault";
 import SelectAgeGroup from "../components/SelectAgeGroup";
 import { SaveButton } from "../components/common/Buttons";
 import { LucideLogOut } from "lucide-react";
+import PayTypeSection from "../components/sections/PayTypeSection";
 
 const ProfileTab = () => {
   const [selectedAge, setSelectedAge] = useState<string>("");
@@ -30,6 +31,27 @@ const ProfileTab = () => {
         로그아웃
         <LucideLogOut size={16} />
       </div>
+    </>
+  );
+};
+
+const TypeTab = () => {
+  const [selectedPayType, setSelectedPayType] = useState<string>("");
+  return (
+    <>
+      <div className="flex flex-col gap-5 rounded-lg border border-second-light px-3 py-7">
+        <div className="flex flex-col">
+          <div className="text-lg font-bold">소비성향 설정</div>
+          <div className="text-sm">
+            자신의 소비패턴과 가장 잘 맞는 유형을 선택하세요.
+          </div>
+        </div>
+        <PayTypeSection
+          selectedPayType={selectedPayType}
+          setSelectedPayType={setSelectedPayType}
+        />
+      </div>
+      <SaveButton title="저장하기" />
     </>
   );
 };
@@ -68,7 +90,7 @@ const MyPage = () => {
         {/* <div className="grid w-full rounded-lg place-items-center">프로필</div>
         <div className="grid w-full rounded-lg place-items-center">성향</div> */}
       </div>
-      {selectedTap === 0 ? <ProfileTab /> : <div>성향</div>}
+      {selectedTap === 0 ? <ProfileTab /> : <TypeTab />}
     </div>
   );
 };
