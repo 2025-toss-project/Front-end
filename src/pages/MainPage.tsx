@@ -3,7 +3,6 @@ import { CustomOverlayMap, Map } from "react-kakao-maps-sdk";
 import MapHeader from "../components/MapHeader";
 import IconMyLocation from "../assets/IconMyLocation";
 import { LucidePlus } from "lucide-react";
-import "../assets/bubble.css";
 import MapBubble from "../components/MapBubble";
 import { useMovePage } from "../hooks/useMovePage";
 import useGetMyCurrentLocation from "../hooks/useGetMyCurrentLocation";
@@ -15,7 +14,7 @@ const IconMoveMyLocation: React.FC<{ moveToCurrentLocation: () => void }> = ({
   return (
     <div
       onClick={moveToCurrentLocation}
-      className="z-10 grid w-10 bg-white rounded-full aspect-square place-items-center drop-shadow-50"
+      className="z-10 grid aspect-square w-10 place-items-center rounded-full bg-white drop-shadow-50"
     >
       <IconMyLocation />
     </div>
@@ -26,7 +25,7 @@ const IconFastInputPay: React.FC = () => {
   return (
     <div
       onClick={() => moveToPage("/addpay")}
-      className="z-10 grid rounded-full aspect-square w-11 place-items-center bg-main drop-shadow-50"
+      className="z-10 grid aspect-square w-11 place-items-center rounded-full bg-main drop-shadow-50"
     >
       <LucidePlus size={24} color="#FFF" />
     </div>
@@ -41,8 +40,8 @@ const MyCurrentLocation: React.FC<{
       position={{ lat: location.lat, lng: location.lng }}
       zIndex={1}
     >
-      <div className="grid w-8 rounded-full aspect-square place-items-center bg-main bg-opacity-30">
-        <div className="w-4 border-2 border-white rounded-full aspect-square bg-main"></div>
+      <div className="grid aspect-square w-8 place-items-center rounded-full bg-main bg-opacity-30">
+        <div className="aspect-square w-4 rounded-full border-2 border-white bg-main"></div>
       </div>
     </CustomOverlayMap>
   );
@@ -121,7 +120,7 @@ const MainPage: React.FC = () => {
           ),
         )}
       </Map>
-      <div className="flex flex-col justify-between w-full h-full px-6 pt-10 pb-5">
+      <div className="flex h-full w-full flex-col justify-between px-6 pb-5 pt-10">
         <MapHeader />
         <div className="flex items-end justify-between">
           <IconMoveMyLocation moveToCurrentLocation={moveToCurrentLocation} />
