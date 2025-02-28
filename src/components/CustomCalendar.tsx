@@ -68,9 +68,9 @@ const Calendar = () => {
           );
 
           return (
-            <div className="relative flex h-full flex-col justify-between pt-2">
+            <div className="flex h-full flex-col justify-between pt-2">
               {dayRecord && (
-                <div className="text-red absolute bottom-2.5 left-1/2 -translate-x-1/2 text-xs active:text-white">
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-xs text-red-500">
                   {dayRecord.dailyTotal.toLocaleString()}
                 </div>
               )}

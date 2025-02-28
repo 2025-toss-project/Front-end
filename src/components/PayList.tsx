@@ -51,7 +51,7 @@ const PayList = () => {
       {spendingData.records.map((dayData, index) => (
         <div key={index} className="mb-5">
           {/* 날짜 및 하루 총액 표시 */}
-          <div className="flex flex-row justify-between py-5 pl-3">
+          <div className="flex flex-row justify-between py-5">
             <p className="text-sm text-second">
               {formatDateWithWeekday(dayData.year, dayData.month, dayData.day)}
             </p>
