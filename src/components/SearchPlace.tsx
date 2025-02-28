@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useSearchPlace } from "../pages/SearchPlacePage";
 import { AddressButton } from "./common/Buttons";
+import { useSearchPlace } from "../contexts/SearchPlaceContext";
 
 declare global {
   interface Window {
@@ -16,24 +16,16 @@ interface Place {
 }
 
 export default function SearchPlace() {
-  const { place } = useSearchPlace();
   const [isKakaoLoaded, setIsKakaoLoaded] = useState(false);
   const [isSearched, setIsSearched] = useState(false);
   const [places, setPlaces] = useState<Place[]>([]);
   const [pagination, setPagination] = useState<any>(null);
+  const { place, selectPlace, setSelectPlace } = useSearchPlace();
 
   useEffect(() => {
-    if (window.kakao?.maps?.services) {
-      setIsKakaoLoaded(true);
-      console.log("KakaoMap services 로드 완료!");
-    } else {
-      console.error("KakaoMap services 로드 실패");
-      return;
-    }
-
     if (!place.trim()) {
       setIsSearched(false);
-      setPlaces([]); // 검색어 없을 때 리스트 초기화
+      setPlaces([]);
       return;
     }
 
@@ -48,11 +40,6 @@ export default function SearchPlace() {
         } else {
           setIsSearched(false);
           setPlaces([]);
-          if (status === window.kakao.maps.services.Status.ZERO_RESULT) {
-            alert("검색 결과가 존재하지 않습니다.");
-          } else {
-            alert("검색 중 오류가 발생했습니다.");
-          }
         }
       },
     );
@@ -64,10 +51,17 @@ export default function SearchPlace() {
       <div id="menu_wrap" className="bg_white">
         <ul id="placesList">
           {places.map((place, index) => (
-            <li key={index} className="item flex flex-col gap-2 border-b py-2">
+            <li
+              key={index}
+              className="item flex flex-col gap-2 border-b py-2"
+              onClick={() => {
+                setSelectPlace(place.place_name);
+                console.log(selectPlace);
+              }}
+            >
               <span className={`markerbg marker_${index + 1}`} />
               <div className="info flex flex-col gap-1.5">
-                <h2 className="text-base font-medium text-second-dark group-hover:text-main">
+                <h2 className="text-base font-medium text-second-dark">
                   {place.place_name}
                 </h2>
                 {place.road_address_name && (

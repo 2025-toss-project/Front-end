@@ -1,6 +1,3 @@
-//components/InputDefault.tsx
-// 일반 입력 받는 재사용 컴포넌트
-
 import React, { useEffect, useState } from "react";
 
 interface PayInputProps {
@@ -22,23 +19,40 @@ const InputDefault: React.FC<PayInputProps> = ({
   value = "",
   onClick,
 }) => {
-  const [inputType, setInputType] = useState("type"); // 초기 type 상태를 저장
-  const [inputValue, setInputValue] = useState(value); // 초기 value 상태를 props 에서 받아옴
+  const [inputType, setInputType] = useState("type"); // 초기 타입 설정(문자열!)
+  const [inputValue, setInputValue] = useState(value); // 입력값 상태 관리
 
   useEffect(() => {
-    setInputValue(value);
+    setInputValue(formatValue(value)); // 초기 값 설정 시 포맷 적용
   }, [value]);
 
+  const formatValue = (val: string) => {
+    if (type === "number" && val) {
+      const num = Number(val.replace(/,/g, "")); // 쉼표 제거 후 숫자로 변환
+      return num.toLocaleString(); // 쉼표 추가된 문자열 반환
+    }
+    return val; // 숫자가 아닐 경우 그대로 반환
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setInputValue(newValue); // 내부 상태 업데이트
+    if (isReadOnly) return;
+
+    let newValue = e.target.value;
+
+    // 숫자에 쉼표달기
+    if (type === "number") {
+      newValue = newValue.replace(/[^0-9]/g, ""); // 숫자만 허용
+      newValue = formatValue(newValue); // 숫자일 경우 쉼표 추가
+    }
+
+    setInputValue(newValue); // 상태 업데이트
   };
 
   return (
     <div onClick={onClick} className={`h-15 ${style}`}>
       <div className="mb-5 flex flex-col border-b py-3 focus-within:border-pink-500">
         <div className="flex gap-5">
-          {label && <label className="w-20"> {label} </label>}
+          {label && <label className="w-20">{label}</label>}
           <input
             type={inputType}
             placeholder={placeholder}
@@ -47,10 +61,10 @@ const InputDefault: React.FC<PayInputProps> = ({
             onChange={handleChange}
             onClick={(e) => isReadOnly && e.preventDefault()}
             className="text-default outline-none focus:outline-none focus:ring-0"
-            onFocus={() => type === "date" && setInputType("date")} // 클릭하면 date로 변경
-            onBlur={(e) =>
-              type === "date" && !e.target.value && setInputType("text")
-            } // 값이 없으면 다시 text로
+            onFocus={() => type === "date" && setInputType("date")} // 누르면 달력 처럼
+            onBlur={
+              (e) => type === "date" && !e.target.value && setInputType("text") // 텍스트인 것처럼 보이게
+            }
           />
         </div>
       </div>

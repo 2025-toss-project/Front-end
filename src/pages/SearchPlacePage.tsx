@@ -1,27 +1,10 @@
 import { LucideCircleX, LucideSearch } from "lucide-react";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import SearchListSection from "../components/sections/SearchListSection";
 import SearchPlace from "../components/SearchPlace";
-
-// Context 타입 정의
-interface SearchContextType {
-  place: string;
-  onSearch: (newPlace: string) => void;
-}
-
-// Context 생성
-const SearchPlaceContext = createContext<SearchContextType | undefined>(
-  undefined,
-);
-
-// Context 사용 훅(place, onSearch 사용가능)
-export function useSearchPlace() {
-  const context = useContext(SearchPlaceContext);
-  if (!context) {
-    throw new Error("error SearchPlaceProvider");
-  }
-  return context;
-}
+import {
+  SearchPlaceProvider,
+  useSearchPlace,
+} from "../contexts/SearchPlaceContext";
 
 const SearchHeader = () => {
   const { place, onSearch } = useSearchPlace(); // context
@@ -61,21 +44,13 @@ const SearchHeader = () => {
 };
 
 const SearchPlacePage = () => {
-  const [place, setPlace] = useState("");
-
-  // 검색 실행 함수
-  const onSearch = (newPlace: string) => {
-    setPlace(newPlace);
-    console.log("검색한 장소:", newPlace);
-  };
-
   return (
-    <div className="flex w-full flex-col gap-5">
-      <SearchPlaceContext.Provider value={{ place, onSearch }}>
+    <SearchPlaceProvider>
+      <div className="flex w-full flex-col gap-5">
         <SearchHeader />
         <SearchPlace />
-      </SearchPlaceContext.Provider>
-    </div>
+      </div>
+    </SearchPlaceProvider>
   );
 };
 
