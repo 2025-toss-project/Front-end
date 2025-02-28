@@ -25,7 +25,7 @@ const App: React.FC = () => {
         <Route path="/addpay" element={<AddPayPage />} />
       </Route>
       <Route element={<MainLayout title="지출 내역 추가" />}>
-        <Route path="/searchplace" element={<SearchPlacePage />} />
+        <Route path="/addpay/searchplace" element={<SearchPlacePage />} />
       </Route>
       <Route
         element={<MainLayout title="지출 내역 리스트" bgColor="bg-second-bg" />}
