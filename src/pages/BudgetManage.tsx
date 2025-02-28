@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import MonthlyBudget from "../components/MonthlyBudget";
 import BudgetStatus from "../components/BudgetStatus";
 import CategoryStatus from "../components/CategoryStatus";
 
 const BudgetManage = () => {
+  const navigate = useNavigate();
+
   const [categoryBudgets, setCategoryBudgets] = useState([
     { category: "식비", budget: 200000, pay: 180000 },
     { category: "교육", budget: 100000, pay: 50000 },
@@ -20,13 +23,19 @@ const BudgetManage = () => {
   ]);
 
   return (
-    <div className="flex flex-col w-full h-full bg-second-bg">
-      {/* 1. 목표예산 설정 */}
-      <MonthlyBudget />
-      {/* 2. 현재 예산 사용 현황 */}
+    <div className="flex h-full w-full flex-col bg-second-bg">
+      <div onClick={() => navigate("/budgetset")} className="cursor-pointer">
+        <MonthlyBudget />
+      </div>
       <BudgetStatus />
-      {/* 3. 카테고리별 소비 현황 */}
-      <CategoryStatus categoryBudgets={categoryBudgets} />
+      <CategoryStatus
+        categoryBudgets={categoryBudgets.map(({ category, budget, pay }) => ({
+          category,
+          budgetPrice: budget,
+          spendPrice: pay,
+          percentage: Math.round((pay / budget) * 100), // 비율 계산
+        }))}
+      />
     </div>
   );
 };
