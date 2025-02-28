@@ -7,12 +7,14 @@ import LoginPage from "./pages/LoginPage";
 import HeaderLayout from "./layouts/HeaderLayout";
 import SignupPage from "./pages/SignupPage";
 import MyPage from "./pages/MyPage";
+import SearchLocation from "./pages/SearchLocation";
 
 const App: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<MainPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/search/location" element={<SearchLocation />} />
 
       <Route element={<MainLayout title="예산관리" bgColor="bg-second-bg" />}>
         <Route path="/budget" element={<BudgetManage />} />

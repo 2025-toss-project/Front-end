@@ -24,7 +24,7 @@ const ProfileTab = () => {
           setSelectedAge={setSelectedAge}
           style="mb-5"
         />
-        <InputDefault placeholder="집 정보" label="집 정보" />
+        <InputDefault placeholder="집 정보" label="집 정보" type="location" />
       </div>
       <SaveButton title="프로필 저장" />
       <div className="flex items-center justify-center gap-5 text-xs font-bold">
@@ -87,8 +87,6 @@ const MyPage = () => {
             {tab}
           </div>
         ))}
-        {/* <div className="grid w-full rounded-lg place-items-center">프로필</div>
-        <div className="grid w-full rounded-lg place-items-center">성향</div> */}
       </div>
       {selectedTap === 0 ? <ProfileTab /> : <TypeTab />}
     </div>
