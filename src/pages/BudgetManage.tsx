@@ -1,136 +1,32 @@
-import { ChevronRight } from "lucide-react";
-import IconFood from "../assets/categoryIcons/IconFood";
-import IconEvent from "../assets/categoryIcons/IconEvent";
+import { useState } from "react";
+import MonthlyBudget from "../components/MonthlyBudget";
+import BudgetStatus from "../components/BudgetStatus";
+import CategoryStatus from "../components/CategoryStatus";
 
 const BudgetManage = () => {
+  const [categoryBudgets, setCategoryBudgets] = useState([
+    { category: "식비", budget: 200000, pay: 180000 },
+    { category: "교육", budget: 100000, pay: 50000 },
+    { category: "주거", budget: 300000, pay: 310000 },
+    { category: "문화생활", budget: 150000, pay: 120000 },
+    { category: "교통", budget: 80000, pay: 70000 },
+    { category: "저축", budget: 200000, pay: 200000 },
+    { category: "통신", budget: 50000, pay: 60000 },
+    { category: "경조사", budget: 100000, pay: 150000 },
+    { category: "건강", budget: 120000, pay: 100000 },
+    { category: "기타", budget: 70000, pay: 50000 },
+    { category: "쇼핑", budget: 90000, pay: 110000 },
+    { category: "취미", budget: 60000, pay: 40000 },
+  ]);
+
   return (
-    <div className="bg-second-bg flex h-full w-full flex-col">
-      {/*}
-      <div className="flex h-16 w-full items-center justify-center">
-        목표예산관리
-      </div>
-      */}
+    <div className="flex flex-col w-full h-full bg-second-bg">
       {/* 1. 목표예산 설정 */}
-      <div className="1px mb-4 mt-5 flex items-center justify-between rounded-2xl border border-second-light bg-white px-4 py-3">
-        <div>
-          <h2 className="text-lg font-bold">목표예산 설정</h2>
-          <p className="text-xs">목표예산을 설정하여 체계적으로 관리하세요.</p>
-        </div>
-        <ChevronRight className="h-5 w-5" />
-      </div>
-
+      <MonthlyBudget />
       {/* 2. 현재 예산 사용 현황 */}
-      <div className="mb-4 rounded-2xl bg-white p-4 drop-shadow-10">
-        <p className="mb-1 text-lg font-bold">
-          현재 예산의 <span className="text-main">60%</span>를 사용했어요
-        </p>
-        <div className="text-sm">
-          남은 기간 동안 하루에
-          <div>
-            <span className="font-bold text-marker-home">15,000원</span>을
-            사용할 수 있어요.
-          </div>
-        </div>
-
-        <div className="flex justify-between">
-          <div className="flex flex-col">
-            <div className="text-sm">남은 금액</div>
-            <div className="text-lg font-bold text-main">15,000원</div>
-          </div>
-
-          <div className="flex flex-col">
-            <div>총 예산</div>
-            <div className="text-lg font-bold text-marker-home">200,000원</div>
-          </div>
-        </div>
-      </div>
-
+      <BudgetStatus />
       {/* 3. 카테고리별 소비 현황 */}
-      <div className="gap-x gap-x-2.5 rounded-2xl bg-white px-3 py-5 drop-shadow-10">
-        <div className="mb-4">
-          <h3 className="text-lg font-bold">카테고리별 소비 현황</h3>
-          <p className="pb-2.5 text-sm">
-            예산 대비 사용량을 한눈에 보고 관리하세요.
-          </p>
-        </div>
-
-        {/* 예: 식비 카테고리 */}
-        <div className="bg-second-bg mb-5 rounded-2xl px-2 py-2.5">
-          <div className="mb-1 flex items-center justify-between pb-2">
-            <div className="flex items-center space-x-2">
-              <div className="flex rounded-full bg-second-lighter">
-                <IconFood />
-              </div>
-              <div className="text-sm font-medium">식비</div>
-              <div className="text-xs font-medium">100%</div>
-            </div>
-
-            <div className="text-sm font-bold">200,000원 남음</div>
-          </div>
-
-          {/* 막대바(사용률) */}
-          <div className="h-2 w-full rounded-full bg-second-light">
-            <div className="h-2 w-3/4 rounded-full bg-marker-home"></div>
-          </div>
-
-          <div className="text-3 flex justify-between pb-1 pt-2 text-xs">
-            <span>220,000원 지출</span>
-            <span>예산 200,000원</span>
-          </div>
-        </div>
-
-        {/* ////초과 예시 */}
-
-        <div className="bg-second-bg mb-5 rounded-2xl px-2 py-2.5">
-          <div className="mb-1 flex items-center justify-between pb-2">
-            <div className="flex items-center space-x-2">
-              <div className="flex rounded-full bg-second-lighter">
-                <IconEvent />
-              </div>
-              <div className="text-sm font-medium">경조사</div>
-              <div className="text-xs font-medium">100%</div>
-            </div>
-
-            <div className="text-sm font-bold">200,000원 초과</div>
-          </div>
-
-          {/* 막대바(사용률) */}
-          <div className="h-2 w-full rounded-full bg-second-light">
-            <div className="h-2 rounded-full bg-main"></div>
-          </div>
-
-          <div className="text-3 flex justify-between pb-1 pt-2 text-xs">
-            <span>220,000원 지출</span>
-            <span>예산 200,000원</span>
-          </div>
-        </div>
-
-        {/*  */}
-
-        <div className="bg-second-bg mb-5 rounded-2xl px-2 py-2.5">
-          <div className="mb-1 flex items-center justify-between pb-2">
-            <div className="flex items-center space-x-2">
-              <div className="flex rounded-full bg-second-lighter">
-                <IconFood />
-              </div>
-              <div className="text-sm font-medium">식비</div>
-              <div className="text-xs font-medium">100%</div>
-            </div>
-
-            <div className="text-sm font-bold">200,000원 남음</div>
-          </div>
-
-          {/* 막대바(사용률) */}
-          <div className="h-2 w-full rounded-full bg-second-light">
-            <div className="h-2 w-3/4 rounded-full bg-marker-home"></div>
-          </div>
-
-          <div className="text-3 flex justify-between pb-1 pt-2 text-xs">
-            <span>220,000원 지출</span>
-            <span>예산 200,000원</span>
-          </div>
-        </div>
-      </div>
+      <CategoryStatus categoryBudgets={categoryBudgets} />
     </div>
   );
 };
