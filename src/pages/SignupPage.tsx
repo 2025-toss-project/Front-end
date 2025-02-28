@@ -18,7 +18,7 @@ const SignupInputs = () => {
       <InputDefault placeholder="비밀번호" />
       <InputDefault placeholder="비밀번호 확인" />
       <InputDefault placeholder="닉네임" />
-      <InputDefault placeholder="집 정보 입력" />
+      <InputDefault placeholder="집 정보 입력" type="location" />
     </>
   );
 };
@@ -46,18 +46,20 @@ const SignupPage = () => {
   const [selectedPayType, setSelectedPayType] = useState<string>("");
 
   return (
-    <div className="flex flex-col gap-5 px-6 py-5 pt-16">
-      <SignupInputs />
-      <SelectAgeGroup
-        selectedAge={selectedAge}
-        setSelectedAge={setSelectedAge}
-      />
-      <SelectPayType
-        selectedPayType={selectedPayType}
-        setSelectedPayType={setSelectedPayType}
-      />
-      <SaveButton title="회원가입" />
-    </div>
+    <>
+      <div className="flex flex-col gap-5 px-6 py-5">
+        <SignupInputs />
+        <SelectAgeGroup
+          selectedAge={selectedAge}
+          setSelectedAge={setSelectedAge}
+        />
+        <SelectPayType
+          selectedPayType={selectedPayType}
+          setSelectedPayType={setSelectedPayType}
+        />
+        <SaveButton title="회원가입" />
+      </div>
+    </>
   );
 };
 
