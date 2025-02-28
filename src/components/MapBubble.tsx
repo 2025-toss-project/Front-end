@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { CustomOverlayMap } from "react-kakao-maps-sdk";
-import "../assets/bubble.css";
+import "../assets/css/bubble.css";
 import { findCategory } from "../utils/findTypeOrCategory";
 import { formatPrice } from "../utils/formatPrice";
 
