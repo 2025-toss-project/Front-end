@@ -1,81 +1,135 @@
-import { useEffect, useRef, useState } from "react";
-import { Map, MapMarker } from "react-kakao-maps-sdk";
+import React, { useRef, useState } from "react";
+import { CustomOverlayMap, Map } from "react-kakao-maps-sdk";
 import MapHeader from "../components/MapHeader";
 import IconMyLocation from "../assets/IconMyLocation";
 import { LucidePlus } from "lucide-react";
+import "../assets/bubble.css";
+import MapBubble from "../components/MapBubble";
+import { useMovePage } from "../hooks/useMovePage";
+import useGetMyCurrentLocation from "../hooks/useGetMyCurrentLocation";
+import MapIconMarker from "../components/MapIconMarker";
 
-const IconMoveMyLocation: React.FC = () => {
+const IconMoveMyLocation: React.FC<{ moveToCurrentLocation: () => void }> = ({
+  moveToCurrentLocation,
+}) => {
   return (
-    <div className="grid w-10 bg-white rounded-full aspect-square place-items-center drop-shadow-50">
+    <div
+      onClick={moveToCurrentLocation}
+      className="z-10 grid w-10 bg-white rounded-full aspect-square place-items-center drop-shadow-50"
+    >
       <IconMyLocation />
     </div>
   );
 };
 const IconFastInputPay: React.FC = () => {
+  const { moveToPage } = useMovePage();
   return (
-    <div className="grid rounded-full aspect-square w-11 place-items-center bg-main drop-shadow-50">
+    <div
+      onClick={() => moveToPage("/addpay")}
+      className="z-10 grid rounded-full aspect-square w-11 place-items-center bg-main drop-shadow-50"
+    >
       <LucidePlus size={24} color="#FFF" />
     </div>
   );
 };
 
-const MapBottomIcons = () => {
+const MyCurrentLocation: React.FC<{
+  location: { lat: number; lng: number };
+}> = ({ location }) => {
   return (
-    <div className="flex items-end justify-between">
-      <IconMoveMyLocation />
-      <IconFastInputPay />
-    </div>
+    <CustomOverlayMap
+      position={{ lat: location.lat, lng: location.lng }}
+      zIndex={1}
+    >
+      <div className="grid w-8 rounded-full aspect-square place-items-center bg-main bg-opacity-30">
+        <div className="w-4 border-2 border-white rounded-full aspect-square bg-main"></div>
+      </div>
+    </CustomOverlayMap>
   );
 };
 
 const MainPage: React.FC = () => {
-  const [location, setLocation] = useState({ latitude: 0, longitude: 0 }); // 현재 위치의 좌표값을 저장할 상태
-  const mapRef = useRef(null);
+  const [location, setLocation] = useState({ lat: 0, lng: 0 });
+  const [level, setLevel] = useState(3);
+  const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
+  const mapRef = useRef<kakao.maps.Map | null>(null);
 
-  const handleSuccess = (pos: GeolocationPosition) => {
-    const { latitude, longitude } = pos.coords;
+  useGetMyCurrentLocation(setLocation, setMapCenter);
 
-    console.log(latitude, longitude);
-    setLocation({
-      latitude,
-      longitude,
-    });
+  const moveToCurrentLocation = () => {
+    if (mapRef.current) {
+      mapRef.current.panTo(new kakao.maps.LatLng(location.lat, location.lng));
+    }
+    setMapCenter({ lat: location.lat, lng: location.lng });
   };
 
-  const handleError = (error: GeolocationPositionError) => {
-    console.log("error");
-  };
+  const dummyDatas = [
+    {
+      category: "식비",
+      price: 2000,
+      count: 3,
+    },
+    {
+      category: "주거",
+      price: 50000,
+      count: 2,
+    },
+  ];
 
-  useEffect(() => {
-    const { geolocation } = navigator;
-
-    geolocation.getCurrentPosition(handleSuccess, handleError);
-  }, []);
   return (
     <>
       <Map
-        center={{ lat: location.latitude, lng: location.longitude }}
+        key={`map-${mapCenter.lat}-${mapCenter.lng}`}
+        center={{ lat: mapCenter.lat, lng: mapCenter.lng }}
         style={{
           width: "100%",
           height: "100%",
           position: "absolute",
-          zIndex: -10,
         }}
-        level={3}
+        isPanto={true}
+        level={level}
         ref={mapRef}
+        onZoomChanged={(map) => {
+          const level = map.getLevel();
+          setLevel(level);
+        }}
       >
-        <MapMarker
-          position={{ lat: location.latitude, lng: location.longitude }}
-        ></MapMarker>
+        <MyCurrentLocation
+          location={{ lat: location.lat, lng: location.lng }}
+        />
+        {dummyDatas.map((data, index) =>
+          level >= 5 ? (
+            <MapIconMarker
+              key={index}
+              position={{
+                lat: location.lat + (index + 1) * 0.001,
+                lng: location.lng + (index + 1) * 0.001,
+              }}
+              category={data.category}
+            />
+          ) : (
+            <MapBubble
+              key={index}
+              position={{
+                lat: location.lat + (index + 1) * 0.001,
+                lng: location.lng + (index + 1) * 0.001,
+              }}
+              category={data.category}
+              price={data.price}
+              count={data.count}
+            />
+          ),
+        )}
       </Map>
       <div className="flex flex-col justify-between w-full h-full px-6 pt-10 pb-5">
         <MapHeader />
-        <MapBottomIcons />
+        <div className="flex items-end justify-between">
+          <IconMoveMyLocation moveToCurrentLocation={moveToCurrentLocation} />
+          <IconFastInputPay />
+        </div>
       </div>
     </>
   );
 };
 
 export default MainPage;
-
-
