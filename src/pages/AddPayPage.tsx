@@ -6,13 +6,22 @@ import { SaveButton } from "../components/common/Buttons";
 
 const AddPayPage = () => {
   const [selectName, setSelectName] = useState(""); // 선택한 값 저장
+  const [isOpen, setIsOpen] = useState(false); // 드롭다운 체크
 
   return (
     <div className="flex w-full flex-col">
-      <AddPayInput />
-      <SelectCategory
+      <AddPayInput
+        toggle={() => setIsOpen(!isOpen)}
+        isOpen={isOpen}
         selectName={selectName}
-        setSelectName={() => setSelectName(selectName)}
+      />
+      <SelectCategory
+        classname={isOpen ? "block" : "hidden"}
+        selectName={selectName}
+        setSelectName={(name) => {
+          setSelectName(name); // 선택한 값 저장
+          setIsOpen(false); //
+        }}
       />
       <SaveButton title="저장하기" />
     </div>
