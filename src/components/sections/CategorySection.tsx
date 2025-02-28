@@ -1,5 +1,6 @@
 import React from "react";
 
+//
 interface CategoryProps {
   icon: React.ReactNode;
   name: string;

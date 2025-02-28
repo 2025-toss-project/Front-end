@@ -49,7 +49,7 @@ const PayList = () => {
   return (
     <div className="flex w-full flex-col px-6">
       {spendingData.records.map((dayData, index) => (
-        <div key={index} className="mb-5">
+        <div key={dayData.day} className="mb-5">
           {/* 날짜 및 하루 총액 표시 */}
           <div className="flex flex-row justify-between py-5">
             <p className="text-sm text-second">

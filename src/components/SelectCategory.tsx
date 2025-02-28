@@ -7,29 +7,25 @@ import CategorySection from "./sections/CategorySection";
 
 interface CategoryProps {
   classname?: string;
-  selectName: string;
-  selectIcon: React.ReactNode;
+  selectName?: string;
   setSelectName: (name: string) => void;
-  setSelectIcon: (name: React.ReactNode) => void;
 }
 
 const SelectCategory: React.FC<CategoryProps> = ({
   classname,
   setSelectName,
-  setSelectIcon,
 }) => {
   return (
     <div
       className={`grid grid-flow-row grid-cols-4 justify-items-center gap-5 py-5 ${classname}`}
     >
-      {categoryList.map((item, index) => (
+      {categoryList.map((item) => (
         <CategorySection
-          key={index}
+          key={item.text}
           icon={item.icon}
           name={item.text}
           toggle={() => {
             setSelectName(item.text);
-            setSelectIcon(item.icon);
           }}
         />
       ))}
