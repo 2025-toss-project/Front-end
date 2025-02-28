@@ -4,6 +4,8 @@ import BudgetManage from "./pages/BudgetManage";
 import MainLayout from "./layouts/MainLayout";
 import AddPayPage from "./pages/AddPayPage";
 import LoginPage from "./pages/LoginPage";
+import HeaderLayout from "./layouts/HeaderLayout";
+import SignupPage from "./pages/SignupPage";
 
 const App: React.FC = () => {
   return (
@@ -15,6 +17,9 @@ const App: React.FC = () => {
       </Route>
       <Route element={<MainLayout title="지출 내역 추가" />}>
         <Route path="/addpay" element={<AddPayPage />} />
+      </Route>
+      <Route element={<HeaderLayout />}>
+        <Route path="/signup" element={<SignupPage />} />
       </Route>
     </Routes>
   );

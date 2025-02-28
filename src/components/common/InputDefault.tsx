@@ -7,17 +7,19 @@ interface PayInputProps {
   label?: string;
   type?: string;
   placeholder: string;
+  style?: string;
 }
 
 const InputDefault: React.FC<PayInputProps> = ({
   label = "",
   type = "text",
   placeholder,
+  style = "",
 }) => {
   const [inputType, setInputType] = useState("type"); // 초기 상태를 저장
 
   return (
-    <div className="h-15">
+    <div className={`h-15 ${style}`}>
       <div className="mb-5 flex flex-col border-b py-3 focus-within:border-pink-500">
         <div className="flex gap-5">
           {label && <label className="w-20"> {label} </label>}
