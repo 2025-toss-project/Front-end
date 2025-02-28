@@ -2,6 +2,7 @@ import React from "react";
 import IconNoPayType from "../assets/payTypeIcons/IconNoPayType";
 import InputDefault from "../components/common/InputDefault";
 import { SaveButton } from "../components/common/Buttons";
+import { useMovePage } from "../hooks/useMovePage";
 
 const Logo = () => {
   return (
@@ -22,12 +23,16 @@ const Inputs = () => {
 };
 
 const LoginAndSignUp = () => {
+  const { moveToPage } = useMovePage();
   return (
     <div>
       <SaveButton title="로그인" style="mt-0 " />
       <div className="flex items-center justify-center gap-2">
         회원이 아니신가요?{" "}
-        <span className="text-second underline underline-offset-2">
+        <span
+          onClick={() => moveToPage("/signup")}
+          className="text-second underline underline-offset-2"
+        >
           회원가입
         </span>
       </div>

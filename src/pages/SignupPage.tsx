@@ -34,6 +34,7 @@ const AgeGroup: React.FC<{
       <div className="z-10 flex min-w-[calc(100vw-24px)] gap-3 overflow-x-scroll pr-6">
         {ageGroups.map((age) => (
           <div
+            key={age}
             onClick={() => {
               setSelectedAge(age);
             }}
