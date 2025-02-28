@@ -119,6 +119,7 @@ const MonthlyBudgetBar: React.FC<{
                   <span className="text-sm font-bold">원</span>
                 </div>
               </div>
+              
               {/* 막대 그래프: 퍼센티지에 따라 길이 변경 */}
               <div className="w-full h-2 rounded-full bg-second-light">
                 <div

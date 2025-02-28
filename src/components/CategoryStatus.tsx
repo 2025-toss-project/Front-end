@@ -65,9 +65,9 @@ const CategoryStatus: React.FC<CategoryStatusProps> = ({ categoryBudgets }) => {
               key={category}
               className="mb-2.5 rounded-2xl bg-second-bg px-2 py-2.5"
             >
-              <div className="flex items-center justify-between pb-2 mb-1">
+              <div className="mb-1 flex items-center justify-between pb-2">
                 <div className="flex items-center space-x-2">
-                  <div className="flex p-2 rounded-full bg-second-lighter">
+                  <div className="flex rounded-full bg-second-lighter p-2">
                     <IconComponent />
                   </div>
                   <div className="text-sm font-medium">{category}</div>
@@ -83,15 +83,15 @@ const CategoryStatus: React.FC<CategoryStatusProps> = ({ categoryBudgets }) => {
                       : `${remainBudget.toLocaleString()}원 남음`}
                 </div>
               </div>
-
-              <div className="w-full h-2 rounded-full bg-second-light">
+              {/* 막대 그래프 */}
+              <div className="h-2 w-full rounded-full bg-second-light">
                 <div
                   className={`h-2 rounded-full ${isOverBudget || isBudgetDepleted ? "bg-main" : "bg-marker-home"}`}
                   style={{ width: `${Math.min(percentage, 100)}%` }}
                 ></div>
               </div>
 
-              <div className="flex justify-between pt-2 pb-1 text-xs text-3">
+              <div className="text-3 flex justify-between pb-1 pt-2 text-xs">
                 <span>{spendPrice.toLocaleString()}원 지출</span>
                 <span>예산 {budgetPrice.toLocaleString()}원</span>
               </div>
