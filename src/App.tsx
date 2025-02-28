@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage";
 import HeaderLayout from "./layouts/HeaderLayout";
 import SignupPage from "./pages/SignupPage";
 import MyPage from "./pages/MyPage";
+import SearchPlacePage from "./pages/SearchPlacePage";
 
 const App: React.FC = () => {
   return (
@@ -20,10 +21,12 @@ const App: React.FC = () => {
       <Route element={<MainLayout title="지출 내역 추가" />}>
         <Route path="/addpay" element={<AddPayPage />} />
       </Route>
+      <Route element={<MainLayout title="지출 내역 추가" />}>
+        <Route path="/searchplace" element={<SearchPlacePage />} />
+      </Route>
       <Route element={<MainLayout title="마이페이지" />}>
         <Route path="/mypage" element={<MyPage />} />
       </Route>
-
       <Route element={<HeaderLayout />}>
         <Route path="/signup" element={<SignupPage />} />
       </Route>
