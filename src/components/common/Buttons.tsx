@@ -13,6 +13,10 @@ interface DropButtonProps {
   icon?: React.ReactNode;
 }
 
+interface AddressButtonProps {
+  title: string;
+}
+
 // 저장하기 버튼 (TODO: onclick submit)
 export const SaveButton: React.FC<MainButtonProps> = ({ title, style }) => {
   return (
@@ -41,6 +45,14 @@ export const DropButton: React.FC<DropButtonProps> = ({
         size={18}
         className={isOpen ? "rotate-180" : "rotate-0"}
       />
+    </div>
+  );
+};
+
+export const AddressButton: React.FC<AddressButtonProps> = ({ title }) => {
+  return (
+    <div className="m-1 inline-block rounded-md border border-second px-2 py-0.5">
+      <p className="text-base text-sm font-light text-second"> {title}</p>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { LucideCircleX, LucideSearch } from "lucide-react";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import SearchListSection from "../components/sections/SearchListSection";
 import SearchPlace from "../components/SearchPlace";
 
@@ -14,7 +14,7 @@ const SearchPlaceContext = createContext<SearchContextType | undefined>(
   undefined,
 );
 
-// Context 사용 훅
+// Context 사용 훅(place, onSearch 사용가능)
 export function useSearchPlace() {
   const context = useContext(SearchPlaceContext);
   if (!context) {
@@ -24,8 +24,13 @@ export function useSearchPlace() {
 }
 
 const SearchHeader = () => {
-  const { place, onSearch } = useSearchPlace();
-  const [inputValue, setInputValue] = useState(place);
+  const { place, onSearch } = useSearchPlace(); // context
+  const [inputValue, setInputValue] = useState(place); // place값이 바뀌면 같이 바뀜
+
+  // place 값이 변경될 때 inputValue도 업데이트
+  useEffect(() => {
+    setInputValue(place);
+  }, [place]);
 
   // 검색한 값 place에 저장
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,10 +47,10 @@ const SearchHeader = () => {
   return (
     <div className="flex h-14 w-full flex-row items-center justify-between bg-second-lighter px-2.5 py-4">
       <LucideSearch size={22} color="#333" />
-      <form onSubmit={handleSearch}>
+      <form onSubmit={handleSearch} className="flex flex-1 pl-5">
         <input
           type="text"
-          className="flex flex-grow bg-second-lighter px-2.5 focus:outline-none"
+          className="flex flex-1 bg-second-lighter focus:outline-none"
           value={inputValue}
           onChange={handleInputChange}
         />

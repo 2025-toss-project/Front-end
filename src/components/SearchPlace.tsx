@@ -1,86 +1,109 @@
 import { useEffect, useState } from "react";
 import { useSearchPlace } from "../pages/SearchPlacePage";
+import { AddressButton } from "./common/Buttons";
+
+declare global {
+  interface Window {
+    kakao: any;
+  }
+}
+
+interface Place {
+  place_name: string;
+  road_address_name?: string;
+  address_name: string;
+  phone?: string;
+}
 
 export default function SearchPlace() {
-  const { place } = useSearchPlace(); // Context에서 검색어 가져오기
+  const { place } = useSearchPlace();
   const [isKakaoLoaded, setIsKakaoLoaded] = useState(false);
+  const [isSearched, setIsSearched] = useState(false);
+  const [places, setPlaces] = useState<Place[]>([]);
+  const [pagination, setPagination] = useState<any>(null);
 
   useEffect(() => {
-    if (window.kakao && window.kakao.maps && window.kakao.maps.services) {
+    if (window.kakao?.maps?.services) {
       setIsKakaoLoaded(true);
       console.log("KakaoMap services 로드 완료!");
     } else {
-      console.log("KakaoMap services 로드 실패");
+      console.error("KakaoMap services 로드 실패");
+      return;
     }
 
-    if (!place) return; // 검색어가 없으면 실행 안 함
+    if (!place.trim()) {
+      setIsSearched(false);
+      setPlaces([]); // 검색어 없을 때 리스트 초기화
+      return;
+    }
 
     const ps = new window.kakao.maps.services.Places();
-
-    // 키워드 검색 실행
-    ps.keywordSearch(place, (data, status, pagination) => {
-      if (status === kakao.maps.services.Status.OK) {
-        displayPlaces(data);
-        displayPagination(pagination);
-      } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
-        alert("검색 결과가 존재하지 않습니다.");
-      } else if (status === kakao.maps.services.Status.ERROR) {
-        alert("검색 중 오류가 발생했습니다.");
-      }
-    });
-
-    function displayPlaces(places: any[]) {
-      const listEl = document.getElementById("placesList");
-      const menuEl = document.getElementById("menu_wrap");
-
-      if (!listEl || !menuEl) return;
-
-      // 기존 검색 결과 초기화
-      listEl.innerHTML = "";
-
-      places.forEach((place, index) => {
-        const el = document.createElement("li");
-        el.innerHTML = `
-          <span class="markerbg marker_${index + 1}"></span>
-          <div class="info">
-            <h5>${place.place_name}</h5>
-            <span>${place.road_address_name || place.address_name}</span>
-            <span class="tel">${place.phone || "전화번호 없음"}</span>
-          </div>
-        `;
-        el.className = "item";
-        listEl.appendChild(el);
-      });
-
-      menuEl.scrollTop = 0;
-    }
-
-    function displayPagination(pagination: kakao.maps.Pagination) {
-      const paginationEl = document.getElementById("pagination");
-      if (!paginationEl) return;
-
-      paginationEl.innerHTML = "";
-
-      for (let i = 1; i <= pagination.last; i++) {
-        const el = document.createElement("a");
-        el.href = "#";
-        el.innerHTML = String(i);
-        if (i === pagination.current) {
-          el.classList.add("on");
+    ps.keywordSearch(
+      place,
+      (data: Place[], status: string, pagination: any) => {
+        if (status === window.kakao.maps.services.Status.OK) {
+          setPlaces(data);
+          setPagination(pagination);
+          setIsSearched(true);
         } else {
-          el.onclick = () => pagination.gotoPage(i);
+          setIsSearched(false);
+          setPlaces([]);
+          if (status === window.kakao.maps.services.Status.ZERO_RESULT) {
+            alert("검색 결과가 존재하지 않습니다.");
+          } else {
+            alert("검색 중 오류가 발생했습니다.");
+          }
         }
-        paginationEl.appendChild(el);
-      }
-    }
-  }, [place]); // place가 변경될 때만 실행
+      },
+    );
+  }, [place]);
 
   return (
-    <div>
+    <div className="flex flex-col">
+      {isSearched && <h2 className="py-3 text-base font-medium">검색 결과</h2>}
       <div id="menu_wrap" className="bg_white">
-        <hr />
-        <ul id="placesList"></ul>
-        <div id="pagination"></div>
+        <ul id="placesList">
+          {places.map((place, index) => (
+            <li key={index} className="item flex flex-col gap-2 border-b py-2">
+              <span className={`markerbg marker_${index + 1}`} />
+              <div className="info flex flex-col gap-1.5">
+                <h2 className="text-base font-medium text-second-dark group-hover:text-main">
+                  {place.place_name}
+                </h2>
+                {place.road_address_name && (
+                  <div className="flex items-center gap-1 text-sm text-second">
+                    <AddressButton title="도로명" />
+                    <span>{place.road_address_name}</span>
+                  </div>
+                )}
+                {place.address_name && (
+                  <div className="flex items-center gap-1 text-sm text-second">
+                    <AddressButton title="주소" />
+                    <span>{place.address_name}</span>
+                  </div>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+        <div id="pagination" className="mt-5 flex justify-center gap-2 pb-6">
+          {pagination &&
+            Array.from({ length: pagination.last }, (_, i) => i + 1).map(
+              (page) => (
+                <button
+                  key={page}
+                  className={`border px-2 ${
+                    page === pagination.current
+                      ? "bg-main text-white"
+                      : "bg-second-lighter"
+                  }`}
+                  onClick={() => pagination.gotoPage(page)}
+                >
+                  {page}
+                </button>
+              ),
+            )}
+        </div>
       </div>
     </div>
   );
