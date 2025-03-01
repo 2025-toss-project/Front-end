@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSearchPlace } from "../contexts/SearchPlaceContext";
+import { useMovePage } from "../hooks/useMovePage";
+import { SaveButton } from "../components/common/Buttons";
 
 declare global {
   interface Window {
@@ -12,6 +14,7 @@ const Map = () => {
   const markerRef = useRef<any>(null);
   const [loaded, setLoaded] = useState(false);
   const { selectPlace } = useSearchPlace();
+  const { moveToBack } = useMovePage();
 
   useEffect(() => {
     // Kakao API 로드 확인
@@ -43,7 +46,10 @@ const Map = () => {
   }, [loaded]);
 
   useEffect(() => {
-    if (!selectPlace) return;
+    if (!selectPlace) {
+      console.log("선택이 없으므로 뒤로감");
+      moveToBack();
+    }
 
     const ps = new window.kakao.maps.services.Places();
     ps.keywordSearch(selectPlace, (data: any[], status: string) => {
@@ -74,24 +80,29 @@ const Map = () => {
     });
   }, [selectPlace, loaded]); // selectPlace가 바뀔 때마다 실행
 
-  return <div id="map" style={{ width: "500px", height: "500px" }} />;
+  return <div id="map" style={{ width: "500px", height: "750px" }} />;
 };
 
-const MapPin = () => {
+const MapInfo = () => {
+  const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
   const { selectPlace } = useSearchPlace();
 
   return (
-    <div>
-      <h1>선택된 장소: {selectPlace}</h1>
+    <div className="pointer-events-auto absolute bottom-10 left-1/2 z-10 w-80 -translate-x-1/2">
+      <SaveButton
+        title="저장하기"
+        style="px-6"
+        onClick={() => moveToPage("/addpay")}
+      />
     </div>
   );
 };
 
 const MapPinPage = () => {
   return (
-    <div>
-      <Map></Map>
-      <MapPin />
+    <div className="relative">
+      <Map />
+      <MapInfo />
     </div>
   );
 };

@@ -33,7 +33,7 @@ export default function SearchPlace() {
 
   useEffect(() => {
     if (selectPlace) {
-      setTimeout(() => moveToPage("./map"), 0); // 아주 짧은 지연을 주어 즉시 실행
+      setTimeout(() => moveToPage("./map"), 0); // 아주 짧은 지연을 ₩주어 즉시 실행
     }
   }, [selectPlace]);
 

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 interface MainButtonProps {
   title: string;
   style?: string;
+  onClick?: () => void;
 }
 
 interface DropButtonProps {
@@ -18,10 +19,15 @@ interface AddressButtonProps {
 }
 
 // 저장하기 버튼 (TODO: onclick submit)
-export const SaveButton: React.FC<MainButtonProps> = ({ title, style }) => {
+export const SaveButton: React.FC<MainButtonProps> = ({
+  title,
+  style,
+  onClick,
+}) => {
   return (
     <div className="flex w-full justify-center">
       <button
+        onClick={onClick}
         className={`my-5 flex h-12 w-full items-center justify-center rounded-lg bg-main text-lg font-medium text-white ${style}`}
       >
         {title}
