@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface SearchPlaceContextType {
   place: string;
@@ -24,6 +24,10 @@ export function SearchPlaceProvider({
     setPlace(newPlace);
     console.log("검색한 장소:", newPlace);
   };
+
+  useEffect(() => {
+    console.log("선택한 장소 업데이트됨:", selectPlace);
+  }, [selectPlace]); // electPlace가 변경될 때 실행됨
 
   return (
     <SearchPlaceContext.Provider
