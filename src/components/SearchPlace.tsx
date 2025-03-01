@@ -28,8 +28,14 @@ export default function SearchPlace() {
 
   useEffect(() => {
     setSelectPlace(""); // 선택한 장소 초기화
-    setPlaces([]); // 🔹 검색 리스트 초기화
+    setPlaces([]); // 검색 리스트 초기화
   }, []);
+
+  useEffect(() => {
+    if (selectPlace) {
+      setTimeout(() => moveToPage("./map"), 0); // 아주 짧은 지연을 주어 즉시 실행
+    }
+  }, [selectPlace]);
 
   useEffect(() => {
     if (!place.trim()) {
@@ -69,8 +75,6 @@ export default function SearchPlace() {
                 className="item flex flex-col gap-2 border-b py-2"
                 onClick={() => {
                   setSelectPlace(place.place_name);
-                  console.log("선택된 장소 변경됨:", selectPlace);
-                  moveToPage("./map");
                 }}
               >
                 <span className={`markerbg marker_${index + 1}`} />
