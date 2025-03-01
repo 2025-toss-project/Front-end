@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSearchPlace } from "../contexts/SearchPlaceContext";
 import { useMovePage } from "../hooks/useMovePage";
 import { SaveButton } from "../components/common/Buttons";
+import { LucideMapPin } from "lucide-react";
+import { createRoot } from "react-dom/client";
 
 declare global {
   interface Window {
@@ -65,12 +67,33 @@ const Map = () => {
           markerRef.current.setMap(null);
         }
 
-        // 새 마커 생성
-        const marker = new window.kakao.maps.Marker({
+        // React 컴포넌트 렌더링할 DOM 요소 생성
+        const container = document.createElement("div");
+        container.className = "custom-marker";
+        container.style.position = "absolute";
+        container.style.transform = "translate(-50%, -100%)"; // 중심이 아래쪽 기준이 되도록 조정
+        container.style.overflow = "visible"; // 아이콘이 넘칠 수 있도록 설정
+
+        // React 컴포넌트 렌더링
+        createRoot(container).render(
+          <div className="flex h-10 w-10 items-center justify-center">
+            <LucideMapPin
+              fill="#C80150"
+              color="#fff"
+              strokeWidth="1"
+              size={35}
+            />
+          </div>,
+        );
+
+        const overlay = new window.kakao.maps.CustomOverlay({
           position,
+          content: container,
+          yAnchor: 0.9, // 위치 조정
         });
-        marker.setMap(mapRef.current);
-        markerRef.current = marker;
+
+        overlay.setMap(mapRef.current);
+        markerRef.current = overlay;
 
         //  지도 객체가 존재할 때만 setCenter 실행
         if (mapRef.current) {
