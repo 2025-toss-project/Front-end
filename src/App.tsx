@@ -9,6 +9,7 @@ import HeaderLayout from "./layouts/HeaderLayout";
 import SignupPage from "./pages/SignupPage";
 import MyPage from "./pages/MyPage";
 import SearchLocation from "./pages/SearchLocation";
+import PayDetailPage from "./pages/PayDetailPage";
 
 const App: React.FC = () => {
   return (
@@ -23,7 +24,9 @@ const App: React.FC = () => {
       <Route element={<MainLayout title="지출 내역 추가" />}>
         <Route path="/addpay" element={<AddPayPage />} />
       </Route>
-      <Route element={<MainLayout title="지출 내역 리스트" bgColor="bg-second-bg" />}>
+      <Route
+        element={<MainLayout title="지출 내역 리스트" bgColor="bg-second-bg" />}
+      >
         <Route path="/payrecode" element={<PayRecodePage />} />
       </Route>
       <Route element={<MainLayout title="마이페이지" />}>
@@ -31,6 +34,9 @@ const App: React.FC = () => {
       </Route>
       <Route element={<HeaderLayout />}>
         <Route path="/signup" element={<SignupPage />} />
+      </Route>
+      <Route element={<MainLayout title="지출내역 상세" />}>
+        <Route path="/paydetail" element={<PayDetailPage />} />
       </Route>
     </Routes>
   );
