@@ -2,10 +2,11 @@ import { LucideChevronRight } from "lucide-react";
 import React, { ReactNode } from "react";
 import { SaveButton } from "../components/common/Buttons";
 import { categoryList } from "../constants/category";
+import BarChart from "../components/charts/BarChart";
 
 const BoxWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
-    <div className="flex flex-col gap-2 rounded-2xl bg-white px-4 py-5 drop-shadow-5">
+    <div className="flex flex-col gap-2 rounded-2xl bg-white px-4 py-5 drop-shadow-10">
       {children}
     </div>
   );
@@ -19,7 +20,9 @@ const MonthPayBox = () => {
         210,000원
         <LucideChevronRight size={24} color="#333" />
       </div>
-      <div>그래프자리</div>
+      <div>
+        <BarChart />
+      </div>
       <div className="flex items-center justify-between">
         <div>남은예산</div>
         <div className="text-xl font-medium">100,000원</div>
