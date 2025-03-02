@@ -4,6 +4,7 @@ import { SaveButton } from "../components/common/Buttons";
 import { categoryList } from "../constants/category";
 import BarChart from "../components/charts/BarChart";
 import DoughnutChart from "../components/charts/DoughnutChart";
+import ProgressBarChart from "../components/charts/ProgressBarChart";
 
 const BoxWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
@@ -21,7 +22,9 @@ const MonthPayBox = () => {
         210,000원
         <LucideChevronRight size={24} color="#333" />
       </div>
-      <div>그래프 자리</div>
+      <div className="py-3">
+        <ProgressBarChart percentage={40} />
+      </div>
       <div className="flex items-center justify-between">
         <div>남은예산</div>
         <div className="text-xl font-medium">100,000원</div>
