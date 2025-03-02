@@ -10,8 +10,10 @@ import SignupPage from "./pages/SignupPage";
 import MyPage from "./pages/MyPage";
 import SearchPlacePage from "./pages/SearchPlacePage";
 import SearchLocation from "./pages/SearchLocation";
+import PayDetailPage from "./pages/PayDetailPage";
 import MapPinPage from "./pages/MapPinPage";
 import { SearchPlaceProvider } from "./contexts/SearchPlaceContext";
+
 
 const App: React.FC = () => {
   return (
@@ -35,7 +37,6 @@ const App: React.FC = () => {
         <Route path="/addpay/searchplace" element={<SearchPlacePage />} />
         <Route path="/addpay/searchplace/map" element={<MapPinPage />} />
       </Route>
-
       <Route
         element={<MainLayout title="지출 내역 리스트" bgColor="bg-second-bg" />}
       >
@@ -46,6 +47,9 @@ const App: React.FC = () => {
       </Route>
       <Route element={<HeaderLayout />}>
         <Route path="/signup" element={<SignupPage />} />
+      </Route>
+      <Route element={<MainLayout title="지출내역 상세" />}>
+        <Route path="/paydetail" element={<PayDetailPage />} />
       </Route>
     </Routes>
   );
