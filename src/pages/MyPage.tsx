@@ -6,9 +6,11 @@ import SelectAgeGroup from "../components/SelectAgeGroup";
 import { SaveButton } from "../components/common/Buttons";
 import { LucideLogOut } from "lucide-react";
 import PayTypeSection from "../components/sections/PayTypeSection";
+import { useMovePage } from "../hooks/useMovePage";
 
 const ProfileTab = () => {
   const [selectedAge, setSelectedAge] = useState<string>("");
+  const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
 
   return (
     <>
@@ -24,7 +26,12 @@ const ProfileTab = () => {
           setSelectedAge={setSelectedAge}
           style="mb-5"
         />
-        <InputDefault placeholder="집 정보" label="집 정보" type="location" />
+        <InputDefault
+          placeholder="집 정보"
+          label="집 정보"
+          type="location"
+          onClick={() => moveToPage("/search/location")}
+        />
       </div>
       <SaveButton title="프로필 저장" />
       <div className="flex items-center justify-center gap-5 text-xs font-bold">

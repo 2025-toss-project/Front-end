@@ -4,6 +4,7 @@ import React, { useState } from "react";
 interface MainButtonProps {
   title: string;
   style?: string;
+  onClick?: () => void;
 }
 
 interface DropButtonProps {
@@ -13,11 +14,20 @@ interface DropButtonProps {
   icon?: React.ReactNode;
 }
 
+interface AddressButtonProps {
+  title: string;
+}
+
 // 저장하기 버튼 (TODO: onclick submit)
-export const SaveButton: React.FC<MainButtonProps> = ({ title, style }) => {
+export const SaveButton: React.FC<MainButtonProps> = ({
+  title,
+  style,
+  onClick,
+}) => {
   return (
     <div className="flex w-full justify-center">
       <button
+        onClick={onClick}
         className={`my-5 flex h-12 w-full items-center justify-center rounded-lg bg-main text-lg font-medium text-white ${style}`}
       >
         {title}
@@ -41,6 +51,14 @@ export const DropButton: React.FC<DropButtonProps> = ({
         size={18}
         className={isOpen ? "rotate-180" : "rotate-0"}
       />
+    </div>
+  );
+};
+
+export const AddressButton: React.FC<AddressButtonProps> = ({ title }) => {
+  return (
+    <div className="m-1 inline-block rounded-md border border-second px-2 py-0.5">
+      <p className="text-base text-sm font-light text-second"> {title}</p>
     </div>
   );
 };
