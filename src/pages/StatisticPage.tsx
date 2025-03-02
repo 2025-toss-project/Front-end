@@ -3,6 +3,7 @@ import React, { ReactNode } from "react";
 import { SaveButton } from "../components/common/Buttons";
 import { categoryList } from "../constants/category";
 import BarChart from "../components/charts/BarChart";
+import DoughnutChart from "../components/charts/DoughnutChart";
 
 const BoxWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
@@ -20,9 +21,7 @@ const MonthPayBox = () => {
         210,000원
         <LucideChevronRight size={24} color="#333" />
       </div>
-      <div>
-        <BarChart />
-      </div>
+      <div>그래프 자리</div>
       <div className="flex items-center justify-between">
         <div>남은예산</div>
         <div className="text-xl font-medium">100,000원</div>
@@ -39,7 +38,9 @@ const PrevMonthPayBox = () => {
         <div className="text-xl font-medium text-main">200,000원</div>
         <div>더 쓰고 있어요</div>
       </div>
-      <div>그래프자리</div>
+      <div className="py-5">
+        <BarChart />
+      </div>
       <SaveButton title="예산 설정하러 가기" style="mb-0" />
     </BoxWrapper>
   );
@@ -49,7 +50,9 @@ const PayOfCategory = () => {
   return (
     <BoxWrapper>
       <div>카테고리 별 지출</div>
-      <div>그래프자리</div>
+      <div className="py-5">
+        <DoughnutChart />
+      </div>
       <div className="flex flex-col gap-6 rounded-lg bg-second-bg px-6 py-3">
         {categoryList.map((category) => (
           <div
