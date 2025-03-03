@@ -15,18 +15,18 @@ import StatisticPage from "./pages/StatisticPage";
 import PayDetailPage from "./pages/PayDetailPage";
 import MapPinPage from "./pages/MapPinPage";
 import { SearchPlaceProvider } from "./contexts/SearchPlaceContext";
-
+import PageUrls from "./constants/PageUrls";
 
 const App: React.FC = () => {
   return (
     <Routes>
-      <Route path="/" element={<MainPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/search/location" element={<SearchLocation />} />
+      <Route path={PageUrls.HOME} element={<MainPage />} />
+      <Route path={PageUrls.LOGIN} element={<LoginPage />} />
+      <Route path={PageUrls.SEARCH_LOCATION} element={<SearchLocation />} />
 
       <Route element={<MainLayout title="예산관리" bgColor="bg-second-bg" />}>
-        <Route path="/budget" element={<BudgetManage />} />
-        <Route path="/budgetset" element={<BudgetManageSet />} />
+        <Route path={PageUrls.BUDGET} element={<BudgetManage />} />
+        <Route path={PageUrls.BUDGET_SET} element={<BudgetManageSet />} />
       </Route>
 
       <Route
@@ -36,26 +36,32 @@ const App: React.FC = () => {
           </SearchPlaceProvider>
         }
       >
-        <Route path="/addpay" element={<AddPayPage />} />
-        <Route path="/addpay/searchplace" element={<SearchPlacePage />} />
-        <Route path="/addpay/searchplace/map" element={<MapPinPage />} />
+        <Route path={PageUrls.ADD_PAY} element={<AddPayPage />} />
+        <Route
+          path={PageUrls.ADD_PAY_SEARCH_PLACE}
+          element={<SearchPlacePage />}
+        />
+        <Route
+          path={PageUrls.ADD_PAY_SEARCH_PLACE_MAP}
+          element={<MapPinPage />}
+        />
       </Route>
       <Route
         element={<MainLayout title="지출 내역 리스트" bgColor="bg-second-bg" />}
       >
-        <Route path="/payrecode" element={<PayRecodePage />} />
+        <Route path={PageUrls.PAY_RECODE} element={<PayRecodePage />} />
       </Route>
       <Route element={<MainLayout title="마이페이지" />}>
-        <Route path="/mypage" element={<MyPage />} />
+        <Route path={PageUrls.MY_PAGE} element={<MyPage />} />
       </Route>
       <Route element={<MainLayout title="통계" bgColor="bg-second-bg" />}>
-        <Route path="/statistic" element={<StatisticPage />} />
+        <Route path={PageUrls.STATISTIC} element={<StatisticPage />} />
       </Route>
       <Route element={<HeaderLayout />}>
-        <Route path="/signup" element={<SignupPage />} />
+        <Route path={PageUrls.SIGNUP} element={<SignupPage />} />
       </Route>
       <Route element={<MainLayout title="지출내역 상세" />}>
-        <Route path="/paydetail" element={<PayDetailPage />} />
+        <Route path={PageUrls.PAY_DETAIL} element={<PayDetailPage />} />
       </Route>
     </Routes>
   );
