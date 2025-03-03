@@ -16,14 +16,14 @@ import PayDetailPage from "./pages/PayDetailPage";
 import MapPinPage from "./pages/MapPinPage";
 import { SearchPlaceProvider } from "./contexts/SearchPlaceContext";
 import PageUrls from "./constants/PageUrls";
+import NavBarLayout from "./layouts/NavBarLayout";
 
 const App: React.FC = () => {
   return (
     <Routes>
-      <Route path={PageUrls.HOME} element={<MainPage />} />
       <Route path={PageUrls.LOGIN} element={<LoginPage />} />
       <Route path={PageUrls.SEARCH_LOCATION} element={<SearchLocation />} />
-      {/* MAIN LAYOUT */}
+      {/* Header + Navbar */}
       <Route element={<MainLayout />}>
         <Route path={PageUrls.BUDGET} element={<BudgetManage />} />
         <Route path={PageUrls.BUDGET_SET} element={<BudgetManageSet />} />
@@ -51,8 +51,13 @@ const App: React.FC = () => {
           />
         </Route>
       </Route>
+      {/* Header */}
       <Route element={<HeaderLayout />}>
         <Route path={PageUrls.SIGNUP} element={<SignupPage />} />
+      </Route>
+      {/* Navbar */}
+      <Route element={<NavBarLayout />}>
+        <Route path={PageUrls.HOME} element={<MainPage />} />
       </Route>
     </Routes>
   );
