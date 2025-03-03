@@ -2,24 +2,19 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/common/Navbar";
 import Header from "../components/common/Header";
+import usePageUpdate from "../hooks/usePageUpdate";
 
-interface MainLayoutProps {
-  bgColor?: string;
-}
-
-const MainLayout: React.FC<MainLayoutProps> = ({ bgColor = "bg-white" }) => {
+const MainLayout: React.FC = () => {
+  const { pageColor } = usePageUpdate();
   return (
     <div
-      className={`relative flex min-h-screen flex-col ${bgColor} box-border`}
+      className={`relative flex min-h-screen flex-col ${pageColor} box-border`}
     >
-      {/* <Header title={title} bgcolor={bgColor} /> */}
-      <Header bgcolor={bgColor} />
-
+      <Header />
       <main className="flex w-full flex-grow justify-center px-6">
         <Outlet />
       </main>
-
-      <Navbar bgcolor={bgColor} />
+      <Navbar />
     </div>
   );
 };
