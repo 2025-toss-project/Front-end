@@ -7,7 +7,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ bgcolor = "bg-white" }) => {
   return (
-    <div className="border-lightest h-16 rounded-2xl border-t">
+    <nav className="border-lightest sticky inset-0 z-50 h-16 w-full rounded-2xl border-t">
       <div
         className={`${bgcolor} flex h-full items-center justify-between px-5`}
       >
@@ -18,7 +18,7 @@ const Navbar: React.FC<NavbarProps> = ({ bgcolor = "bg-white" }) => {
           </div>
         ))}
       </div>
-    </div>
+    </nav>
   );
 };
 
