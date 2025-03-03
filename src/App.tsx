@@ -3,6 +3,7 @@ import MainPage from "./pages/MainPage";
 import BudgetManage from "./pages/BudgetManage";
 import MainLayout from "./layouts/MainLayout";
 import AddPayPage from "./pages/AddPayPage";
+import BudgetManageSet from "./pages/BudgetManageSet";
 import PayRecodePage from "./pages/PayRecodePage";
 import LoginPage from "./pages/LoginPage";
 import HeaderLayout from "./layouts/HeaderLayout";
@@ -25,6 +26,7 @@ const App: React.FC = () => {
 
       <Route element={<MainLayout title="예산관리" bgColor="bg-second-bg" />}>
         <Route path="/budget" element={<BudgetManage />} />
+        <Route path="/budgetset" element={<BudgetManageSet />} />
       </Route>
 
       <Route
