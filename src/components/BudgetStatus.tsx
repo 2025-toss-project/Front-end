@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import HalfCircleGauge from "./HalfCircleGauge";
 
 interface BudgetData {
   totalBudget: number;
@@ -17,10 +18,10 @@ const BudgetStatus = () => {
 
   useEffect(() => {
     const fetchBudgetData = async () => {
-      // 실제 API 연동 가능
+      // 여긴 받아온 데이터
       const apiData = {
-        totalBudget: 240000,
-        totalSpend: 120000,
+        totalBudget: 200000,
+        totalSpend: 150000,
       };
       setBudgetData(apiData);
     };
@@ -47,12 +48,15 @@ const BudgetStatus = () => {
         남은 기간 동안 하루에{" "}
         <div className="flex flex-row">
           <span className="font-bold text-marker-home">
-            {budgetPerDay.toLocaleString()} 원
+            {Math.floor(budgetPerDay).toLocaleString()} 원
           </span>
           을 사용할 수 있어요.
         </div>
       </div>
-
+      <div className="my-4 flex justify-center">
+        {/* 바뀐 컴포넌트: remainBudget, totalBudget을 prop으로 넘김 */}
+        <HalfCircleGauge totalPercentage={totalPercentage} size={220} />
+      </div>
       <div className="mt-2 flex justify-between">
         <div className="flex flex-col">
           <div className="text-sm">남은 금액</div>
