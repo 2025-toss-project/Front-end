@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { categoryList, CategoryProps } from "../constants/category";
+import { categoryList, CategoryProps } from "../../constants/category";
 import { ChevronDown } from "lucide-react";
-import useClickOutside from "../hooks/useClickOutside";
-import { payTypeList, PayTypeProps } from "../constants/payType";
-import useUserInfo from "../stores/userInfo";
-import { findType } from "../utils/findTypeOrCategory";
+import useClickOutside from "../../hooks/useClickOutside";
+import { payTypeList, PayTypeProps } from "../../constants/payType";
+import useUserInfo from "../../stores/userInfo";
+import { findType } from "../../utils/findTypeOrCategory";
 
 const Category: React.FC<
   CategoryProps & {

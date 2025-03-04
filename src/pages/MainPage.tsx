@@ -1,39 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
-import { CustomOverlayMap, Map } from "react-kakao-maps-sdk";
-import MapHeader from "../components/MapHeader";
-import IconMyLocation from "../assets/IconMyLocation";
-import { LucidePlus } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { CustomOverlayMap } from "react-kakao-maps-sdk";
+import MapHeader from "../components/maps/MapHeader";
 import MapBubble from "../components/MapBubble";
-import { useMovePage } from "../hooks/useMovePage";
 import useGetMyCurrentLocation from "../hooks/useGetMyCurrentLocation";
-import { formatPrice } from "../utils/formatPrice";
 import { findCategory } from "../utils/findTypeOrCategory";
 import { CategoryProps } from "../constants/category";
-import useClickOutside from "../hooks/useClickOutside";
-
-const IconMoveMyLocation: React.FC<{ moveToCurrentLocation: () => void }> = ({
-  moveToCurrentLocation,
-}) => {
-  return (
-    <div
-      onClick={moveToCurrentLocation}
-      className="z-10 grid w-10 bg-white rounded-full aspect-square place-items-center drop-shadow-50"
-    >
-      <IconMyLocation />
-    </div>
-  );
-};
-const IconFastInputPay: React.FC = () => {
-  const { moveToPage } = useMovePage();
-  return (
-    <div
-      onClick={() => moveToPage("/addpay")}
-      className="z-10 grid rounded-full aspect-square w-11 place-items-center bg-main drop-shadow-50"
-    >
-      <LucidePlus size={24} color="#FFF" />
-    </div>
-  );
-};
+import useMapInfo from "../stores/mapInfo";
+import KakaoMap from "../components/maps/KakaoMap";
+import MapBottom from "../components/maps/MapBottom";
 
 const MyCurrentLocation: React.FC<{
   location: { lat: number; lng: number };
@@ -49,29 +23,22 @@ const MyCurrentLocation: React.FC<{
   );
 };
 
+interface DataProps {
+  category: string;
+  price: number;
+  count: number;
+  detail: string;
+  place: string;
+}
+
 const MainPage: React.FC = () => {
   const [location, setLocation] = useState({ lat: 0, lng: 0 });
-  const [level, setLevel] = useState(3);
-  const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
-  const mapRef = useRef<kakao.maps.Map | null>(null);
+  const { mapInfo, setCenter } = useMapInfo();
+  const [showBubble, setShowBubble] = useState<boolean>(false);
+  const [selectedData, setSelectedBubble] = useState<DataProps>();
+  const [categoryInfo, setCategoryInfo] = useState<CategoryProps>();
 
-  useGetMyCurrentLocation(setLocation, setMapCenter);
-
-  const moveToCurrentLocation = () => {
-    if (mapRef.current) {
-      mapRef.current.panTo(new kakao.maps.LatLng(location.lat, location.lng));
-    }
-    setMapCenter({ lat: location.lat, lng: location.lng });
-  };
-
-  interface DataProps {
-    category: string;
-    price: number;
-    count: number;
-    detail: string;
-    place: string;
-  }
-
+  // TODO : remove dummy datas
   const dummyDatas = [
     {
       category: "식비",
@@ -89,40 +56,20 @@ const MainPage: React.FC = () => {
     },
   ];
 
-  const [showBubble, setShowBubble] = useState<boolean>(false);
-  const [selectedData, setSelectedBubble] = useState<DataProps>();
-  const [categoryInfo, setCategoryInfo] = useState<CategoryProps>();
   const showBubbleInfo = (idx: number) => {
     setShowBubble(true);
     setSelectedBubble(dummyDatas[idx]);
   };
 
+  useGetMyCurrentLocation(setLocation, setCenter);
+
   useEffect(() => {
     if (!selectedData?.category) return;
     setCategoryInfo(findCategory(selectedData!.category));
   }, [selectedData]);
-
-  const showBubbleRef = useRef<HTMLDivElement>(null!);
-  useClickOutside(showBubbleRef, () => setShowBubble(false));
-
   return (
     <>
-      <Map
-        key={`map-${mapCenter.lat}-${mapCenter.lng}`}
-        center={{ lat: mapCenter.lat, lng: mapCenter.lng }}
-        style={{
-          width: "100%",
-          height: "100%",
-          position: "absolute",
-        }}
-        isPanto={true}
-        level={level}
-        ref={mapRef}
-        onZoomChanged={(map) => {
-          const level = map.getLevel();
-          setLevel(level);
-        }}
-      >
+      <KakaoMap>
         <MyCurrentLocation
           location={{ lat: location.lat, lng: location.lng }}
         />
@@ -130,7 +77,7 @@ const MainPage: React.FC = () => {
           <MapBubble
             onClick={() => showBubbleInfo(index)}
             key={index}
-            type={level >= 5 ? "icon" : "bubble"}
+            type={mapInfo.level >= 5 ? "icon" : "bubble"}
             position={{
               lat: location.lat + (index + 1) * 0.001,
               lng: location.lng + (index + 1) * 0.001,
@@ -140,35 +87,16 @@ const MainPage: React.FC = () => {
             count={data.count}
           />
         ))}
-      </Map>
+      </KakaoMap>
       <div className="flex flex-col justify-between w-full h-full px-6 pt-10 pb-5">
         <MapHeader />
-        <div className="z-10 flex flex-col gap-3">
-          <div className="flex items-end justify-between">
-            <IconMoveMyLocation moveToCurrentLocation={moveToCurrentLocation} />
-            <IconFastInputPay />
-          </div>
-          {showBubble && (
-            <div
-              ref={showBubbleRef}
-              className="flex flex-col gap-2 p-3 bg-white rounded-lg drop-shadow-10"
-            >
-              <div className="flex items-center justify-between">
-                {selectedData!.place}
-                <div
-                  className={`flex items-center gap-1 rounded-lg border px-1.5 py-1 ${categoryInfo?.bgColor} ${categoryInfo?.borderColor}`}
-                >
-                  <div>{categoryInfo?.icon({ size: 16 })}</div>
-                  <div className="text-sm">{selectedData!.category}</div>
-                </div>
-              </div>
-              <div className="text-xs font-light">{selectedData!.detail}</div>
-              <div className="text-right">
-                {formatPrice(selectedData!.price)}원
-              </div>
-            </div>
-          )}
-        </div>
+        <MapBottom
+          location={location}
+          selectedData={selectedData}
+          categoryInfo={categoryInfo}
+          showBubble={showBubble}
+          setShowBubble={setShowBubble}
+        />
       </div>
     </>
   );
