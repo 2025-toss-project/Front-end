@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Outlet, Route, Routes } from "react-router-dom";
 import MainPage from "./pages/MainPage";
 import BudgetManage from "./pages/BudgetManage";
 import MainLayout from "./layouts/MainLayout";
@@ -9,30 +9,55 @@ import LoginPage from "./pages/LoginPage";
 import HeaderLayout from "./layouts/HeaderLayout";
 import SignupPage from "./pages/SignupPage";
 import MyPage from "./pages/MyPage";
+import SearchPlacePage from "./pages/SearchPlacePage";
 import SearchLocation from "./pages/SearchLocation";
+import StatisticPage from "./pages/StatisticPage";
+import PayDetailPage from "./pages/PayDetailPage";
+import MapPinPage from "./pages/MapPinPage";
+import { SearchPlaceProvider } from "./contexts/SearchPlaceContext";
+import PageUrls from "./constants/PageUrls";
+import NavBarLayout from "./layouts/NavBarLayout";
 
 const App: React.FC = () => {
   return (
     <Routes>
-      <Route path="/" element={<MainPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/search/location" element={<SearchLocation />} />
+      <Route path={PageUrls.LOGIN} element={<LoginPage />} />
+      <Route path={PageUrls.SEARCH_LOCATION} element={<SearchLocation />} />
+      {/* Header + Navbar */}
+      <Route element={<MainLayout />}>
+        <Route path={PageUrls.BUDGET} element={<BudgetManage />} />
+        <Route path={PageUrls.BUDGET_SET} element={<BudgetManageSet />} />
+        <Route path={PageUrls.PAY_RECODE} element={<PayRecodePage />} />
+        <Route path={PageUrls.MY_PAGE} element={<MyPage />} />
+        <Route path={PageUrls.STATISTIC} element={<StatisticPage />} />
+        <Route path={PageUrls.PAY_DETAIL} element={<PayDetailPage />} />
 
-      <Route element={<MainLayout title="예산관리" bgColor="bg-second-bg" />}>
-        <Route path="/budget" element={<BudgetManage />} />
-        <Route path="/budgetset" element={<BudgetManageSet />} />
+        {/* SearchPlaceProvider를 감싸서 컨텍스트 유지 */}
+        <Route
+          element={
+            <SearchPlaceProvider>
+              <Outlet />
+            </SearchPlaceProvider>
+          }
+        >
+          <Route path={PageUrls.ADD_PAY} element={<AddPayPage />} />
+          <Route
+            path={PageUrls.ADD_PAY_SEARCH_PLACE}
+            element={<SearchPlacePage />}
+          />
+          <Route
+            path={PageUrls.ADD_PAY_SEARCH_PLACE_MAP}
+            element={<MapPinPage />}
+          />
+        </Route>
       </Route>
-      <Route element={<MainLayout title="지출 내역 추가" />}>
-        <Route path="/addpay" element={<AddPayPage />} />
-      </Route>
-      <Route element={<MainLayout title="지출 내역 리스트" bgColor="bg-second-bg" />}>
-        <Route path="/payrecode" element={<PayRecodePage />} />
-      </Route>
-      <Route element={<MainLayout title="마이페이지" />}>
-        <Route path="/mypage" element={<MyPage />} />
-      </Route>
+      {/* Header */}
       <Route element={<HeaderLayout />}>
-        <Route path="/signup" element={<SignupPage />} />
+        <Route path={PageUrls.SIGNUP} element={<SignupPage />} />
+      </Route>
+      {/* Navbar */}
+      <Route element={<NavBarLayout />}>
+        <Route path={PageUrls.HOME} element={<MainPage />} />
       </Route>
     </Routes>
   );

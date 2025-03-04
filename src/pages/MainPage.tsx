@@ -40,9 +40,8 @@ const MyCurrentLocation: React.FC<{
       position={{ lat: location.lat, lng: location.lng }}
       zIndex={1}
     >
-      <div className="grid aspect-square w-8 place-items-center rounded-full bg-main bg-opacity-30">
-        <div className="aspect-square w-4 rounded-full border-2 border-white bg-main"></div>
-      </div>
+      <div className="grid aspect-square w-8 animate-pulse place-items-center rounded-full bg-main bg-opacity-30"></div>
+      <div className="absolute left-1/2 top-1/2 aspect-square w-4 -translate-x-1/2 -translate-y-1/2 transform rounded-full border-2 border-white bg-main"></div>
     </CustomOverlayMap>
   );
 };
