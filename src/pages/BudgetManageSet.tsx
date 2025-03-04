@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import IconFood from "../assets/categoryIcons/IconFood";
 import { SaveButton } from "../components/common/Buttons";
 import { categoryList } from "../constants/category";
 
@@ -27,7 +26,7 @@ const dummyData: CategoryBudget[] = [
   { category: "기타", budgetPrice: 50000, percentage: 5 },
 ];
 
-// 한달 예산 설정
+// monthBudget(현재 월 예산)과 setMonthBudget(월 예산 변경) 함수를 props로 받음
 const MonthlyBudgetSet: React.FC<{
   monthBudget: number;
   setMonthBudget: (value: number) => void;
@@ -36,11 +35,12 @@ const MonthlyBudgetSet: React.FC<{
     // 쉼표 제거 후 숫자 변환
     const cleaned = e.target.value.replace(/,/g, "");
     const num = Number(cleaned);
+    // 입력이 비었으면 0, 숫자가 아니면 기본값, 아니면 해당 숫자
     setMonthBudget(cleaned === "" ? 0 : isNaN(num) ? totalBudget : num);
   };
 
   return (
-    <div className="p-4 mb-4 bg-white rounded-2xl drop-shadow-10">
+    <div className="mb-4 rounded-2xl bg-white p-4 drop-shadow-10">
       <div className="text-lg font-bold">
         한달에 소비할 <span className="text-marker-home">예산</span>
       </div>
@@ -59,7 +59,7 @@ const MonthlyBudgetSet: React.FC<{
             style={{
               width: `${(monthBudget === 0 ? 1 : monthBudget.toString().length) + 2}ch`,
             }}
-            className="p-1 text-2xl font-bold text-center border-b-2 border-second-lighter text-main focus:outline-none"
+            className="border-b-2 border-second-lighter p-1 text-center text-2xl font-bold text-main focus-within:border-main focus:outline-none"
           />
           <span className="ml-1 text-2xl font-bold text-main">원</span>
         </div>
@@ -68,7 +68,7 @@ const MonthlyBudgetSet: React.FC<{
           <span className="text-sm font-bold text-[#006f6f]">
             {" " + Math.round(monthBudget / 30).toLocaleString()}원{" "}
           </span>
-           소비가 가능해요.
+          소비가 가능해요.
         </div>
       </div>
     </div>
@@ -100,25 +100,29 @@ const MonthlyBudgetBar: React.FC<{
         };
 
         return (
-          <div key={i} className="flex pt-2 gap-y-3">
+          <div key={i} className="flex gap-y-3 pt-2">
             <div className="w-full rounded-2xl bg-[#f8f8f8] px-2 py-2.5">
-              <div className="flex items-center justify-between pb-2 mb-1">
+              <div className="mb-1 flex items-center justify-between pb-2">
                 <div className="z-20 flex items-center space-x-2">
                   <div className="flex rounded-full bg-second-lighter">
                     {cat.icon}
                   </div>
-                  <div className="text-sm font-medium shrink-0">{cat.text}</div>
+                  <div className="shrink-0 text-sm font-medium">{cat.text}</div>
                   {/* 퍼센티지 표시 (소수점 반올림) */}
                   <div className="text-xs font-medium">
                     {Math.round(percentage)}%
                   </div>
                 </div>
-                <div className="flex items-center">
+                <div className="flex items-center border-b-2 border-transparent border-b-second focus-within:border-b-main">
                   <input
                     type="text"
-                    className="inline-block bg-[#f8f8f8] text-right text-sm font-bold focus:outline-none focus-visible:outline-none"
-                    // 0이면 빈 문자열 표시
-                    value={budgetPrice === 0 ? "0" : budgetPrice.toString()}
+                    style={{
+                      width: `${(monthBudget === 0 ? 1 : monthBudget.toString().length) + 2}ch`,
+                    }}
+                    className="border-0 bg-[#f8f8f8] text-right text-sm font-bold focus:outline-none"
+                    value={
+                      budgetPrice === 0 ? "0" : budgetPrice.toLocaleString()
+                    }
                     onChange={handleInputChange}
                   />
                   <span className="text-sm font-bold">원</span>
@@ -126,7 +130,7 @@ const MonthlyBudgetBar: React.FC<{
               </div>
 
               {/* 막대 그래프: 퍼센티지에 따라 길이 조절 */}
-              <div className="w-full h-2 rounded-full bg-second-light">
+              <div className="h-2 w-full rounded-full bg-second-light">
                 <div
                   className={`h-2 rounded-full ${
                     percentage >= 100 ? "bg-main" : "bg-marker-home"
@@ -172,7 +176,7 @@ const BudgetManageSet: React.FC = () => {
   const remain = Math.max(monthBudget - used);
 
   return (
-    <div className="flex flex-col w-full h-full bg-second-bg">
+    <div className="flex h-full w-full flex-col bg-second-bg">
       <div className="flex h-full flex-col bg-[#f8f8f8] py-5">
         {/* 월 전체 예산 입력 */}
         <MonthlyBudgetSet
@@ -181,7 +185,7 @@ const BudgetManageSet: React.FC = () => {
         />
 
         {/* 카테고리별 예산 설정 */}
-        <div className="p-4 mt-4 text-lg bg-white rounded-2xl drop-shadow-10">
+        <div className="mt-4 rounded-2xl bg-white p-4 text-lg drop-shadow-10">
           <div className="font-bold">
             카테고리별 소비{" "}
             <span className="font-bold text-marker-home">예산</span>
@@ -197,7 +201,7 @@ const BudgetManageSet: React.FC = () => {
               남은예산
               <div>
                 {remain < 0 ? (
-                  <div className="flex flex-col items-end m-0 text-base font-bold text-main tb-0">
+                  <div className="tb-0 m-0 flex flex-col items-end text-base font-bold text-main">
                     {remain.toLocaleString()}원
                   </div>
                 ) : (
@@ -217,10 +221,13 @@ const BudgetManageSet: React.FC = () => {
           />
         </div>
       </div>
-      <SaveButton 
-  title={remain >= 0 ? `남은 금액: ${remain.toLocaleString()}원` : `예산 초과: ${Math.abs(remain).toLocaleString()}원`} 
-/>
-
+      <SaveButton
+        title={
+          remain >= 0
+            ? `남은 금액: ${remain.toLocaleString()}원`
+            : `예산 초과: ${Math.abs(remain).toLocaleString()}원`
+        }
+      />
     </div>
   );
 };
