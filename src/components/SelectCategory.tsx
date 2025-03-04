@@ -1,9 +1,6 @@
-import { LucideArrowUpNarrowWide } from "lucide-react";
-import React, { useState } from "react";
+import React from "react";
 import { categoryList } from "../constants/category";
 import CategorySection from "./sections/CategorySection";
-
-//   <CategorySection icon={<IconFood size={28} />} name="식비" />
 
 interface CategoryProps {
   classname?: string;
@@ -22,7 +19,7 @@ const SelectCategory: React.FC<CategoryProps> = ({
       {categoryList.map((item) => (
         <CategorySection
           key={item.text}
-          icon={item.icon}
+          icon={item.icon({})}
           name={item.text}
           toggle={() => {
             setSelectName(item.text);

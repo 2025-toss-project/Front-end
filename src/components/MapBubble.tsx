@@ -34,7 +34,7 @@ const MapBubble: React.FC<{
         }}
         className={`bubble flex items-end gap-1 border text-sm`}
       >
-        {bubbleCategory?.icon}
+        {bubbleCategory?.icon && bubbleCategory.icon({})}
         <div>
           ₩{formatPrice(price)}
           <span className="text-[10px]">({count})</span>

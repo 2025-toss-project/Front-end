@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import IconFood from "../assets/categoryIcons/IconFood";
 import { SaveButton } from "../components/common/Buttons";
 import { categoryList } from "../constants/category";
 
@@ -68,7 +67,7 @@ const MonthlyBudgetSet: React.FC<{
           <span className="text-sm font-bold text-[#006f6f]">
             {" " + Math.round(monthBudget / 30).toLocaleString()}원{" "}
           </span>
-           소비가 가능해요.
+          소비가 가능해요.
         </div>
       </div>
     </div>
@@ -105,7 +104,7 @@ const MonthlyBudgetBar: React.FC<{
               <div className="flex items-center justify-between pb-2 mb-1">
                 <div className="z-20 flex items-center space-x-2">
                   <div className="flex rounded-full bg-second-lighter">
-                    {cat.icon}
+                    {cat.icon({})}
                   </div>
                   <div className="text-sm font-medium shrink-0">{cat.text}</div>
                   {/* 퍼센티지 표시 (소수점 반올림) */}
@@ -197,7 +196,7 @@ const BudgetManageSet: React.FC = () => {
               남은예산
               <div>
                 {remain < 0 ? (
-                  <div className="flex flex-col items-end m-0 text-base font-bold text-main tb-0">
+                  <div className="flex flex-col items-end m-0 text-base font-bold tb-0 text-main">
                     {remain.toLocaleString()}원
                   </div>
                 ) : (
@@ -217,10 +216,13 @@ const BudgetManageSet: React.FC = () => {
           />
         </div>
       </div>
-      <SaveButton 
-  title={remain >= 0 ? `남은 금액: ${remain.toLocaleString()}원` : `예산 초과: ${Math.abs(remain).toLocaleString()}원`} 
-/>
-
+      <SaveButton
+        title={
+          remain >= 0
+            ? `남은 금액: ${remain.toLocaleString()}원`
+            : `예산 초과: ${Math.abs(remain).toLocaleString()}원`
+        }
+      />
     </div>
   );
 };

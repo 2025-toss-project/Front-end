@@ -24,7 +24,7 @@ const Category: React.FC<
       }}
       className={`flex w-fit flex-shrink-0 items-center gap-1 rounded-full border bg-white px-2.5 py-2 font-medium drop-shadow-10 ${selectedCategory === text ? "border-main" : "border-white"}`}
     >
-      {icon}
+      {icon({})}
       <div>{text}</div>
     </div>
   );
@@ -82,7 +82,7 @@ const DropDown: React.FC<DropDownProps> = ({ isOpen, setIsOpen }) => {
           <div
             key={type.type}
             onClick={() => setType(type)}
-            className="flex gap-1 border-b border-b-second py-2 last:border-none"
+            className="flex gap-1 py-2 border-b border-b-second last:border-none"
           >
             {type.icon({ size: 20 })}
             {type.type}
@@ -117,7 +117,7 @@ const MyProperty: React.FC<{ name: string; property: string }> = ({
 const MapHeader: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   return (
-    <div className="z-10 flex max-w-full flex-col">
+    <div className="z-10 flex flex-col max-w-full">
       <CategoryList />
       <div className="flex items-center justify-between py-1">
         <MyProperty name="희연" property="플렉스" />
