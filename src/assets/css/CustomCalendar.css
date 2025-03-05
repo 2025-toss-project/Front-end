@@ -132,75 +132,54 @@ react-calendar__navigation__label {
   text-decoration: none;
 }
 
-/* 범위 스타일 */
-
-.react-calendar__tile--range abbr {
+.react-calendar__tile:active {
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   height: 30px;
-  width: 100%;
+  width: 50px;
   line-height: 30px;
-  background-color: #577527;
+  background-color: "#C80150";
   color: white;
-  border-radius: 0px;
+  border-radius: 99px;
 }
 
-/* 범위 시작일 스타일 */
-.react-calendar__tile--rangeStart abbr {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  height: 30px !important;
-  width: 30px !important;
-  line-height: 30px;
-  /* background-color: #ff6b6b; */
-  color: white;
-  border-radius: 20px 0 0 20px;
-  z-index: 10;
-}
-
-/* 범위 끝일 스타일 */
-.react-calendar__tile--rangeEnd abbr {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  height: 30px !important;
-  width: 30px !important;
-  line-height: 30px;
-  /* background-color: #ff6b6b; */
-  color: white;
-  border-radius: 0px 20px 20px 0px;
-  z-index: 10;
-}
-
+/* 범위 스타일 */
 .react-calendar__tile--range {
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   height: 30px;
-  width: 100%;
+  width: 50px;
   line-height: 30px;
-  background-color: #577527;
+  background-color: #c80150;
   color: white;
   border-radius: 0px;
 }
 
-/* 선택된 날짜가 풀렸을 때 배경을 투명으로 설정 */
-.react-calendar__tile--rangeStart:focus,
-.react-calendar__tile--rangeEnd:focus {
-  background-color: transparent !important; /* 배경색을 투명으로 설정 */
-  color: inherit !important; /* 기본 텍스트 색으로 설정 */
+.react-calendar__tile--rangeStart abbr {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 30px;
+  width: 30px;
+  line-height: 30px;
+  background-color: #c80150;
+  color: white;
+  border-radius: 10px 0 0 10px;
 }
 
-/* 범위가 풀렸을 때, 즉 선택이 끝났을 때 */
-.react-calendar__tile--range:focus,
-.react-calendar__tile--rangeStart:focus,
-.react-calendar__tile--rangeEnd:focus {
-  background-color: transparent !important; /* 배경색을 투명으로 설정 */
-  color: inherit !important; /* 텍스트 색상 기본으로 */
+.react-calendar__tile--rangeEnd abbr {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 30px;
+  line-height: 30px;
+  background-color: #c80150;
+  color: white;
+  border-radius: 0 10px 10px 0px;
 }

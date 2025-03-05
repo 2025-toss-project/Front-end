@@ -12,6 +12,9 @@ const Calendar = () => {
   const [value, setValue] = useState<Value>(new Date());
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
+  const [selectedDates, setSelectedDates] = useState<Date | [Date, Date]>(
+    new Date(),
+  );
 
   const formatDay = (date: Date): string => {
     const day = date.getDate();
@@ -48,6 +51,7 @@ const Calendar = () => {
         locale="ko"
         view="month"
         maxDetail="month"
+        showNeighboringMonth={false} // 전달, 다음달 날짜 숨기기
         formatDay={(locale, date) => formatDay(date)}
         formatMonthYear={(locale, date) =>
           `${date.toLocaleString("ko", { month: "long" })}`
@@ -67,8 +71,25 @@ const Calendar = () => {
         }
         next2Label={null}
         prev2Label={null}
-        // 선택된 구간 배경 & 글씨 색상 변경
+        tileClassName={({ date }) => {
+          if (
+            selectedDates instanceof Date &&
+            date.toDateString() === selectedDates.toDateString()
+          ) {
+            return "single-selected"; // 단일 선택 스타일
+          }
 
+          if (
+            Array.isArray(selectedDates) &&
+            selectedDates.length === 2 &&
+            date >= selectedDates[0] &&
+            date <= selectedDates[1]
+          ) {
+            return "range-selected"; // 범위 선택 스타일
+          }
+
+          return "";
+        }}
         tileContent={({ date }) => {
           const year = date.getFullYear().toString();
           const month = (date.getMonth() + 1).toString();
