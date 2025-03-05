@@ -18,7 +18,7 @@
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
-    "types": ["kakao.maps.d.ts"]
+    "types": ["kakao.maps.d.ts", "vite/client"]
   },
   "include": ["src"],
   "exclude": ["node_modules"]
