@@ -4,6 +4,8 @@ import { useMovePage } from "../hooks/useMovePage";
 import { SaveButton } from "../components/common/Buttons";
 import { LucideMapPin } from "lucide-react";
 import { createRoot } from "react-dom/client";
+import PageUrls from "../constants/PageUrls";
+import { usePlaceInfo } from "../stores/placeInfo";
 
 declare global {
   interface Window {
@@ -15,8 +17,8 @@ const Map = () => {
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
   const [loaded, setLoaded] = useState(false);
-  const { selectPlace } = useSearchPlace();
   const { moveToBack } = useMovePage();
+  const { selectPlace, setPlaceInfo } = usePlaceInfo();
 
   useEffect(() => {
     // Kakao API 로드 확인
@@ -61,6 +63,8 @@ const Map = () => {
 
         console.log("선택된 장소:", selectPlace);
         console.log("좌표:", place.y, place.x);
+
+        setPlaceInfo(place.y, place.x);
 
         // 기존 마커 제거
         if (markerRef.current) {
@@ -108,14 +112,13 @@ const Map = () => {
 
 const MapInfo = () => {
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
-  const { selectPlace } = useSearchPlace();
 
   return (
     <div className="pointer-events-auto absolute bottom-10 left-1/2 z-10 w-80 -translate-x-1/2">
       <SaveButton
         title="저장하기"
         style="px-6"
-        onClick={() => moveToPage("/addpay")}
+        onClick={() => moveToPage(PageUrls.ADD_PAY)}
       />
     </div>
   );

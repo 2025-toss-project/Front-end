@@ -27,7 +27,11 @@ export const SaveButton: React.FC<MainButtonProps> = ({
   return (
     <div className="flex w-full justify-center">
       <button
-        onClick={onClick}
+        type="submit"
+        onClick={(e) => {
+          e.preventDefault(); // 기본 제출 방지
+          if (onClick) onClick(); //  onClick이 있을 때만 실행
+        }}
         className={`my-5 flex h-12 w-full items-center justify-center rounded-lg bg-main text-lg font-medium text-white ${style}`}
       >
         {title}

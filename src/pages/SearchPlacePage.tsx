@@ -1,33 +1,25 @@
 import { LucideCircleX, LucideSearch } from "lucide-react";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import SearchPlace from "../components/SearchPlace";
-import { useSearchPlace } from "../contexts/SearchPlaceContext";
+import { usePlaceInfo } from "../stores/placeInfo";
 
 const SearchHeader = () => {
-  const { place, onSearch } = useSearchPlace(); // context
-  const [inputValue, setInputValue] = useState(place); // place값이 바뀌면 같이 바뀜
-  const { setPlace, selectPlace, setSelectPlace } = useSearchPlace();
+  const { place, setPlace, setSelectPlace } = usePlaceInfo();
 
-  // place 값이 변경될 때 inputValue도 업데이트
   useEffect(() => {
-    setInputValue(place);
+    console.log("Current place:", place);
   }, [place]);
-
-  useEffect(() => {
-    setPlace(""); // 검색어 초기화
-    setSelectPlace(""); // 선택한 장소 초기화
-  }, []);
 
   // 검색한 값 place에 저장
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
+    setPlace(e.target.value);
   };
 
-  //검색 실행
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // 기본 제출 이벤트 방지
-    if (!inputValue.trim()) return; // 빈 검색어 방지
-    onSearch(inputValue); // 입력된 장소 검색
+  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // Prevent default form submit
+    if (!place.trim()) return; // If place is empty, prevent search
+    setSelectPlace(place); // Directly set the selected place from the search input
+    console.log("검색한 장소:", place); // Or trigger search logic here
   };
 
   return (
@@ -37,11 +29,11 @@ const SearchHeader = () => {
         <input
           type="text"
           className="flex flex-1 bg-second-lighter focus:outline-none"
-          value={inputValue}
+          value={place}
           onChange={handleInputChange}
         />
       </form>
-      <LucideCircleX size={24} color="#aaa" onClick={() => setInputValue("")} />
+      <LucideCircleX size={24} color="#aaa" onClick={() => setPlace("")} />
     </div>
   );
 };

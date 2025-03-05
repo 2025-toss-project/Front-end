@@ -1,17 +1,17 @@
 import React from "react";
 import { categoryList } from "../constants/category";
 import CategorySection from "./sections/CategorySection";
+import { useCategoryInfo } from "../stores/CategoryInfo";
+import useAddPayInfo from "../stores/addpayInfo";
 
 interface CategoryProps {
   classname?: string;
-  selectName?: string;
-  setSelectName: (name: string) => void;
 }
 
-const SelectCategory: React.FC<CategoryProps> = ({
-  classname,
-  setSelectName,
-}) => {
+const SelectCategory: React.FC<CategoryProps> = ({ classname }) => {
+  const { setSelectName, setIsOpen } = useCategoryInfo();
+  const { setAddPayInfo } = useAddPayInfo(); //
+
   return (
     <div
       className={`grid grid-flow-row grid-cols-4 justify-items-center gap-5 py-5 ${classname}`}
@@ -23,6 +23,8 @@ const SelectCategory: React.FC<CategoryProps> = ({
           name={item.text}
           toggle={() => {
             setSelectName(item.text);
+            setAddPayInfo("category", item.text);
+            setIsOpen(false);
           }}
         />
       ))}
