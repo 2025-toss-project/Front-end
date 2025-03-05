@@ -12,6 +12,7 @@ import IconHealth from "../assets/categoryIcons/IconHealth";
 import IconEtc from "../assets/categoryIcons/IconEtc";
 import IconShopping from "../assets/categoryIcons/IconShopping";
 import IconHobby from "../assets/categoryIcons/IconHobby";
+import BarGraph from "../components/BarGraph";
 
 const categoryIcons: Record<string, React.FC> = {
   식비: IconFood,
@@ -84,13 +85,7 @@ const CategoryStatus: React.FC<CategoryStatusProps> = ({ categoryBudgets }) => {
                 </div>
               </div>
               {/* 막대 그래프 */}
-              <div className="w-full h-2 rounded-full bg-second-light">
-                <div
-                  className={`h-2 rounded-full ${isOverBudget || isBudgetDepleted ? "bg-main" : "bg-marker-home"}`}
-                  style={{ width: `${Math.min(percentage, 100)}%` }}
-                ></div>
-              </div>
-
+              <BarGraph props={percentage} />
               <div className="flex justify-between pt-2 pb-1 text-xs text-3">
                 <span>{spendPrice.toLocaleString()}원 지출</span>
                 <span>예산 {budgetPrice.toLocaleString()}원</span>
