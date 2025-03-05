@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import IconMyLocation from "../../assets/IconMyLocation";
 import { LucidePlus } from "lucide-react";
 import { useMovePage } from "../../hooks/useMovePage";
@@ -65,26 +65,21 @@ const ShowDetailInfo: React.FC<{
 };
 
 const MapBottom: React.FC<{
-  location: {
-    lat: number;
-    lng: number;
-  };
   selectedData?: DataProps;
   categoryInfo?: CategoryProps;
   showBubble: boolean;
   setShowBubble: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ location, selectedData, categoryInfo, showBubble, setShowBubble }) => {
+}> = ({ selectedData, categoryInfo, showBubble, setShowBubble }) => {
   const showBubbleRef = useRef<HTMLDivElement>(null!);
   useClickOutside(showBubbleRef, () => setShowBubble(false));
 
-  const { setCenter, mapInfo } = useMapInfo();
+  const { mapRef, myLocation } = useMapInfo();
   const moveToCurrentLocation = () => {
-    if (mapInfo.ref.current) {
-      mapInfo.ref.current.panTo(
-        new kakao.maps.LatLng(location.lat, location.lng),
+    if (mapRef.current) {
+      mapRef.current.panTo(
+        new kakao.maps.LatLng(myLocation.lat, myLocation.lng),
       );
     }
-    setCenter({ lat: location.lat, lng: location.lng });
   };
   return (
     <>

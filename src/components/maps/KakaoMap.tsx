@@ -1,25 +1,31 @@
-import React from "react";
+import React, { useEffect } from "react";
 import useMapInfo from "../../stores/mapInfo";
 import { Map } from "react-kakao-maps-sdk";
 
 const KakaoMap: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const { mapInfo, setLevel } = useMapInfo();
+  const { level, myLocation, mapRef, setLevel } = useMapInfo();
+
+  useEffect(() => {}, []);
   return (
     <Map
-      center={{ lat: mapInfo.center.lat, lng: mapInfo.center.lng }}
+      center={{ lat: myLocation.lat, lng: myLocation.lng }}
       style={{
         width: "100%",
         height: "100%",
         position: "absolute",
       }}
       isPanto={true}
-      level={mapInfo.level}
-      ref={mapInfo.ref}
+      level={level}
+      ref={mapRef}
       onZoomChanged={(map) => {
         const level = map.getLevel();
         setLevel(level);
+      }}
+      onCenterChanged={(map) => {
+        const lat = map.getCenter().getLat();
+        const lng = map.getCenter().getLng();
       }}
     >
       {children}

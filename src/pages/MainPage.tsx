@@ -33,7 +33,7 @@ interface DataProps {
 
 const MainPage: React.FC = () => {
   const [location, setLocation] = useState({ lat: 0, lng: 0 });
-  const { mapInfo, setCenter } = useMapInfo();
+  const { level, setMapCenter, setMyLocation, myLocation } = useMapInfo();
   const [showBubble, setShowBubble] = useState<boolean>(false);
   const [selectedData, setSelectedBubble] = useState<DataProps>();
   const [categoryInfo, setCategoryInfo] = useState<CategoryProps>();
@@ -61,7 +61,7 @@ const MainPage: React.FC = () => {
     setSelectedBubble(dummyDatas[idx]);
   };
 
-  useGetMyCurrentLocation(setLocation, setCenter);
+  useGetMyCurrentLocation(setMyLocation, setMapCenter);
 
   useEffect(() => {
     if (!selectedData?.category) return;
@@ -71,16 +71,16 @@ const MainPage: React.FC = () => {
     <>
       <KakaoMap>
         <MyCurrentLocation
-          location={{ lat: location.lat, lng: location.lng }}
+          location={{ lat: myLocation.lat, lng: myLocation.lng }}
         />
         {dummyDatas.map((data, index) => (
           <MapBubble
             onClick={() => showBubbleInfo(index)}
             key={index}
-            type={mapInfo.level >= 5 ? "icon" : "bubble"}
+            type={level >= 5 ? "icon" : "bubble"}
             position={{
-              lat: location.lat + (index + 1) * 0.001,
-              lng: location.lng + (index + 1) * 0.001,
+              lat: myLocation.lat + (index + 1) * 0.001,
+              lng: myLocation.lng + (index + 1) * 0.001,
             }}
             category={data.category}
             price={data.price}
@@ -91,7 +91,6 @@ const MainPage: React.FC = () => {
       <div className="flex flex-col justify-between w-full h-full px-6 pt-10 pb-5">
         <MapHeader />
         <MapBottom
-          location={location}
           selectedData={selectedData}
           categoryInfo={categoryInfo}
           showBubble={showBubble}
