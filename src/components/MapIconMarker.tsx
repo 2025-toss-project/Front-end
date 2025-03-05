@@ -14,10 +14,7 @@ const MapIconMarker: React.FC<{
     <CustomOverlayMap position={position}>
       <IconMapMarker color={markerCategory?.border || ""} />
       <div className="absolute left-[7px] top-2">
-        {React.isValidElement(markerCategory?.icon) &&
-          React.cloneElement(markerCategory.icon as React.ReactElement<any>, {
-            color: "white",
-          })}
+        {markerCategory?.icon({ color: "white" })}
       </div>
     </CustomOverlayMap>
   );

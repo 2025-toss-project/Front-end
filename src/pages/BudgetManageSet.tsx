@@ -106,7 +106,7 @@ const MonthlyBudgetBar: React.FC<{
               <div className="flex items-center justify-between pb-2 mb-1">
                 <div className="z-20 flex items-center space-x-2">
                   <div className="flex rounded-full bg-second-lighter">
-                    {cat.icon}
+                    {cat.icon({})}
                   </div>
                   <div className="text-sm font-medium shrink-0">{cat.text}</div>
                   {/* 퍼센티지 표시 (소수점 반올림) */}
