@@ -1,36 +1,13 @@
-import React, { useRef, useState } from "react";
-import { CustomOverlayMap, Map } from "react-kakao-maps-sdk";
-import MapHeader from "../components/MapHeader";
-import IconMyLocation from "../assets/IconMyLocation";
-import { LucidePlus } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { CustomOverlayMap } from "react-kakao-maps-sdk";
+import MapHeader from "../components/maps/MapHeader";
 import MapBubble from "../components/MapBubble";
-import { useMovePage } from "../hooks/useMovePage";
 import useGetMyCurrentLocation from "../hooks/useGetMyCurrentLocation";
-import MapIconMarker from "../components/MapIconMarker";
-
-const IconMoveMyLocation: React.FC<{ moveToCurrentLocation: () => void }> = ({
-  moveToCurrentLocation,
-}) => {
-  return (
-    <div
-      onClick={moveToCurrentLocation}
-      className="z-10 grid aspect-square w-10 place-items-center rounded-full bg-white drop-shadow-50"
-    >
-      <IconMyLocation />
-    </div>
-  );
-};
-const IconFastInputPay: React.FC = () => {
-  const { moveToPage } = useMovePage();
-  return (
-    <div
-      onClick={() => moveToPage("/addpay")}
-      className="z-10 grid aspect-square w-11 place-items-center rounded-full bg-main drop-shadow-50"
-    >
-      <LucidePlus size={24} color="#FFF" />
-    </div>
-  );
-};
+import { findCategory } from "../utils/findTypeOrCategory";
+import { CategoryProps } from "../constants/category";
+import useMapInfo from "../stores/mapInfo";
+import KakaoMap from "../components/maps/KakaoMap";
+import MapBottom from "../components/maps/MapBottom";
 
 const MyCurrentLocation: React.FC<{
   location: { lat: number; lng: number };
@@ -40,91 +17,85 @@ const MyCurrentLocation: React.FC<{
       position={{ lat: location.lat, lng: location.lng }}
       zIndex={1}
     >
-      <div className="grid aspect-square w-8 animate-pulse place-items-center rounded-full bg-main bg-opacity-30"></div>
-      <div className="absolute left-1/2 top-1/2 aspect-square w-4 -translate-x-1/2 -translate-y-1/2 transform rounded-full border-2 border-white bg-main"></div>
+      <div className="grid w-8 rounded-full aspect-square animate-pulse place-items-center bg-main bg-opacity-30"></div>
+      <div className="absolute w-4 transform -translate-x-1/2 -translate-y-1/2 border-2 border-white rounded-full left-1/2 top-1/2 aspect-square bg-main"></div>
     </CustomOverlayMap>
   );
 };
 
+interface DataProps {
+  category: string;
+  price: number;
+  count: number;
+  detail: string;
+  place: string;
+}
+
 const MainPage: React.FC = () => {
   const [location, setLocation] = useState({ lat: 0, lng: 0 });
-  const [level, setLevel] = useState(3);
-  const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
-  const mapRef = useRef<kakao.maps.Map | null>(null);
+  const { level, setMapCenter, setMyLocation, myLocation } = useMapInfo();
+  const [showBubble, setShowBubble] = useState<boolean>(false);
+  const [selectedData, setSelectedBubble] = useState<DataProps>();
+  const [categoryInfo, setCategoryInfo] = useState<CategoryProps>();
 
-  useGetMyCurrentLocation(setLocation, setMapCenter);
-
-  const moveToCurrentLocation = () => {
-    if (mapRef.current) {
-      mapRef.current.panTo(new kakao.maps.LatLng(location.lat, location.lng));
-    }
-    setMapCenter({ lat: location.lat, lng: location.lng });
-  };
-
+  // TODO : remove dummy datas
   const dummyDatas = [
     {
       category: "식비",
       price: 2000,
       count: 3,
+      detail: "한국경제신문에서 밥머금",
+      place: "맥도날드",
     },
     {
-      category: "주거",
+      category: "교통",
       price: 50000,
       count: 2,
+      detail: "한국경제신문에서 버스탐",
+      place: "버스",
     },
   ];
 
+  const showBubbleInfo = (idx: number) => {
+    setShowBubble(true);
+    setSelectedBubble(dummyDatas[idx]);
+  };
+
+  useGetMyCurrentLocation(setMyLocation, setMapCenter);
+
+  useEffect(() => {
+    if (!selectedData?.category) return;
+    setCategoryInfo(findCategory(selectedData!.category));
+  }, [selectedData]);
   return (
     <>
-      <Map
-        key={`map-${mapCenter.lat}-${mapCenter.lng}`}
-        center={{ lat: mapCenter.lat, lng: mapCenter.lng }}
-        style={{
-          width: "100%",
-          height: "100%",
-          position: "absolute",
-        }}
-        isPanto={true}
-        level={level}
-        ref={mapRef}
-        onZoomChanged={(map) => {
-          const level = map.getLevel();
-          setLevel(level);
-        }}
-      >
+      <KakaoMap>
         <MyCurrentLocation
-          location={{ lat: location.lat, lng: location.lng }}
+          location={{ lat: myLocation.lat, lng: myLocation.lng }}
         />
-        {dummyDatas.map((data, index) =>
-          level >= 5 ? (
-            <MapIconMarker
-              key={index}
-              position={{
-                lat: location.lat + (index + 1) * 0.001,
-                lng: location.lng + (index + 1) * 0.001,
-              }}
-              category={data.category}
-            />
-          ) : (
-            <MapBubble
-              key={index}
-              position={{
-                lat: location.lat + (index + 1) * 0.001,
-                lng: location.lng + (index + 1) * 0.001,
-              }}
-              category={data.category}
-              price={data.price}
-              count={data.count}
-            />
-          ),
-        )}
-      </Map>
-      <div className="flex h-full w-full flex-col justify-between px-6 pb-5 pt-10">
+        {dummyDatas.map((data, index) => (
+          <MapBubble
+            onClick={() => showBubbleInfo(index)}
+            key={index}
+            type={level >= 5 ? "icon" : "bubble"}
+            position={{
+              lat: myLocation.lat + (index + 1) * 0.001,
+              lng: myLocation.lng + (index + 1) * 0.001,
+            }}
+            category={data.category}
+            price={data.price}
+            count={data.count}
+          />
+        ))}
+      </KakaoMap>
+      <div className="flex flex-col justify-between w-full h-full px-6 pt-10 pb-5">
         <MapHeader />
-        <div className="flex items-end justify-between">
-          <IconMoveMyLocation moveToCurrentLocation={moveToCurrentLocation} />
-          <IconFastInputPay />
-        </div>
+        <MapBottom
+          selectedData={selectedData}
+          categoryInfo={categoryInfo}
+          showBubble={showBubble}
+          setShowBubble={setShowBubble}
+        />
       </div>
     </>
   );

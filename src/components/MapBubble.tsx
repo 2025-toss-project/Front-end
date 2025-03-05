@@ -1,47 +1,69 @@
 import React, { useEffect, useRef } from "react";
 import { CustomOverlayMap } from "react-kakao-maps-sdk";
-import "../assets/css/bubble.css";
 import { findCategory } from "../utils/findTypeOrCategory";
 import { formatPrice } from "../utils/formatPrice";
+import IconMapMarker from "../assets/IconMapMarker";
+import "../assets/css/bubble.css";
 
-const MapBubble: React.FC<{
+interface MapMarkerProps {
+  type: "icon" | "bubble"; // 마커 종류 지정
   position: { lat: number; lng: number };
   category: string;
-  price: number;
-  count: number;
-}> = ({ position, category, price, count }) => {
-  const bubbleCategory = findCategory(category);
+  price?: number;
+  count?: number;
+  onClick?: () => void;
+}
+
+const MapMarker: React.FC<MapMarkerProps> = ({
+  type,
+  position,
+  category,
+  price,
+  count,
+  onClick,
+}) => {
+  const categoryData = findCategory(category);
   const bubbleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (bubbleRef.current) {
+    if (bubbleRef.current && type === "bubble") {
       const el = bubbleRef.current;
-      el.style.setProperty("--border-color", bubbleCategory?.border ?? "");
+      el.style.setProperty("--border-color", categoryData?.border ?? "");
       el.style.setProperty(
         "--background-color",
-        bubbleCategory?.background ?? "",
+        categoryData?.background ?? "",
       );
     }
-  }, [bubbleCategory]);
+  }, [categoryData, type]);
 
   return (
     <CustomOverlayMap position={position}>
-      <div
-        ref={bubbleRef}
-        style={{
-          backgroundColor: bubbleCategory?.background,
-          borderColor: bubbleCategory?.border,
-        }}
-        className={`bubble flex items-end gap-1 border text-sm`}
-      >
-        {bubbleCategory?.icon}
-        <div>
-          ₩{formatPrice(price)}
-          <span className="text-[10px]">({count})</span>
+      {type === "icon" ? (
+        <div className="relative" onClick={onClick}>
+          <IconMapMarker color={categoryData?.border || ""} />
+          <div className="absolute left-[7px] top-2">
+            {categoryData?.icon({ color: "white" })}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div
+          onClick={onClick}
+          ref={bubbleRef}
+          style={{
+            backgroundColor: categoryData?.background,
+            borderColor: categoryData?.border,
+          }}
+          className="flex items-end gap-1 text-sm border bubble"
+        >
+          {categoryData?.icon && categoryData.icon({})}
+          <div>
+            ₩{formatPrice(price || 0)}
+            <span className="text-[10px]">({count})</span>
+          </div>
+        </div>
+      )}
     </CustomOverlayMap>
   );
 };
 
-export default MapBubble;
+export default MapMarker;

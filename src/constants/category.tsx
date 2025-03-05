@@ -11,28 +11,25 @@ import IconSaving from "../assets/categoryIcons/IconSaving";
 import IconEvent from "../assets/categoryIcons/IconEvent";
 import IconEtc from "../assets/categoryIcons/IconEtc";
 
-export type CategoryProps = {
-  text: string;
-  // 테일윈드에서 사용
-  borderColor?: string;
-  bgColor?: string;
-  icon?: ReactNode;
-  // inline-style에서 사용
-  border?: string;
-  background?: string;
-};
-
 export interface IconProps {
   color?: "white";
   size?: number; // 아이콘 크기 조정
 }
+export type CategoryProps = {
+  text: string;
+  borderColor?: string;
+  bgColor?: string;
+  icon: (props: IconProps) => ReactNode; // IconProps를 적용
+  border?: string;
+  background?: string;
+};
 
 export const categoryList: CategoryProps[] = [
   {
     text: "식비",
     borderColor: "border-marker-food",
     bgColor: "bg-marker-food-light",
-    icon: <IconFood />,
+    icon: (props: { size?: number }) => <IconFood {...props} />,
     border: "#AAD6FF",
     background: "#E9F1F8",
   },
@@ -40,7 +37,7 @@ export const categoryList: CategoryProps[] = [
     text: "주거",
     borderColor: "border-marker-home",
     bgColor: "bg-marker-home-light",
-    icon: <IconHome />,
+    icon: (props: { size?: number }) => <IconHome {...props} />,
     border: "#007FF2",
     background: "#CCE5FC",
   },
@@ -48,7 +45,7 @@ export const categoryList: CategoryProps[] = [
     text: "교통",
     borderColor: "border-marker-traffic",
     bgColor: "bg-marker-traffic-light",
-    icon: <IconTraffic />,
+    icon: (props: { size?: number }) => <IconTraffic {...props} />,
     border: "#2D67D5",
     background: "#D5E1F7",
   },
@@ -56,7 +53,7 @@ export const categoryList: CategoryProps[] = [
     text: "통신",
     borderColor: "border-marker-com",
     bgColor: "bg-marker-com-light",
-    icon: <IconCom />,
+    icon: (props: { size?: number }) => <IconCom {...props} />,
     border: "#23B169",
     background: "#D3EFE1",
   },
@@ -64,7 +61,7 @@ export const categoryList: CategoryProps[] = [
     text: "건강",
     borderColor: "border-marker-health",
     bgColor: "bg-marker-health-light",
-    icon: <IconHealth />,
+    icon: (props: { size?: number }) => <IconHealth {...props} />,
     border: "#77CEBD",
     background: "#E4F5F2",
   },
@@ -72,7 +69,7 @@ export const categoryList: CategoryProps[] = [
     text: "쇼핑",
     borderColor: "border-marker-shopping",
     bgColor: "bg-marker-shopping-light",
-    icon: <IconShopping />,
+    icon: (props: { size?: number }) => <IconShopping {...props} />,
     border: "#EF4452",
     background: "#FCDADC",
   },
@@ -80,7 +77,7 @@ export const categoryList: CategoryProps[] = [
     text: "교육",
     borderColor: "border-marker-education",
     bgColor: "bg-marker-education-light",
-    icon: <IconEducation />,
+    icon: (props: { size?: number }) => <IconEducation {...props} />,
     border: "#FD9F2C",
     background: "#FFECD5",
   },
@@ -88,7 +85,7 @@ export const categoryList: CategoryProps[] = [
     text: "문화생활",
     borderColor: "border-marker-hobby",
     bgColor: "bg-marker-hobby-light",
-    icon: <IconHobby />,
+    icon: (props: { size?: number }) => <IconHobby {...props} />,
     border: "#A064FF",
     background: "#ECE0FF",
   },
@@ -96,7 +93,7 @@ export const categoryList: CategoryProps[] = [
     text: "저축",
     borderColor: "border-marker-saving",
     bgColor: "bg-marker-saving-light",
-    icon: <IconSaving />,
+    icon: (props: { size?: number }) => <IconSaving {...props} />,
     border: "#FFC522",
     background: "#FFF3D3",
   },
@@ -104,7 +101,7 @@ export const categoryList: CategoryProps[] = [
     text: "경조사",
     borderColor: "border-marker-event",
     bgColor: "bg-marker-event-light",
-    icon: <IconEvent />,
+    icon: (props: { size?: number }) => <IconEvent {...props} />,
     border: "#BFBFBF",
     background: "#F2F2F2",
   },
@@ -112,7 +109,7 @@ export const categoryList: CategoryProps[] = [
     text: "기타",
     borderColor: "border-marker-etc",
     bgColor: "bg-marker-etc-light",
-    icon: <IconEtc />,
+    icon: (props: { size?: number }) => <IconEtc {...props} />,
     border: "#86584A",
     background: "#E7DEDB",
   },
