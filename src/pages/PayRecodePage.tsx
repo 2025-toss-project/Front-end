@@ -9,9 +9,9 @@ const PayRecodePage = () => {
   const [selectName, setSelectName] = useState(""); // 선택한 값 저장
 
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex flex-col w-full gap-2">
       <CustomCalendar />
-      <div className="mt-5 flex w-full flex-col rounded-lg bg-white">
+      <div className="flex flex-col w-full mt-5 bg-white rounded-lg">
         {/* 드롭 클릭시 아래로 나오기  */}
         <DropButton
           title={selectName || "전체 항목"}
