@@ -1,31 +1,137 @@
-import React, { useState } from "react";
+import React from "react";
 import InputDefault from "../components/common/InputDefault";
-import { payTypeList } from "../constants/payType";
 import PayTypeSection from "../components/sections/PayTypeSection";
 import { SaveButton } from "../components/common/Buttons";
 import SelectAgeGroup from "../components/SelectAgeGroup";
+import { apiWithoutAuth } from "../utils/api";
+import PageUrls from "../constants/PageUrls";
+import { useMovePage } from "../hooks/useMovePage";
+import useSignupInfo from "../stores/signupInfo";
 
-const SignupInputs = () => {
+export interface signupInfo {
+  email: string;
+  code: string;
+  password: string;
+  checkPassword: string;
+  nickName: string;
+  location: string;
+  home: {
+    lat: number;
+    lng: number;
+  };
+  ageGroup: string;
+  type: string;
+}
+
+const SignupInputs: React.FC<{
+  signupInfo: signupInfo;
+  handleInputChange: (key: keyof signupInfo, value: string) => void;
+  setIsMailCertified: (value: boolean) => void;
+}> = ({ signupInfo, handleInputChange, setIsMailCertified }) => {
+  const { moveToPage } = useMovePage();
+  const handleClickCetifyMail = async () => {
+    if (!signupInfo.email) {
+      alert("이메일을 입력해주세요.");
+      return;
+    }
+    try {
+      const res = await apiWithoutAuth.post("/mail/send", {
+        email: signupInfo.email,
+      });
+      console.log(res.data);
+      alert("인증 메일이 발송되었습니다.");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleClickCheckMail = async () => {
+    if (!signupInfo.email) {
+      alert("인증번호를 입력해주세요.");
+      return;
+    }
+    try {
+      const res = await apiWithoutAuth.post("/mail/verify", {
+        email: signupInfo.email,
+        code: signupInfo.code,
+      });
+      console.log(res.data);
+
+      if (res.data.result.check) {
+        setIsMailCertified(true);
+        alert("인증되었습니다.");
+      } else {
+        alert("인증에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("인증에 실패했습니다.");
+    }
+  };
+
   return (
     <>
-      <InputDefault placeholder="이메일" />
-      <div className="flex w-full items-end gap-3">
-        <InputDefault placeholder="이메일 인증번호" style="w-full" />
-        <div className="mb-5 grid h-10 w-16 shrink-0 place-items-center gap-3 rounded-lg bg-second-light font-medium text-white">
+      <div className="flex items-end w-full gap-3">
+        <InputDefault
+          style="w-full"
+          placeholder="이메일"
+          type="email"
+          value={signupInfo.email}
+          onChange={(value) => handleInputChange("email", value)}
+        />
+        <div
+          onClick={handleClickCetifyMail}
+          className="grid w-16 h-10 gap-3 mb-5 font-medium text-white rounded-lg shrink-0 place-items-center bg-second-light"
+        >
+          전송
+        </div>
+      </div>
+      <div className="flex items-end w-full gap-3">
+        <InputDefault
+          placeholder="이메일 인증번호"
+          style="w-full"
+          type="number"
+          value={signupInfo.code}
+          onChange={(value) => handleInputChange("code", value)}
+        />
+        <div
+          onClick={handleClickCheckMail}
+          className="grid w-16 h-10 gap-3 mb-5 font-medium text-white rounded-lg shrink-0 place-items-center bg-second-light"
+        >
           확인
         </div>
       </div>
-      <InputDefault placeholder="비밀번호" />
-      <InputDefault placeholder="비밀번호 확인" />
-      <InputDefault placeholder="닉네임" />
-      <InputDefault placeholder="집 정보 입력" type="location" />
+      <InputDefault
+        placeholder="비밀번호"
+        type="password"
+        value={signupInfo.password}
+        onChange={(value) => handleInputChange("password", value)}
+      />
+      <InputDefault
+        placeholder="비밀번호 확인"
+        type="password"
+        value={signupInfo.checkPassword}
+        onChange={(value) => handleInputChange("checkPassword", value)}
+      />
+      <InputDefault
+        placeholder="닉네임"
+        value={signupInfo.nickName}
+        onChange={(value) => handleInputChange("nickName", value)}
+      />
+      <InputDefault
+        placeholder="집 정보 입력"
+        type="location"
+        onClick={() => moveToPage(PageUrls.SEARCH_LOCATION)}
+        value={signupInfo.location}
+        isReadOnly
+      />
     </>
   );
 };
 
 const SelectPayType: React.FC<{
   selectedPayType: string;
-  setSelectedPayType: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedPayType: (value: string) => void;
 }> = ({ selectedPayType, setSelectedPayType }) => {
   return (
     <div className="flex flex-col gap-2">
@@ -42,23 +148,63 @@ const SelectPayType: React.FC<{
 };
 
 const SignupPage = () => {
-  const [selectedAge, setSelectedAge] = useState<string>("");
-  const [selectedPayType, setSelectedPayType] = useState<string>("");
+  const { signupInfo, setSignupInfo, resetSignupInfo } = useSignupInfo();
+  const { moveToPage } = useMovePage();
+
+  const [isMailCertified, setIsMailCertified] = React.useState(false);
+
+  const isSignupInfoComplete = Object.values(signupInfo).every((value) => {
+    if (typeof value === "object" && value !== null) {
+      return Object.values(value).every((nestedValue) => nestedValue !== 0);
+    }
+    return value !== "";
+  });
+
+  const handleClickSignup = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log(signupInfo);
+    if (isMailCertified === false) return alert("메일 인증을 해주세요.");
+    if (!isSignupInfoComplete) return alert("모든 정보를 입력해주세요.");
+
+    try {
+      const res = await apiWithoutAuth.post("/members/join", {
+        email: signupInfo.email,
+        password: signupInfo.password,
+        nickName: signupInfo.nickName,
+        type: signupInfo.type,
+        home: signupInfo.home,
+        ageGroup: signupInfo.ageGroup,
+      });
+      console.log(res.data);
+      moveToPage(PageUrls.HOME);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      resetSignupInfo();
+    }
+  };
 
   return (
     <>
-      <div className="flex flex-col gap-5 px-6 py-5">
-        <SignupInputs />
+      <form
+        onSubmit={handleClickSignup}
+        className="flex flex-col gap-5 px-6 py-5"
+      >
+        <SignupInputs
+          signupInfo={signupInfo}
+          handleInputChange={setSignupInfo}
+          setIsMailCertified={setIsMailCertified}
+        />
         <SelectAgeGroup
-          selectedAge={selectedAge}
-          setSelectedAge={setSelectedAge}
+          selectedAge={signupInfo.ageGroup}
+          setSelectedAge={(value: string) => setSignupInfo("ageGroup", value)}
         />
         <SelectPayType
-          selectedPayType={selectedPayType}
-          setSelectedPayType={setSelectedPayType}
+          selectedPayType={signupInfo.type}
+          setSelectedPayType={(value: string) => setSignupInfo("type", value)}
         />
         <SaveButton title="회원가입" />
-      </div>
+      </form>
     </>
   );
 };
