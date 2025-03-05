@@ -4,7 +4,7 @@ import InputDefault from "../components/common/InputDefault";
 import { SaveButton } from "../components/common/Buttons";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
-import { api, apiWithoutAuth } from "../utils/api";
+import { apiWithoutAuth } from "../utils/api";
 
 const Logo = () => {
   return (
@@ -47,7 +47,10 @@ const LoginAndSignUp: React.FC<{
     email: string;
     password: string;
   };
-}> = ({ loginInfo }) => {
+  setLoginInfo: React.Dispatch<
+    React.SetStateAction<{ email: string; password: string }>
+  >;
+}> = ({ loginInfo, setLoginInfo }) => {
   const { moveToPage } = useMovePage();
   const handleClickLoginBtn = async () => {
     if (loginInfo.email === "" || loginInfo.password === "") return;
@@ -57,10 +60,14 @@ const LoginAndSignUp: React.FC<{
         email: loginInfo.email,
         password: loginInfo.password,
       });
+
       console.log(res.data);
+      localStorage.setItem("accessToken", res.data.accessToken);
       moveToPage(PageUrls.HOME);
     } catch (error) {
       console.error(error);
+      alert("정보를 다시 입력해주세요.");
+      setLoginInfo({ email: "", password: "" });
     }
   };
   return (
@@ -88,7 +95,7 @@ const LoginPage = () => {
     <div className="flex flex-col gap-10 px-6 py-10">
       <Logo />
       <Inputs loginInfo={loginInfo} setLoginInfo={setLoginInfo} />
-      <LoginAndSignUp loginInfo={loginInfo} />
+      <LoginAndSignUp loginInfo={loginInfo} setLoginInfo={setLoginInfo} />
     </div>
   );
 };
