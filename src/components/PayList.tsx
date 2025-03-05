@@ -41,7 +41,7 @@ const PayDay: React.FC<{ data: any }> = ({ data }) => {
 // 전체 소비리스트
 const PayList = () => {
   return (
-    <div className="flex flex-col w-full px-6">
+    <div className="flex flex-col w-full">
       {spendingData.records.map((dayData, index) => (
         <div key={dayData.day} className="mb-5">
           {/* 날짜 및 하루 총액 표시 */}
