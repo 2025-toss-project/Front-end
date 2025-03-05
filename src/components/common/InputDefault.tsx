@@ -5,9 +5,9 @@ interface PayInputProps {
   type?: string;
   placeholder: string;
   style?: string;
-  isReadOnly?: boolean; // 읽기 전용 체크
-  onClick?: () => void; // 이동할 페이지 핸들러
-  value?: string; // 입력 값
+  isReadOnly?: boolean;
+  onClick?: () => void;
+  value?: string;
   onChange?: (value: string) => void;
 }
 
@@ -21,19 +21,24 @@ const InputDefault: React.FC<PayInputProps> = ({
   onClick,
   onChange,
 }) => {
-  const [inputType, setInputType] = useState("type"); // 초기 타입 설정(문자열!)
-  const [inputValue, setInputValue] = useState(value); // 입력값 상태 관리
+  const [inputType, setInputType] = useState(type);
+  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
-    setInputValue(formatValue(value)); // 초기 값 설정 시 포맷 적용
-  }, [value]);
+    if (type === "date" && !value) {
+      const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD 포맷
+      setInputValue(today);
+    } else {
+      setInputValue(formatValue(value));
+    }
+  }, [value, type]);
 
   const formatValue = (val: string) => {
     if (type === "price" && val) {
-      const num = Number(val.replace(/,/g, "")); // 쉼표 제거 후 숫자로 변환
-      return num.toLocaleString(); // 쉼표 추가된 문자열 반환
+      const num = Number(val.replace(/,/g, ""));
+      return num.toLocaleString();
     }
-    return val; // 숫자가 아닐 경우 그대로 반환
+    return val;
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,37 +46,32 @@ const InputDefault: React.FC<PayInputProps> = ({
 
     let newValue = e.target.value;
 
-    // 숫자에 쉼표달기
     if (type === "price") {
-      newValue = newValue.replace(/[^0-9]/g, ""); // 숫자만 허용
-      newValue = formatValue(newValue); // 숫자일 경우 쉼표 추가
+      newValue = newValue.replace(/[^0-9]/g, "");
+      newValue = formatValue(newValue);
     }
 
     if (type === "number") {
-      newValue = newValue.replace(/[^0-9]/g, ""); // 숫자만 허용
+      newValue = newValue.replace(/[^0-9]/g, "");
     }
 
-    setInputValue(newValue); // 상태 업데이트
+    setInputValue(newValue);
     onChange?.(newValue);
   };
 
   return (
     <div onClick={onClick} className={`h-15 ${style}`}>
-      <div className="flex flex-col py-3 mb-5 border-b focus-within:border-pink-500">
+      <div className="mb-5 flex flex-col border-b py-3 focus-within:border-pink-500">
         <div className="flex gap-5">
           {label && <label className="w-20">{label}</label>}
           <input
-            type={type}
+            type={inputType}
             placeholder={placeholder}
             readOnly={isReadOnly}
             value={inputValue}
             onChange={handleChange}
             onClick={(e) => isReadOnly && e.preventDefault()}
-            className="w-full outline-none text-default focus:outline-none focus:ring-0"
-            onFocus={() => type === "date" && setInputType("date")} // 누르면 달력 처럼
-            onBlur={
-              (e) => type === "date" && !e.target.value && setInputType("text") // 텍스트인 것처럼 보이게
-            }
+            className="text-default w-full outline-none focus:outline-none focus:ring-0"
           />
         </div>
       </div>

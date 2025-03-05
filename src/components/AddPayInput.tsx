@@ -24,7 +24,7 @@ const AddPayInput: React.FC<AddPayInputProps> = ({ toggle, selectName }) => {
           placeholder="장소를 입력하세요"
           onClick={() => moveToPage("/addpay/searchplace")}
         />
-        <InputDefault label="지출내용" placeholder="지출내용을 입력하세요" />
+        <InputDefault label="내용" placeholder="지출내용을 입력하세요" />
         <InputDefault
           label="날짜"
           type="date"
