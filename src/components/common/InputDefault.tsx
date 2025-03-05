@@ -8,6 +8,7 @@ interface PayInputProps {
   isReadOnly?: boolean; // 읽기 전용 체크
   onClick?: () => void; // 이동할 페이지 핸들러
   value?: string; // 입력 값
+  onChange?: (value: string) => void;
 }
 
 const InputDefault: React.FC<PayInputProps> = ({
@@ -18,6 +19,7 @@ const InputDefault: React.FC<PayInputProps> = ({
   isReadOnly = false,
   value = "",
   onClick,
+  onChange,
 }) => {
   const [inputType, setInputType] = useState("type"); // 초기 타입 설정(문자열!)
   const [inputValue, setInputValue] = useState(value); // 입력값 상태 관리
@@ -27,7 +29,7 @@ const InputDefault: React.FC<PayInputProps> = ({
   }, [value]);
 
   const formatValue = (val: string) => {
-    if (type === "number" && val) {
+    if (type === "price" && val) {
       const num = Number(val.replace(/,/g, "")); // 쉼표 제거 후 숫자로 변환
       return num.toLocaleString(); // 쉼표 추가된 문자열 반환
     }
@@ -40,27 +42,32 @@ const InputDefault: React.FC<PayInputProps> = ({
     let newValue = e.target.value;
 
     // 숫자에 쉼표달기
-    if (type === "number") {
+    if (type === "price") {
       newValue = newValue.replace(/[^0-9]/g, ""); // 숫자만 허용
       newValue = formatValue(newValue); // 숫자일 경우 쉼표 추가
     }
 
+    if (type === "number") {
+      newValue = newValue.replace(/[^0-9]/g, ""); // 숫자만 허용
+    }
+
     setInputValue(newValue); // 상태 업데이트
+    onChange?.(newValue);
   };
 
   return (
     <div onClick={onClick} className={`h-15 ${style}`}>
-      <div className="mb-5 flex flex-col border-b py-3 focus-within:border-pink-500">
+      <div className="flex flex-col py-3 mb-5 border-b focus-within:border-pink-500">
         <div className="flex gap-5">
           {label && <label className="w-20">{label}</label>}
           <input
-            type={inputType}
+            type={type}
             placeholder={placeholder}
             readOnly={isReadOnly}
             value={inputValue}
             onChange={handleChange}
             onClick={(e) => isReadOnly && e.preventDefault()}
-            className="text-default outline-none focus:outline-none focus:ring-0"
+            className="w-full outline-none text-default focus:outline-none focus:ring-0"
             onFocus={() => type === "date" && setInputType("date")} // 누르면 달력 처럼
             onBlur={
               (e) => type === "date" && !e.target.value && setInputType("text") // 텍스트인 것처럼 보이게

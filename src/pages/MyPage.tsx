@@ -7,11 +7,11 @@ import { SaveButton } from "../components/common/Buttons";
 import { LucideLogOut } from "lucide-react";
 import PayTypeSection from "../components/sections/PayTypeSection";
 import { useMovePage } from "../hooks/useMovePage";
+import PageUrls from "../constants/PageUrls";
 
 const ProfileTab = () => {
   const [selectedAge, setSelectedAge] = useState<string>("");
-  const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
-
+  const { moveToPage } = useMovePage();
   return (
     <>
       <div className="flex flex-col py-5">
@@ -30,7 +30,7 @@ const ProfileTab = () => {
           placeholder="집 정보"
           label="집 정보"
           type="location"
-          onClick={() => moveToPage("/search/location")}
+          onClick={() => moveToPage(PageUrls.SEARCH_LOCATION)}
         />
       </div>
       <SaveButton title="프로필 저장" />
@@ -46,7 +46,7 @@ const TypeTab = () => {
   const [selectedPayType, setSelectedPayType] = useState<string>("");
   return (
     <>
-      <div className="flex flex-col gap-5 rounded-lg border border-second-light px-3 py-7">
+      <div className="flex flex-col gap-5 px-3 border rounded-lg border-second-light py-7">
         <div className="flex flex-col">
           <div className="text-lg font-bold">소비성향 설정</div>
           <div className="text-sm">
@@ -70,7 +70,7 @@ const MyPage = () => {
   const tabs = ["프로필", "성향"];
 
   return (
-    <div className="flex w-full flex-col gap-2">
+    <div className="flex flex-col w-full gap-2">
       <div className="flex items-center gap-2 py-4">
         <div>{userType?.icon({ size: 48 })}</div>
         <div>
