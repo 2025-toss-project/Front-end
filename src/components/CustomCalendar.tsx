@@ -1,4 +1,4 @@
-import { LucidePlus, LucideTriangle, LucideTriangleRight } from "lucide-react";
+import { LucidePlus, LucideTriangle } from "lucide-react";
 import React, { useState } from "react";
 import CustomCalendar from "react-calendar";
 import { spendingData } from "../spendingData";
@@ -9,15 +9,30 @@ type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 const Calendar = () => {
   // 캘린더 값 상태
-  const [value, onChange] = useState<Value>(new Date());
+  const [value, setValue] = useState<Value>(new Date());
+  const [startDate, setStartDate] = useState<string | null>(null);
+  const [endDate, setEndDate] = useState<string | null>(null);
+
+  const formatDay = (date: Date): string => {
+    const day = date.getDate();
+    return day < 10 ? `0${day}` : `${day}`;
+  };
+
+  const dateChangeHandler = (value: Value) => {
+    if (Array.isArray(value) && value[0] && value[1]) {
+      setStartDate(formatDay(value[0]));
+      setEndDate(formatDay(value[1]));
+    }
+    setValue(value);
+  };
+
   const calAmount: number = 10000; // 예제 값
   const Amount: string = `${calAmount.toLocaleString()}원`;
 
-  // 캘린더 사이 들어갈 컴포넌트
   const CalendarHeader = () => {
     return (
       <div className="flex w-full flex-row justify-between px-10 pt-3">
-        <p className=""> {Amount} </p>
+        <p> {Amount} </p>
         <LucidePlus />
       </div>
     );
@@ -27,16 +42,15 @@ const Calendar = () => {
     <div className="flex w-full flex-col items-center py-2">
       <CustomCalendar
         value={value}
-        onChange={onChange}
+        selectRange={true}
+        onChange={dateChangeHandler}
         className="rounded-lg pb-5"
         locale="ko"
         view="month"
         maxDetail="month"
-        formatDay={(locale, date) =>
-          date.toLocaleString("en", { day: "numeric" })
-        }
+        formatDay={(locale, date) => formatDay(date)}
         formatMonthYear={(locale, date) =>
-          date.toLocaleString("ko", { month: "long" })
+          `${date.toLocaleString("ko", { month: "long" })}`
         }
         showWeekNumbers={false}
         nextLabel={
@@ -44,22 +58,22 @@ const Calendar = () => {
             size={12}
             className="mr-2 rotate-90 hover:bg-second-light"
           />
-        } // 다음 달 버튼
+        }
         prevLabel={
           <LucideTriangle
             size={12}
-            className="90 ml-2 -rotate-90 hover:bg-second-light"
+            className="ml-2 -rotate-90 hover:bg-second-light"
           />
-        } // 이전 달 버튼
-        next2Label={null} // >> 버튼 숨김
-        prev2Label={null} // << 버튼 숨김
-        // 일일 소비 내역 렌더링
+        }
+        next2Label={null}
+        prev2Label={null}
+        // 선택된 구간 배경 & 글씨 색상 변경
+
         tileContent={({ date }) => {
           const year = date.getFullYear().toString();
           const month = (date.getMonth() + 1).toString();
           const day = date.getDate().toString();
 
-          // 내 데이터에서 달력 날짜랑 같은 거 찾기
           const dayRecord = spendingData.records.find(
             (record) =>
               record.year === year &&
@@ -78,8 +92,6 @@ const Calendar = () => {
           );
         }}
       />
-
-      {/* 네비게이션과 날짜 사이에 금액 표시 (달리 방법이 없어서 absol로 구현) */}
       {calAmount > 0 && (
         <div className="absolute top-28 w-full text-left text-lg font-medium">
           <CalendarHeader />
