@@ -6,6 +6,7 @@ import SelectCategory from "../components/SelectCategory";
 import { useCategoryInfo } from "../stores/CategoryInfo";
 import usePayListInfo from "../stores/payListInfo";
 import { api } from "../utils/api";
+import useSpendingInfo from "../stores/spendingInfo";
 
 export interface paylistInfo {
   category: string;
@@ -18,19 +19,18 @@ const PayRecodePage = () => {
   const { selectName, isOpen, setIsOpen } = useCategoryInfo();
   const { payListInfo } = usePayListInfo();
   const { totalPrice, spendingRecords, setSpendingData, resetSpendingData } =
-    useSpendingStore();
+    useSpendingInfo();
 
   useEffect(() => {
     const fetchPay = async () => {
       try {
         setLoading(true);
         const res = await api.get(
-          `cunsumtion?category=${payListInfo.category}&startDate=${payListInfo.startDate}&endDate=${payListInfo.endDate}`,
+          `consumption?category=${payListInfo.category}&startDate=${payListInfo.startDate}&endDate=${payListInfo.endDate}`,
         );
-
         console.log(res.data);
         // 받아온 데이터 store 저장
-        setSpendingData(res.data);
+        setSpendingData(res.data.result);
       } catch (err) {
         console.error(err);
       } finally {
@@ -43,10 +43,6 @@ const PayRecodePage = () => {
       fetchPay();
     }
   }, [payListInfo]);
-
-  if (loading) {
-    console.log("loading....");
-  }
 
   return (
     <div className="flex w-full flex-col">
@@ -66,11 +62,3 @@ const PayRecodePage = () => {
 };
 
 export default PayRecodePage;
-function useSpendingStore(): {
-  totalPrice: any;
-  spendingRecords: any;
-  setSpendingData: any;
-  resetSpendingData: any;
-} {
-  throw new Error("Function not implemented.");
-}

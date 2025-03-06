@@ -9,9 +9,9 @@ interface PayListStore {
 
 const usePayListInfo = create<PayListStore>((set) => ({
   payListInfo: {
-    category: "",
-    startDate: "",
-    endDate: "",
+    category: "식비",
+    startDate: new Date().toISOString().split("T")[0],
+    endDate: new Date().toISOString().split("T")[0],
   },
 
   setPayListInfo: (key, value) => {
