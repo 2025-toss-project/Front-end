@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSearchPlace } from "../contexts/SearchPlaceContext";
 import { useMovePage } from "../hooks/useMovePage";
 import { SaveButton } from "../components/common/Buttons";
 import { LucideMapPin } from "lucide-react";

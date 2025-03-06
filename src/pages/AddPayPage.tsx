@@ -34,8 +34,6 @@ const AddPayPage = () => {
     if (!isAddpayInfoComplete) return alert("모든 정보를 입력해주세요.");
 
     try {
-      console.log("AddPayInfo:", addpayInfo);
-      console.log("PlaceInfo:", placeInfo);
       const res = await api.post("/consumption/create", {
         price: Number(addpayInfo.price),
         detail: addpayInfo.detail,
