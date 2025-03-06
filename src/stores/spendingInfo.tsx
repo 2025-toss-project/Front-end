@@ -15,6 +15,7 @@ interface ConsumptionInfoByDate {
   consumptionInfoList: ConsumptionInfo[];
   month: number;
   day: number;
+  year: number;
 }
 
 interface SpendingState {
