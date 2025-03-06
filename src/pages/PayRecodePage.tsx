@@ -3,10 +3,10 @@ import CustomCalendar from "../components/CustomCalendar";
 import { DropButton } from "../components/common/Buttons";
 import PayList from "../components/PayList";
 import SelectCategory from "../components/SelectCategory";
+import { useCategoryInfo } from "../stores/CategoryInfo";
 
 const PayRecodePage = () => {
-  const [isOpen, setIsOpen] = useState(false); // 드롭다운 체크
-  const [selectName, setSelectName] = useState(""); // 선택한 값 저장
+  const { selectName, setSelectName, isOpen, setIsOpen } = useCategoryInfo();
 
   return (
     <div className="flex w-full flex-col">
@@ -18,14 +18,7 @@ const PayRecodePage = () => {
           toggle={() => setIsOpen(!isOpen)}
           isOpen={isOpen}
         />
-        <SelectCategory
-          classname={isOpen ? "block" : "hidden"}
-          selectName={selectName}
-          setSelectName={(name) => {
-            setSelectName(name); // 선택한 값 저장
-            setIsOpen(false); //
-          }}
-        />
+        <SelectCategory classname={isOpen ? "block" : "hidden"} />
         <PayList />
       </div>
     </div>

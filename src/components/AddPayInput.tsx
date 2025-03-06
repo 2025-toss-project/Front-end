@@ -17,16 +17,25 @@ const AddPayInput: React.FC<AddPayInputProps> = ({ toggle }) => {
   const { addpayInfo, setAddPayInfo } = useAddPayInfo();
   const { selectName } = useCategoryInfo();
 
+  const formatPrice = (value: string): number => {
+    const numericValue = parseInt(value.replace(/,/g, ""), 10);
+    return isNaN(numericValue) ? 0 : numericValue;
+  };
+
   return (
     <div>
       <form className="flex flex-col gap-2 pt-3">
         <InputDefault
           label="금액"
           type="price"
-          value={addpayInfo.price}
-          onChange={(value) => setAddPayInfo("price", value)}
+          value={addpayInfo.price.toString()} // 숫자를 문자열로 변환하여 전달
           placeholder="금액을 입력하세요"
+          onChange={(value) => {
+            const numericValue = formatPrice(value); // 숫자로 변환
+            setAddPayInfo("price", String(numericValue)); // 숫자로 상태 업데이트
+          }}
         />
+
         <InputDefault
           label="장소"
           placeholder="장소를 입력하세요"
@@ -64,7 +73,6 @@ const AddPayInput: React.FC<AddPayInputProps> = ({ toggle }) => {
           placeholder="미선택"
           isReadOnly={true}
           onClick={toggle}
-          // key={`category-${selectName}`} // 키를 추가하여 강제 리렌더링
         />
       </form>
     </div>

@@ -9,7 +9,7 @@ interface AddPayInfoStore {
 
 const useAddPayInfo = create<AddPayInfoStore>((set) => ({
   addpayInfo: {
-    price: "",
+    price: 0,
     detail: "",
     date: "",
   },
@@ -26,7 +26,7 @@ const useAddPayInfo = create<AddPayInfoStore>((set) => ({
   resetAddPayInfo: () => {
     set({
       addpayInfo: {
-        price: "",
+        price: 0,
         detail: "",
         date: "",
       },

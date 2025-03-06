@@ -9,7 +9,7 @@ import { useCategoryInfo } from "../stores/CategoryInfo";
 import { usePlaceInfo } from "../stores/placeInfo";
 
 export interface addpayInfo {
-  price: string;
+  price: number;
   detail: string;
   date: string;
 }
@@ -31,20 +31,17 @@ const AddPayPage = () => {
   });
 
   const handleClickSubmit = async () => {
-    console.log("AddPayInfo:", addpayInfo);
-    console.log("PlaceInfo:", placeInfo);
-
     if (!isAddpayInfoComplete) return alert("모든 정보를 입력해주세요.");
 
     try {
       console.log("AddPayInfo:", addpayInfo);
       console.log("PlaceInfo:", placeInfo);
       const res = await api.post("/consumption/create", {
-        price: addpayInfo.price,
+        price: Number(addpayInfo.price),
         detail: addpayInfo.detail,
         category: selectName,
-        lat: placeInfo.lat,
-        lng: placeInfo.lng,
+        lat: Number(placeInfo.lat),
+        lng: Number(placeInfo.lng),
         locationName: selectPlace,
         date: addpayInfo.date,
       });

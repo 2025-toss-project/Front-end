@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useCategoryInfo } from "../../stores/CategoryInfo";
+import useAddPayInfo from "../../stores/addpayInfo";
 
 interface PayInputProps {
   label?: string;
@@ -24,6 +25,7 @@ const InputDefault: React.FC<PayInputProps> = ({
 }) => {
   const [inputValue, setInputValue] = useState(value);
   const { selectName } = useCategoryInfo();
+  const { setAddPayInfo } = useAddPayInfo();
 
   const formatPrice = (val: string) => {
     const num = Number(val.replace(/,/g, ""));
@@ -59,8 +61,13 @@ const InputDefault: React.FC<PayInputProps> = ({
   useEffect(() => {
     if (type === "category" && selectName) {
       setInputValue(selectName);
+    } else if (type === "date" && !inputValue) {
+      // date 타입일 경우, 값이 비어 있으면 오늘 날짜로 기본값 설정
+      const today = new Date().toISOString().split("T")[0]; // 'YYYY-MM-DD' 형식
+      setInputValue(today);
+      setAddPayInfo("date", today);
     }
-  }, [selectName, type]);
+  }, [selectName, type, inputValue]);
 
   return (
     <div onClick={onClick} className={`h-15 ${style}`}>
