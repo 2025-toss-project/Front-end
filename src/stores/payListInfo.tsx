@@ -22,6 +22,7 @@ const usePayListInfo = create<PayListStore>((set) => ({
       },
     }));
   },
+
   resetPayListInfo: () => {
     set({
       payListInfo: {

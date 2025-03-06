@@ -14,20 +14,39 @@ export interface paylistInfo {
 }
 
 const PayRecodePage = () => {
-  const { selectName, setSelectName, isOpen, setIsOpen } = useCategoryInfo();
+  const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 관리
+  const { selectName, isOpen, setIsOpen } = useCategoryInfo();
   const { payListInfo } = usePayListInfo();
+  const { totalPrice, spendingRecords, setSpendingData, resetSpendingData } =
+    useSpendingStore();
 
   useEffect(() => {
     const fetchPay = async () => {
       try {
+        setLoading(true);
         const res = await api.get(
           `cunsumtion?category=${payListInfo.category}&startDate=${payListInfo.startDate}&endDate=${payListInfo.endDate}`,
         );
+
+        console.log(res.data);
+        // 받아온 데이터 store 저장
+        setSpendingData(res.data);
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
-  });
+
+    // payListInfo 값이 있을 때만 실행
+    if (payListInfo.startDate && payListInfo.endDate) {
+      fetchPay();
+    }
+  }, [payListInfo]);
+
+  if (loading) {
+    console.log("loading....");
+  }
 
   return (
     <div className="flex w-full flex-col">
@@ -47,3 +66,11 @@ const PayRecodePage = () => {
 };
 
 export default PayRecodePage;
+function useSpendingStore(): {
+  totalPrice: any;
+  spendingRecords: any;
+  setSpendingData: any;
+  resetSpendingData: any;
+} {
+  throw new Error("Function not implemented.");
+}
