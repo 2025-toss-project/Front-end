@@ -31,25 +31,15 @@ const App: React.FC = () => {
         <Route path={PageUrls.MY_PAGE} element={<MyPage />} />
         <Route path={PageUrls.STATISTIC} element={<StatisticPage />} />
         <Route path={PageUrls.PAY_DETAIL} element={<PayDetailPage />} />
-
-        {/* SearchPlaceProvider를 감싸서 컨텍스트 유지 */}
+        <Route path={PageUrls.ADD_PAY} element={<AddPayPage />} />
         <Route
-          element={
-            <SearchPlaceProvider>
-              <Outlet />
-            </SearchPlaceProvider>
-          }
-        >
-          <Route path={PageUrls.ADD_PAY} element={<AddPayPage />} />
-          <Route
-            path={PageUrls.ADD_PAY_SEARCH_PLACE}
-            element={<SearchPlacePage />}
-          />
-          <Route
-            path={PageUrls.ADD_PAY_SEARCH_PLACE_MAP}
-            element={<MapPinPage />}
-          />
-        </Route>
+          path={PageUrls.ADD_PAY_SEARCH_PLACE}
+          element={<SearchPlacePage />}
+        />
+        <Route
+          path={PageUrls.ADD_PAY_SEARCH_PLACE_MAP}
+          element={<MapPinPage />}
+        />
       </Route>
       {/* Header */}
       <Route element={<HeaderLayout />}>

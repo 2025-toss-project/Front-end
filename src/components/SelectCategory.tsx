@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { categoryList } from "../constants/category";
 import CategorySection from "./sections/CategorySection";
 import { useCategoryInfo } from "../stores/CategoryInfo";
@@ -10,7 +10,11 @@ interface CategoryProps {
 
 const SelectCategory: React.FC<CategoryProps> = ({ classname }) => {
   const { setSelectName, setIsOpen } = useCategoryInfo();
-  const { setAddPayInfo } = useAddPayInfo(); //
+  const { selectName } = useCategoryInfo();
+
+  useEffect(() => {
+    console.log("selectName:", selectName);
+  }, [selectName]);
 
   return (
     <div
@@ -23,7 +27,6 @@ const SelectCategory: React.FC<CategoryProps> = ({ classname }) => {
           name={item.text}
           toggle={() => {
             setSelectName(item.text);
-            setAddPayInfo("category", item.text);
             setIsOpen(false);
           }}
         />

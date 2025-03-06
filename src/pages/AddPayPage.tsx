@@ -11,19 +11,13 @@ import { usePlaceInfo } from "../stores/placeInfo";
 export interface addpayInfo {
   price: string;
   detail: string;
-  category: string;
-  place: {
-    lat: number;
-    lng: number;
-  };
-  locationName: string;
   date: string;
 }
 
 const AddPayPage = () => {
   const { addpayInfo, setAddPayInfo, resetAddPayInfo } = useAddPayInfo();
   const { selectName, setSelectName, isOpen, setIsOpen } = useCategoryInfo();
-  const { placeInfo } = usePlaceInfo();
+  const { placeInfo, selectPlace } = usePlaceInfo();
 
   const isAddpayInfoComplete = Object.values(addpayInfo).every((value) => {
     if (typeof value === "object" && value !== null) {
@@ -37,16 +31,21 @@ const AddPayPage = () => {
   });
 
   const handleClickSubmit = async () => {
+    console.log("AddPayInfo:", addpayInfo);
+    console.log("PlaceInfo:", placeInfo);
+
     if (!isAddpayInfoComplete) return alert("모든 정보를 입력해주세요.");
 
     try {
+      console.log("AddPayInfo:", addpayInfo);
+      console.log("PlaceInfo:", placeInfo);
       const res = await api.post("/consumption/create", {
         price: addpayInfo.price,
         detail: addpayInfo.detail,
-        category: addpayInfo.category,
+        category: selectName,
         lat: placeInfo.lat,
         lng: placeInfo.lng,
-        locationName: addpayInfo.locationName,
+        locationName: selectPlace,
         date: addpayInfo.date,
       });
       console.log(res.data);
@@ -59,11 +58,7 @@ const AddPayPage = () => {
 
   return (
     <div className="flex w-full flex-col">
-      <AddPayInput
-        toggle={() => setIsOpen(!isOpen)}
-        isOpen={isOpen}
-        selectName={selectName}
-      />
+      <AddPayInput toggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
       <SelectCategory classname={isOpen ? "block" : "hidden"} />
       <SaveButton title="저장하기" onClick={handleClickSubmit} />
     </div>
