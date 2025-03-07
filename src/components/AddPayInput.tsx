@@ -20,7 +20,7 @@ const AddPayInput: React.FC<AddPayInputProps> = ({
       <form className="flex flex-col gap-2 pt-3">
         <InputDefault
           label="금액"
-          type="number"
+          type="price"
           placeholder="금액을 입력하세요"
         />
         <InputDefault

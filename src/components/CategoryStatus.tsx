@@ -1,6 +1,3 @@
-import { useState } from "react";
-import MonthlyBudget from "../components/MonthlyBudget";
-import BudgetStatus from "../components/BudgetStatus";
 import IconFood from "../assets/categoryIcons/IconFood";
 import IconEducation from "../assets/categoryIcons/IconEducation";
 import IconHome from "../assets/categoryIcons/IconHome";
@@ -60,6 +57,7 @@ const CategoryStatus: React.FC<CategoryStatusProps> = ({ categoryBudgets }) => {
           const isOverBudget = remainBudget < 0;
           const isBudgetDepleted = remainBudget === 0;
           const IconComponent = categoryIcons[category] || IconEtc;
+          const categoryPercent = spendPrice / budgetPrice * 100;
 
           return (
             <div
@@ -72,7 +70,7 @@ const CategoryStatus: React.FC<CategoryStatusProps> = ({ categoryBudgets }) => {
                     <IconComponent />
                   </div>
                   <div className="text-sm font-medium">{category}</div>
-                  <div className="text-xs font-medium">{percentage}%</div>
+                  <div className="text-xs font-medium">{Math.floor(categoryPercent)}%</div>
                 </div>
                 <div
                   className={`text-sm font-bold ${isOverBudget ? "text-main" : isBudgetDepleted ? "text-main" : ""}`}
@@ -85,7 +83,7 @@ const CategoryStatus: React.FC<CategoryStatusProps> = ({ categoryBudgets }) => {
                 </div>
               </div>
               {/* 막대 그래프 */}
-              <BarGraph props={percentage} />
+              <BarGraph props={categoryPercent} />
               <div className="flex justify-between pt-2 pb-1 text-xs text-3">
                 <span>{spendPrice.toLocaleString()}원 지출</span>
                 <span>예산 {budgetPrice.toLocaleString()}원</span>

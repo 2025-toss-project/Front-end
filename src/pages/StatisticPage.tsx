@@ -4,11 +4,11 @@ import { SaveButton } from "../components/common/Buttons";
 import { categoryList } from "../constants/category";
 import BarChart from "../components/charts/BarChart";
 import DoughnutChart from "../components/charts/DoughnutChart";
-import ProgressBarChart from "../components/charts/ProgressBarChart";
+import BarGraph from "../components/BarGraph";
 
 const BoxWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
-    <div className="flex flex-col gap-2 rounded-2xl bg-white px-4 py-5 drop-shadow-10">
+    <div className="flex flex-col gap-2 px-4 py-5 bg-white rounded-2xl drop-shadow-10">
       {children}
     </div>
   );
@@ -22,9 +22,10 @@ const MonthPayBox = () => {
         210,000원
         <LucideChevronRight size={24} color="#333" />
       </div>
-      <div className="py-3">
-        <ProgressBarChart percentage={40} />
+      <div className="py-2.5">
+        <BarGraph props={40} height="h-5" /> 
       </div>
+
       <div className="flex items-center justify-between">
         <div>남은예산</div>
         <div className="text-xl font-medium">100,000원</div>
@@ -56,7 +57,7 @@ const PayOfCategory = () => {
       <div className="py-5">
         <DoughnutChart />
       </div>
-      <div className="flex flex-col gap-6 rounded-lg bg-second-bg px-6 py-3">
+      <div className="flex flex-col gap-6 px-6 py-3 rounded-lg bg-second-bg">
         {categoryList.map((category) => (
           <div
             key={category.text}
@@ -69,7 +70,7 @@ const PayOfCategory = () => {
               13%
             </div>
             <div className="font-normal">{category.text}</div>
-            <div className="grow text-right text-base">100,000원</div>
+            <div className="text-base text-right grow">100,000원</div>
           </div>
         ))}
       </div>
@@ -80,7 +81,7 @@ const PayOfCategory = () => {
 
 const StatisticPage = () => {
   return (
-    <div className="flex w-full flex-col gap-5 py-6">
+    <div className="flex flex-col w-full gap-5 py-6">
       <MonthPayBox />
       <PrevMonthPayBox />
       <PayOfCategory />

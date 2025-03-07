@@ -3,7 +3,9 @@ import { payTypeList } from "../../constants/payType";
 
 const PayTypeSection: React.FC<{
   selectedPayType: string;
-  setSelectedPayType: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedPayType:
+    | React.Dispatch<React.SetStateAction<string>>
+    | ((value: string) => void);
 }> = ({ selectedPayType, setSelectedPayType }) => {
   return (
     <div className="grid grid-cols-2 gap-2">

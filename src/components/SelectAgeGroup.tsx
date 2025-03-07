@@ -2,10 +2,13 @@ import React from "react";
 
 const SelectAgeGroup: React.FC<{
   selectedAge: string;
-  setSelectedAge: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedAge:
+    | React.Dispatch<React.SetStateAction<string>>
+    | ((value: string) => void);
   style?: string;
 }> = ({ selectedAge, setSelectedAge, style = "" }) => {
   const ageGroups = ["10대", "20대", "30대", "40대", "50대~"];
+
   return (
     <div className={`flex flex-col gap-2 ${style}`}>
       <div className="text-sm">연령대</div>
