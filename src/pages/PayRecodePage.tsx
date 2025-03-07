@@ -5,17 +5,12 @@ import PayList from "../components/PayList";
 import SelectCategory from "../components/SelectCategory";
 import { useCategoryInfo } from "../stores/CategoryInfo";
 import { api } from "../utils/api";
-import useCalendarInfo from "../stores/CalendarInfo";
-
-export interface paylistInfo {
-  category: string;
-  startDate: string;
-  endDate: string;
-}
+import useCalendarInfo, { ConsumptionInfoByDate } from "../stores/CalendarInfo";
 
 const PayRecodePage = () => {
   const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 관리
   const [activeStartDate, setActiveDate] = useState(new Date()); // 캘린더 선택 날짜
+  const [validDates, setValidDates] = useState<string[]>([]); // API 호출 가능한 날짜 리스트
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const { selectName, isOpen, setIsOpen } = useCategoryInfo();
@@ -54,13 +49,28 @@ const PayRecodePage = () => {
         setLoading(true);
         const { startDate, endDate } =
           getStartAndEndDateOfMonth(activeStartDate);
+
         const res = await api.get(
-          `consumption/calendar?category=${selectName}&currentDate=${activeStartDate}`,
+          `consumption/calendar?currentDate=${activeStartDate}`,
         );
+
         console.log(res.data);
-        // 받아온 데이터 store 저장
-        setDayData(res.data);
-        res.data;
+
+        // Zustand에 데이터 저장
+        setDayData({
+          totalPrice: res.data.totalPrice,
+          consumptionInfoByDateDTOS: res.data.consumptionInfoByDateDTOS,
+        });
+
+        // datePrice가 0보다 큰 날짜만 필터링
+        const validDays = res.data.consumptionInfoByDateDTOS
+          .filter((day: ConsumptionInfoByDate) => day.datePrice > 0)
+          .map(
+            (day: ConsumptionInfoByDate) =>
+              `${day.year}-${String(day.month).padStart(2, "0")}-${String(day.day).padStart(2, "0")}`,
+          );
+
+        setValidDates(validDays); // 상태 저장
       } catch (err) {
         console.error(err);
       } finally {
@@ -69,7 +79,7 @@ const PayRecodePage = () => {
     };
 
     //fetchCalendar();
-  }, [activeStartDate]);
+  }, [activeStartDate, selectName]); // 카테고리 변경 시에도 API 호출
 
   return (
     <div className="flex w-full flex-col">
@@ -86,7 +96,11 @@ const PayRecodePage = () => {
           isOpen={isOpen}
         />
         <SelectCategory classname={isOpen ? "block" : "hidden"} />
-        <PayList startDate={startDate} endDate={endDate} />
+        <PayList
+          startDate={startDate}
+          endDate={endDate}
+          validDates={validDates}
+        />
       </div>
     </div>
   );

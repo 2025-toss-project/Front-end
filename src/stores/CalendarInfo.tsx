@@ -1,34 +1,40 @@
+// Zustand 상태 정의 (CalendarInfo.ts)
 import { create } from "zustand";
 
-interface CalendarInfoByDate {
+export interface ConsumptionInfoByDate {
+  year: number;
+  month: number;
+  day: number;
   datePrice: number;
-  month: string;
-  day: string;
-  year: string;
+  consumptionInfoList: {
+    id: number;
+    price: number;
+    category: string;
+    details: string;
+    lat: number;
+    lng: number;
+    point_name: string;
+  }[];
 }
 
 interface CalendarInfoState {
   totalPrice: number;
-  DayRecords: CalendarInfoByDate[];
+  consumptionInfoByDateDTOS: ConsumptionInfoByDate[];
   setDayData: (data: {
     totalPrice: number;
-    CalendarInfoByDate: CalendarInfoByDate[];
+    consumptionInfoByDateDTOS: ConsumptionInfoByDate[];
   }) => void;
   resetDayData: () => void;
 }
 
 const useCalendarInfo = create<CalendarInfoState>((set) => ({
   totalPrice: 0,
-  DayRecords: [],
-  setDayData: (data) =>
-    set({
-      totalPrice: data.totalPrice,
-      DayRecords: data.CalendarInfoByDate,
-    }),
+  consumptionInfoByDateDTOS: [], //
+  setDayData: (data) => set(data),
   resetDayData: () =>
     set({
       totalPrice: 0,
-      DayRecords: [],
+      consumptionInfoByDateDTOS: [],
     }),
 }));
 

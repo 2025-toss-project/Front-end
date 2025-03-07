@@ -14,6 +14,7 @@ interface PayDayProps {
 interface PayListProps {
   startDate: string;
   endDate: string;
+  validDates: string[];
 }
 
 // 아이콘 가져오기 ( {<IconFood/>} 이런식으로 반환됨)
@@ -53,7 +54,11 @@ const PayDay: React.FC<PayDayProps> = ({ data, onClick }) => {
 };
 
 // 전체 소비리스트
-const PayList: React.FC<PayListProps> = ({ startDate, endDate }) => {
+const PayList: React.FC<PayListProps> = ({
+  startDate,
+  endDate,
+  validDates,
+}) => {
   const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 관리
   const { moveToPage } = useMovePage();
   const { spendingRecords, setSpendingData } = useSpendingInfo();
@@ -67,9 +72,16 @@ const PayList: React.FC<PayListProps> = ({ startDate, endDate }) => {
   };
 
   useEffect(() => {
-    const fetchConsumption = async () => {
+    const ReadConsumption = async () => {
       try {
         setLoading(true);
+        const hasValidDate = validDates.some(
+          (date) => date >= startDate && date <= endDate,
+        );
+        if (!hasValidDate) {
+          console.warn("소비 기록이 없는 기간이므로 API 호출을 하지 않습니다.");
+          return; // API 호출 중단
+        }
         const res = await api.get(
           `consumption?category=${selectName}&startDate=${startDate}&endDate=${endDate}`,
         );
@@ -82,7 +94,7 @@ const PayList: React.FC<PayListProps> = ({ startDate, endDate }) => {
         setLoading(false);
       }
     };
-    fetchConsumption();
+    ReadConsumption();
   }, [startDate, endDate]);
 
   return (

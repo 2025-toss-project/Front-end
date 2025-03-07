@@ -20,7 +20,7 @@ const Calendar: React.FC<CustomCalendarProps> = ({
 }) => {
   const curDate = new Date();
   const [value, setValue] = useState<Value>(curDate); // 초기값 현재 날짜
-  const { totalPrice, DayRecords } = useCalendarInfo();
+  const { totalPrice, consumptionInfoByDateDTOS } = useCalendarInfo();
 
   const handleDateChange = (selectedValue: Value) => {
     setValue(selectedValue);
@@ -98,9 +98,17 @@ const Calendar: React.FC<CustomCalendarProps> = ({
           const month = (date.getMonth() + 1).toString();
           const day = date.getDate().toString();
 
+          if (
+            !consumptionInfoByDateDTOS ||
+            consumptionInfoByDateDTOS.length === 0
+          ) {
+            return null;
+          }
+
           // 내 데이터에서 달력 날짜랑 같은 거 찾기
-          const dayRecord = DayRecords.find(
-            (record) => record.month === month && record.day === day,
+          const dayRecord = consumptionInfoByDateDTOS.find(
+            (record) =>
+              String(record.month) === month && String(record.day) === day,
           );
 
           return (

@@ -6,6 +6,8 @@ import { usePlaceInfo } from "../stores/placeInfo";
 import { useCategoryInfo } from "../stores/CategoryInfo";
 import { useLocation } from "react-router-dom";
 import useSpendingInfo, { ConsumptionInfo } from "../stores/spendingInfo";
+import useAddPayInfo from "../stores/addpayInfo";
+import { CategoryProps } from "../constants/category";
 
 interface ReadPayInputProps {
   toggle?: () => void; // 선택시 함수 전달
@@ -14,9 +16,11 @@ interface ReadPayInputProps {
 
 const ReadPayInput: React.FC<ReadPayInputProps> = ({ toggle }) => {
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
-  const { selectPlace } = usePlaceInfo();
   const { spendingRecords } = useSpendingInfo();
+  const { addpayInfo, setAddPayInfo } = useAddPayInfo();
   const { selectName } = useCategoryInfo();
+  const { selectPlace } = usePlaceInfo();
+
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");
@@ -42,7 +46,6 @@ const ReadPayInput: React.FC<ReadPayInputProps> = ({ toggle }) => {
   const itemData = useMemo(() => {
     if (id) {
       return getConsumptionInfoById(Number(id));
-      console.log(itemData);
     }
     return null;
   }, [id, spendingRecords]); // id나 spendingRecords가 변경될 때만 재계산
@@ -51,6 +54,10 @@ const ReadPayInput: React.FC<ReadPayInputProps> = ({ toggle }) => {
   const formatPrice = (value: string): number => {
     const numericValue = parseInt(value.replace(/,/g, ""), 10);
     return isNaN(numericValue) ? 0 : numericValue;
+  };
+  // 날짜 포맷팅 함수 (년-월-일 형식)
+  const formatDate = (year: number, month: number, day: number): string => {
+    return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
   };
 
   return (
@@ -63,12 +70,16 @@ const ReadPayInput: React.FC<ReadPayInputProps> = ({ toggle }) => {
             type="price"
             value={String(itemData.price)} // itemData의 price에 접근
             placeholder="금액을 입력하세요"
+            onChange={(value) => {
+              const numericValue = formatPrice(value); // 숫자로 변환
+              setAddPayInfo("price", String(numericValue)); // 숫자로 상태 업데이트
+            }}
           />
 
           <InputDefault
             label="장소"
             placeholder="장소를 입력하세요"
-            value={itemData.point_name}
+            value={itemData.point_name || selectPlace}
             onClick={() => moveToPage(PageUrls.ADD_PAY_SEARCH_PLACE)}
           />
 
@@ -76,19 +87,23 @@ const ReadPayInput: React.FC<ReadPayInputProps> = ({ toggle }) => {
             label="내용"
             placeholder="지출내용을 입력하세요"
             value={itemData.details} // itemData의 details에 접근
+            onChange={(value) => setAddPayInfo("detail", value)}
           />
 
           <InputDefault
             label="날짜"
             type="date"
             placeholder="날짜를 입력하세요"
-            value={`2025-${String(itemData.month).padStart(2, "0")}-${String(itemData.day).padStart(2, "0")}`} // 날짜 포맷팅
+            value={formatDate(itemData.year, itemData.month, itemData.day)}
+            onChange={(value) => {
+              setAddPayInfo("date", value);
+            }}
           />
 
           <InputDefault
             label="카테고리"
             type="category"
-            value={itemData.category}
+            value={itemData.category || selectName}
             placeholder="미선택"
             isReadOnly={true}
             onClick={toggle}
