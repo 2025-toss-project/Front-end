@@ -26,6 +26,7 @@ const ReadPayInput: React.FC<ReadPayInputProps> = ({ toggle }) => {
     for (const dayData of spendingRecords) {
       const item = dayData.consumptionInfoList.find((info) => info.id === id);
       if (item) {
+        console.log("Item :", { ...item, day: dayData.day });
         return {
           ...item,
           day: dayData.day,
@@ -37,10 +38,11 @@ const ReadPayInput: React.FC<ReadPayInputProps> = ({ toggle }) => {
     return null; // id에 해당하는 항목이 없을 경우 null 반환
   };
 
-  // 해당 페이지에서만 데이터 사용하게 (상태저장 안함)
+  // 해당 페이지에서만 데이터 사용하게 (상태저장 안함 )
   const itemData = useMemo(() => {
     if (id) {
       return getConsumptionInfoById(Number(id));
+      console.log(itemData);
     }
     return null;
   }, [id, spendingRecords]); // id나 spendingRecords가 변경될 때만 재계산
@@ -80,7 +82,7 @@ const ReadPayInput: React.FC<ReadPayInputProps> = ({ toggle }) => {
             label="날짜"
             type="date"
             placeholder="날짜를 입력하세요"
-            value={`${itemData.year}-${String(itemData.month).padStart(2, "0")}-${String(itemData.day).padStart(2, "0")}`} // 날짜 포맷팅
+            value={`2025-${String(itemData.month).padStart(2, "0")}-${String(itemData.day).padStart(2, "0")}`} // 날짜 포맷팅
           />
 
           <InputDefault

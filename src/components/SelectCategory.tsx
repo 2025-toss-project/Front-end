@@ -14,10 +14,6 @@ const SelectCategory: React.FC<CategoryProps> = ({ classname }) => {
   const { selectName } = useCategoryInfo();
   const { payListInfo, setPayListInfo } = usePayListInfo();
 
-  useEffect(() => {
-    console.log("selectName:", selectName);
-  }, [selectName]);
-
   return (
     <div
       className={`grid grid-flow-row grid-cols-4 justify-items-center gap-5 py-5 ${classname}`}
