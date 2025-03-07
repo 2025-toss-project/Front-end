@@ -75,13 +75,13 @@ const PayList: React.FC<PayListProps> = ({
     const ReadConsumption = async () => {
       try {
         setLoading(true);
-        const hasValidDate = validDates.some(
-          (date) => date >= startDate && date <= endDate,
-        );
-        if (!hasValidDate) {
-          console.warn("소비 기록이 없는 기간이므로 API 호출을 하지 않습니다.");
-          return; // API 호출 중단
-        }
+        // const hasValidDate = validDates.some(
+        //   (date) => date >= startDate && date <= endDate,
+        // );
+        // if (!hasValidDate) {
+        //   console.warn("소비 기록이 없는 기간이므로 API 호출을 하지 않습니다.");
+        //   return; // API 호출 중단
+        // }
         const res = await api.get(
           `consumption?category=${selectName}&startDate=${startDate}&endDate=${endDate}`,
         );

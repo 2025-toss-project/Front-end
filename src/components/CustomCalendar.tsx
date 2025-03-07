@@ -1,5 +1,10 @@
 import { LucidePlus, LucideTriangle } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import useCalendarInfo from "../stores/CalendarInfo";
+
+interface CustomCalendarProps {
+  onDateChange: (startDate: string, endDate: string) => void;
+}
 
 interface CalendarBodyProps {
   tripDate: {
@@ -15,6 +20,11 @@ interface CalendarBodyProps {
   selectedYear: number;
   selectedMonth: number;
   isSingleSelect: boolean;
+  consumptionInfoByDateDTOS: {
+    month: number;
+    day: number;
+    datePrice: number;
+  }[];
 }
 
 const CalendarBody: React.FC<CalendarBodyProps> = ({
@@ -23,6 +33,7 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
   selectedYear,
   selectedMonth,
   isSingleSelect,
+  consumptionInfoByDateDTOS,
 }) => {
   const updateStartDate = (newStartDate: string) => {
     setTripDate((prev) => ({
@@ -40,10 +51,10 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
 
   const handleClickDate = (date: string) => {
     if (isSingleSelect) {
-      // 단일 선택 모드에서는 startDate만 설정하고, 같은 날짜 클릭 시 선택 해제
+      // 단일 선택 모드에서는 startDate로 모두 설정, 같은 날짜 클릭 시 선택 해제
       setTripDate((prev) => ({
         startDate: prev.startDate === date ? "" : date,
-        endDate: "",
+        endDate: prev.startDate === date ? "" : date,
       }));
     } else {
       // 기간 선택 모드
@@ -97,12 +108,25 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
       const isStartDate = currentDate === tripDate.startDate;
       const isEndDate = currentDate === tripDate.endDate;
 
+      // 내 데이터에서 달력 날짜랑 같은 날짜 찾기
+      const dayRecord = consumptionInfoByDateDTOS.find(
+        (record) =>
+          String(record.month) === String(selectedMonth) &&
+          String(record.day) === String(day),
+      );
+
       return (
         <div
           onClick={() => handleClickDate(currentDate)}
           className={`relative my-1 grid h-9 w-full place-items-center text-center text-xs font-medium ${
-            isInRange ? "bg-main text-white" : ""
-          } ${isInRange && isStartDate ? "rounded-l-full" : ""} ${isInRange && isEndDate ? "rounded-r-full" : ""}`}
+            isInRange
+              ? "bg-main text-white"
+              : isStartDate || isEndDate
+                ? "bg-white text-second-dark"
+                : ""
+          } ${isInRange && isStartDate ? "rounded-l-full" : ""} ${
+            isInRange && isEndDate ? "rounded-r-full" : ""
+          }`}
           key={index}
         >
           <span
@@ -114,8 +138,10 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
             )}
           </span>
           {/* 지출금액 표시할 곳 */}
-          {isSingleSelect && (
-            <div className="h-3 text-[10px] text-[#FF4D4D]">{"11,000"}</div>
+          {isSingleSelect && dayRecord && (
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-xs text-red-500">
+              {dayRecord.datePrice.toLocaleString()}원
+            </div>
           )}
           {!isSingleSelect && (isStartDate || isEndDate) && (
             <div
@@ -152,16 +178,18 @@ const DaysOfWeek: React.FC = () => {
   );
 };
 
-const CustomCalendar: React.FC = () => {
+const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedDate, _] = useState(new Date().getDate());
   const [isSingleSelect, setIsSingleSelect] = useState(true);
+  const { totalPrice, consumptionInfoByDateDTOS } = useCalendarInfo();
 
   const [tripDate, setTripDate] = useState({
     startDate: `${selectedYear}-${selectedMonth}-${selectedDate}`,
     endDate: "",
   });
+
   const handleClickArrow = (isLeft: boolean) => {
     if (isLeft) {
       if (selectedMonth === 1) {
@@ -180,6 +208,7 @@ const CustomCalendar: React.FC = () => {
       }
     }
   };
+
   const handleClickSelectBtn = () => {
     setTripDate({
       startDate: "",
@@ -188,9 +217,39 @@ const CustomCalendar: React.FC = () => {
     setIsSingleSelect((prev) => !prev);
   };
 
+  const prevTripDateRef = useRef(tripDate);
+
   useEffect(() => {
-    console.log(tripDate);
-  }, [tripDate]);
+    if (
+      prevTripDateRef.current.startDate !== tripDate.startDate ||
+      prevTripDateRef.current.endDate !== tripDate.endDate
+    ) {
+      console.log(
+        "tripDate has changed. Calling onDateChange with:",
+        tripDate.startDate,
+        tripDate.endDate,
+      );
+      onDateChange(tripDate.startDate, tripDate.endDate);
+      prevTripDateRef.current = tripDate;
+    }
+  }, [tripDate, onDateChange]);
+
+  const handleClickDate = (date: string) => {
+    if (isSingleSelect) {
+      setTripDate((prev) => ({
+        startDate: prev.startDate === date ? "" : date,
+        endDate: prev.startDate === date ? "" : date,
+      }));
+    } else {
+      if (tripDate.startDate === "") {
+        setTripDate({ ...tripDate, startDate: date });
+      } else if (tripDate.endDate === "") {
+        setTripDate({ ...tripDate, endDate: date });
+      } else {
+        setTripDate({ startDate: date, endDate: "" });
+      }
+    }
+  };
 
   return (
     <>
@@ -220,7 +279,9 @@ const CustomCalendar: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center justify-between py-2">
-          <div className="text-xl font-bold">122,200원</div>
+          <div className="text-xl font-bold">
+            {totalPrice.toLocaleString()} 원
+          </div>
           <LucidePlus size={24} color="#333" />
         </div>
         <DaysOfWeek />
@@ -230,6 +291,7 @@ const CustomCalendar: React.FC = () => {
           selectedYear={selectedYear}
           selectedMonth={selectedMonth}
           isSingleSelect={isSingleSelect}
+          consumptionInfoByDateDTOS={consumptionInfoByDateDTOS}
         />
       </div>
     </>

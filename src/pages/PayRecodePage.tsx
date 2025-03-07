@@ -16,39 +16,25 @@ const PayRecodePage = () => {
   const { selectName, isOpen, setIsOpen } = useCategoryInfo();
   const { totalPrice, setDayData } = useCalendarInfo();
 
-  // 보고 있는 달력 상태 관리
-  const handleActiveDateChange = (date: Date) => {
-    setActiveDate(date); // 자식에서 받은 값으로 부모 상태 업데이트
-  };
-
-  // 캘린더 선택 날짜 상태 관리
-  const handleSelectDateChange = (startDate: string, endDate: string) => {
-    setStartDate(startDate);
-    setEndDate(endDate);
-    console.log("캘린더 날짜 선택:", startDate, endDate);
-  };
-
-  // 보고 있는 달력 전체 날짜 구하기
-  const getStartAndEndDateOfMonth = (activeStartDate: Date) => {
-    const startDate = new Date(activeStartDate);
-    startDate.setDate(1); // 해당 월의 1일로 설정
-
-    const endDate = new Date(activeStartDate);
-    endDate.setMonth(endDate.getMonth() + 1); // 다음 달로 이동
-    endDate.setDate(0); // 그 달의 마지막 날로 설정
-
-    return {
-      startDate: startDate.toISOString().split("T")[0], // 'YYYY-MM-DD' 형식
-      endDate: endDate.toISOString().split("T")[0], // 'YYYY-MM-DD' 형식
-    };
+  const handleDateChange = (startDate: string, endDate: string) => {
+    if (startDate) {
+      setStartDate(startDate);
+    }
+    if (endDate) {
+      setEndDate(endDate);
+    }
+    // 범위 선택일경우
+    if (startDate && endDate) {
+      setActiveDate(new Date(endDate));
+    } else if (startDate) {
+      setActiveDate(new Date(startDate));
+    }
   };
 
   useEffect(() => {
     const fetchCalendar = async () => {
       try {
         setLoading(true);
-        const { startDate, endDate } =
-          getStartAndEndDateOfMonth(activeStartDate);
 
         const res = await api.get(
           `consumption/calendar?currentDate=${activeStartDate}`,
@@ -63,14 +49,13 @@ const PayRecodePage = () => {
         });
 
         // datePrice가 0보다 큰 날짜만 필터링
-        const validDays = res.data.consumptionInfoByDateDTOS
-          .filter((day: ConsumptionInfoByDate) => day.datePrice > 0)
-          .map(
-            (day: ConsumptionInfoByDate) =>
-              `${day.year}-${String(day.month).padStart(2, "0")}-${String(day.day).padStart(2, "0")}`,
-          );
-
-        setValidDates(validDays); // 상태 저장
+        // const validDays = res.data.consumptionInfoByDateDTOS
+        //   .filter((day: ConsumptionInfoByDate) => day.datePrice > 0)
+        //   .map(
+        //     (day: ConsumptionInfoByDate) =>
+        //       `${day.year}-${String(day.month).padStart(2, "0")}-${String(day.day).padStart(2, "0")}`,
+        //   );
+        // setValidDates(validDays); // 상태 저장
       } catch (err) {
         console.error(err);
       } finally {
@@ -82,19 +67,9 @@ const PayRecodePage = () => {
   }, [activeStartDate, selectName]); // 카테고리 변경 시에도 API 호출
 
   return (
-<<<<<<< HEAD
-    <div className="flex w-full flex-col">
-      <CustomCalendar
-        activeStartDate={activeStartDate}
-        onActiveStartDateChange={handleActiveDateChange}
-        onSelectDateChange={handleSelectDateChange}
-      />
+    <div className="flex w-full flex-col gap-2">
+      <CustomCalendar onDateChange={handleDateChange} />
       <div className="mt-5 flex w-full flex-col rounded-lg bg-white">
-=======
-    <div className="flex flex-col w-full gap-2">
-      <CustomCalendar />
-      <div className="flex flex-col w-full mt-5 bg-white rounded-lg">
->>>>>>> origin
         {/* 드롭 클릭시 아래로 나오기  */}
         <DropButton
           title={selectName || "전체 항목"}
