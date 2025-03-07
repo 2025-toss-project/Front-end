@@ -186,7 +186,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
   const { totalPrice, consumptionInfoByDateDTOS } = useCalendarInfo();
 
   const [tripDate, setTripDate] = useState({
-    startDate: `${selectedYear}-${selectedMonth}-${selectedDate}`,
+    startDate: `${String(selectedYear)}-${String(selectedMonth).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`,
     endDate: "",
   });
 
@@ -217,40 +217,37 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
     setIsSingleSelect((prev) => !prev);
   };
 
+  const formatDate = (date: string) => {
+    if (!date) return ""; // date가 비어있으면 빈 문자열 반환
+
+    const [year, month, day] = date.split("-");
+
+    if (!month || !day) return date;
+
+    const formattedMonth = month.padStart(2, "0"); // 두 자릿수로 포맷팅
+    const formattedDay = day.padStart(2, "0"); // 두 자릿수로 포맷팅
+
+    return `${year}-${formattedMonth}-${formattedDay}`;
+  };
+
   const prevTripDateRef = useRef(tripDate);
 
   useEffect(() => {
+    const formattedStartDate = formatDate(tripDate.startDate);
+    const formattedEndDate = formatDate(tripDate.endDate);
+
     if (
-      prevTripDateRef.current.startDate !== tripDate.startDate ||
-      prevTripDateRef.current.endDate !== tripDate.endDate
+      prevTripDateRef.current.startDate !== formattedStartDate ||
+      prevTripDateRef.current.endDate !== formattedEndDate
     ) {
-      console.log(
-        "tripDate has changed. Calling onDateChange with:",
-        tripDate.startDate,
-        tripDate.endDate,
-      );
-      onDateChange(tripDate.startDate, tripDate.endDate);
-      prevTripDateRef.current = tripDate;
+      console.log("onDateChange :", formattedStartDate, formattedEndDate);
+      onDateChange(formattedStartDate, formattedEndDate);
+      prevTripDateRef.current = {
+        startDate: formattedStartDate,
+        endDate: formattedEndDate,
+      };
     }
   }, [tripDate, onDateChange]);
-
-  const handleClickDate = (date: string) => {
-    if (isSingleSelect) {
-      setTripDate((prev) => ({
-        startDate: prev.startDate === date ? "" : date,
-        endDate: prev.startDate === date ? "" : date,
-      }));
-    } else {
-      if (tripDate.startDate === "") {
-        setTripDate({ ...tripDate, startDate: date });
-      } else if (tripDate.endDate === "") {
-        setTripDate({ ...tripDate, endDate: date });
-      } else {
-        setTripDate({ startDate: date, endDate: "" });
-      }
-    }
-  };
-
   return (
     <>
       <div className={"w-full"}>

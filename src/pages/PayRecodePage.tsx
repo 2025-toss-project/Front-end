@@ -6,6 +6,8 @@ import SelectCategory from "../components/SelectCategory";
 import { useCategoryInfo } from "../stores/CategoryInfo";
 import { api } from "../utils/api";
 import useCalendarInfo, { ConsumptionInfoByDate } from "../stores/CalendarInfo";
+import { useMovePage } from "../hooks/useMovePage";
+import PageUrls from "../constants/PageUrls";
 
 const PayRecodePage = () => {
   const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 관리
@@ -15,6 +17,14 @@ const PayRecodePage = () => {
   const [endDate, setEndDate] = useState("");
   const { selectName, isOpen, setIsOpen } = useCategoryInfo();
   const { totalPrice, setDayData } = useCalendarInfo();
+  const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
+
+  const formatDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작하므로 +1 해줌
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
   const handleDateChange = (startDate: string, endDate: string) => {
     if (startDate) {
@@ -35,9 +45,10 @@ const PayRecodePage = () => {
     const fetchCalendar = async () => {
       try {
         setLoading(true);
+        const formatActive = formatDate(activeStartDate);
 
         const res = await api.get(
-          `consumption/calendar?currentDate=${activeStartDate}`,
+          `consumption/calender?currentDate=${formatActive}`,
         );
 
         console.log(res.data);
@@ -49,13 +60,13 @@ const PayRecodePage = () => {
         });
 
         // datePrice가 0보다 큰 날짜만 필터링
-        // const validDays = res.data.consumptionInfoByDateDTOS
-        //   .filter((day: ConsumptionInfoByDate) => day.datePrice > 0)
-        //   .map(
-        //     (day: ConsumptionInfoByDate) =>
-        //       `${day.year}-${String(day.month).padStart(2, "0")}-${String(day.day).padStart(2, "0")}`,
-        //   );
-        // setValidDates(validDays); // 상태 저장
+        const validDays = res.data.consumptionInfoByDateDTOS
+          .filter((day: ConsumptionInfoByDate) => day.datePrice > 0)
+          .map(
+            (day: ConsumptionInfoByDate) =>
+              `${day.year}-${String(day.month).padStart(2, "0")}-${String(day.day).padStart(2, "0")}`,
+          );
+        setValidDates(validDays); // 상태 저장
       } catch (err) {
         console.error(err);
       } finally {

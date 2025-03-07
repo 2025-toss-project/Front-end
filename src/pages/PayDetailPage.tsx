@@ -8,13 +8,15 @@ import useAddPayInfo from "../stores/addpayInfo";
 import { api } from "../utils/api";
 import { usePlaceInfo } from "../stores/placeInfo";
 import { useLocation } from "react-router-dom";
+import { useMovePage } from "../hooks/useMovePage";
+import PageUrls from "../constants/PageUrls";
 
 const PayDetailPage = () => {
   const { isOpen, setIsOpen } = useCategoryInfo();
   const { addpayInfo, resetAddPayInfo } = useAddPayInfo();
   const { selectName } = useCategoryInfo();
   const { selectPlace, placeInfo } = usePlaceInfo();
-  const [receivedId, setReceivedId] = useState<string | null>(null);
+  const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -51,6 +53,7 @@ const PayDetailPage = () => {
       console.error(error);
     } finally {
       resetAddPayInfo();
+      moveToPage(PageUrls.PAY_RECODE);
     }
   };
 

@@ -7,6 +7,8 @@ import { api } from "../utils/api";
 import useAddPayInfo from "../stores/addpayInfo";
 import { useCategoryInfo } from "../stores/CategoryInfo";
 import { usePlaceInfo } from "../stores/placeInfo";
+import PageUrls from "../constants/PageUrls";
+import { useMovePage } from "../hooks/useMovePage";
 
 export interface addpayInfo {
   price: number;
@@ -18,6 +20,7 @@ const AddPayPage = () => {
   const { addpayInfo, setAddPayInfo, resetAddPayInfo } = useAddPayInfo();
   const { selectName, setSelectName, isOpen, setIsOpen } = useCategoryInfo();
   const { placeInfo, selectPlace } = usePlaceInfo();
+  const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
 
   const isAddpayInfoComplete = Object.values(addpayInfo).every((value) => {
     if (typeof value === "object" && value !== null) {
@@ -48,6 +51,7 @@ const AddPayPage = () => {
       console.error(error);
     } finally {
       resetAddPayInfo();
+      moveToPage(PageUrls.PAY_RECODE);
     }
   };
 

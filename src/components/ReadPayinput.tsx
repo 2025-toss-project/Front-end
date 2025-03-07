@@ -18,8 +18,9 @@ const ReadPayInput: React.FC<ReadPayInputProps> = ({ toggle }) => {
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
   const { spendingRecords } = useSpendingInfo();
   const { addpayInfo, setAddPayInfo } = useAddPayInfo();
-  const { selectName } = useCategoryInfo();
-  const { selectPlace } = usePlaceInfo();
+  const { selectName, setSelectName } = useCategoryInfo();
+  const { selectPlace, setSelectPlace, setPlaceInfo, placeInfo } =
+    usePlaceInfo();
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -60,6 +61,24 @@ const ReadPayInput: React.FC<ReadPayInputProps> = ({ toggle }) => {
     return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
   };
 
+  // itemData 값이 변경되면 addpayInfo에 기본 값 설정
+  useEffect(() => {
+    if (itemData) {
+      // itemData 값이 있을 때만 초기 값 설정
+      setAddPayInfo("price", String(itemData.price));
+      setAddPayInfo("detail", itemData.details);
+      setAddPayInfo(
+        "date",
+        formatDate(itemData.year, itemData.month, itemData.day),
+      );
+      if (!selectName) setSelectName(itemData.category);
+      if (!selectPlace) {
+        setSelectPlace(itemData.point_name);
+        setPlaceInfo(itemData.lat, itemData.lng);
+      }
+    }
+  }, [itemData]);
+
   return (
     <div>
       {/* 조건부 렌더링 item 있을 때만 */}
@@ -94,7 +113,7 @@ const ReadPayInput: React.FC<ReadPayInputProps> = ({ toggle }) => {
             label="날짜"
             type="date"
             placeholder="날짜를 입력하세요"
-            value={formatDate(itemData.year, itemData.month, itemData.day)}
+            value={addpayInfo.date}
             onChange={(value) => {
               setAddPayInfo("date", value);
             }}

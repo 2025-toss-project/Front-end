@@ -73,6 +73,11 @@ const PayList: React.FC<PayListProps> = ({
 
   useEffect(() => {
     const ReadConsumption = async () => {
+      // startDate 또는 endDate가 없으면 API 호출하지 않음
+      if (!startDate || !endDate) {
+        console.warn("캘린더에서 날짜가 선택되지 않음 → API 호출 중단");
+        return;
+      }
       try {
         setLoading(true);
         // const hasValidDate = validDates.some(
@@ -83,7 +88,7 @@ const PayList: React.FC<PayListProps> = ({
         //   return; // API 호출 중단
         // }
         const res = await api.get(
-          `consumption?category=${selectName}&startDate=${startDate}&endDate=${endDate}`,
+          `consumption?category="식비"&startDate=${startDate}&endDate=${endDate}`,
         );
         console.log(res.data);
         // 받아온 데이터 store 저장
