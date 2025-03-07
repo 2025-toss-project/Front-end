@@ -63,14 +63,14 @@ const MonthlyBudgetSet: React.FC<{
   };
 
   return (
-    <div className="mb-4 rounded-2xl bg-white p-4 drop-shadow-10">
+    <div className="p-4 mb-4 bg-white rounded-2xl drop-shadow-10">
       <div className="text-lg font-bold">
         한달에 소비할 <span className="text-marker-home">예산</span>
       </div>
       <div className="text-sm">대략 한 달에 얼마를 사용할지 예상해보세요.</div>
       <div className="text-sm">예산은 언제든지 수정이 가능해요.</div>
       <div className="flex flex-col items-center pt-9">
-        <div className="flex flex-row items-center border-b-2 border-b-second text-2xl font-bold text-main focus-within:border-b-main">
+        <div className="flex flex-row items-center text-2xl font-bold border-b-2 border-b-second text-main focus-within:border-b-main">
           <input
             maxLength={11}
             type="text"
@@ -79,7 +79,7 @@ const MonthlyBudgetSet: React.FC<{
             style={{
               width: `${(monthBudget === 0 ? 1 : monthBudget.toString().length) + 1}ch`,
             }}
-            className="border-0 bg-white text-right text-2xl font-bold focus:outline-none"
+            className="text-2xl font-bold text-right bg-white border-0 focus:outline-none"
           />
           <span className="ml-1 text-2xl font-bold text-main">원</span>
         </div>
@@ -109,14 +109,14 @@ const MonthlyBudgetBar: React.FC<{
         const percentage = totalBudget ? (budgetPrice / totalBudget) * 100 : 0;
 
         return (
-          <div key={i} className="flex gap-y-3 pt-2">
+          <div key={i} className="flex pt-2 gap-y-3">
             <div className="w-full rounded-2xl bg-[#f8f8f8] px-2 py-2.5">
-              <div className="mb-1 flex items-center justify-between pb-2">
+              <div className="flex items-center justify-between pb-2 mb-1">
                 <div className="z-20 flex items-center space-x-2">
                   <div className="flex rounded-full bg-second-lighter">
                     {cat.icon({})}
                   </div>
-                  <div className="shrink-0 text-sm font-medium">{cat.text}</div>
+                  <div className="text-sm font-medium shrink-0">{cat.text}</div>
                   <div className="text-xs font-medium">
                     {totalBudget ? Math.round(percentage) : 0}%
                   </div>
@@ -152,12 +152,10 @@ const BudgetManageSet: React.FC = () => {
   useEffect(() => {
     const getBudgetData = async () => {
       try {
-        //   const data: BudgetInfo = await fetchBudgetInfo(); // 더미데이터 사용시
-
+        
         // api 연동시
         const response = await fetchBudgetInfo(); // ✅ API 호출
         const data: BudgetInfo = response.result; // ✅ data.result 사용
-        // 여까지
 
         setTotalId(data.totalId ?? 0);
         setTotalBudget(data.totalBudget ?? 0);
@@ -193,13 +191,13 @@ const BudgetManageSet: React.FC = () => {
   const remain = totalBudget - used;
 
   return (
-    <div className="flex h-full w-full flex-col bg-second-bg">
+    <div className="flex flex-col w-full h-full bg-second-bg">
       <div className="flex h-full flex-col bg-[#f8f8f8] py-5">
         <MonthlyBudgetSet
           monthBudget={totalBudget}
           setMonthBudget={setTotalBudget}
         />
-        <div className="mt-4 rounded-2xl bg-white p-4 text-lg drop-shadow-10">
+        <div className="p-4 mt-4 text-lg bg-white rounded-2xl drop-shadow-10">
           <div className="font-bold">
             카테고리별 소비{" "}
             <span className="font-bold text-marker-home">예산</span>
