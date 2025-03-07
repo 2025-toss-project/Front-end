@@ -2,8 +2,6 @@ import React, { useEffect } from "react";
 import { categoryList } from "../constants/category";
 import CategorySection from "./sections/CategorySection";
 import { useCategoryInfo } from "../stores/CategoryInfo";
-import useAddPayInfo from "../stores/addpayInfo";
-import usePayListInfo from "../stores/payListInfo";
 
 interface CategoryProps {
   classname?: string;
@@ -12,7 +10,6 @@ interface CategoryProps {
 const SelectCategory: React.FC<CategoryProps> = ({ classname }) => {
   const { setSelectName, setIsOpen } = useCategoryInfo();
   const { selectName } = useCategoryInfo();
-  const { payListInfo, setPayListInfo } = usePayListInfo();
 
   return (
     <div
@@ -25,7 +22,6 @@ const SelectCategory: React.FC<CategoryProps> = ({ classname }) => {
           name={item.text}
           toggle={() => {
             setSelectName(item.text);
-            setPayListInfo("category", item.text);
             setIsOpen(false);
           }}
         />

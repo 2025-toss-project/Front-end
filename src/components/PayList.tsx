@@ -1,13 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { categoryList } from "../constants/category";
 import useSpendingInfo from "../stores/spendingInfo";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
-import { Key } from "lucide-react";
+import { useCategoryInfo } from "../stores/CategoryInfo";
+import { api } from "../utils/api";
 
 interface PayDayProps {
   data: any; // 필요한 타입으로 수정
   onClick: () => void; // onClick 핸들러
+}
+
+interface PayListProps {
+  startDate: string;
+  endDate: string;
 }
 
 // 아이콘 가져오기 ( {<IconFood/>} 이런식으로 반환됨)
@@ -47,9 +53,10 @@ const PayDay: React.FC<PayDayProps> = ({ data, onClick }) => {
 };
 
 // 전체 소비리스트
-const PayList = () => {
+const PayList: React.FC<PayListProps> = ({ startDate, endDate }) => {
   const { moveToPage } = useMovePage();
-  const { spendingRecords } = useSpendingInfo();
+  const { spendingRecords, setSpendingData } = useSpendingInfo();
+  const { selectName } = useCategoryInfo();
 
   // 소비 기록 클릭 시 상세 페이지로 이동
   const clickDetails = (id: number) => {
@@ -57,6 +64,25 @@ const PayList = () => {
     // 페이지 이동 시 id를 URL 쿼리로 전달
     moveToPage(`${PageUrls.PAY_DETAIL}?id=${id}`);
   };
+
+  useEffect(() => {
+    const fetchConsumption = async () => {
+      try {
+        setLoading(true);
+        const res = await api.get(
+          `consumption?category=${selectName}&startDate=${startDate}&endDate=${endDate}`,
+        );
+        console.log(res.data);
+        // 받아온 데이터 store 저장
+        setSpendingData(res.data.result);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchConsumption();
+  }, []);
 
   return (
     <div className="flex w-full flex-col px-6">
@@ -87,3 +113,6 @@ const PayList = () => {
 };
 
 export default PayList;
+function setLoading(arg0: boolean) {
+  throw new Error("Function not implemented.");
+}
