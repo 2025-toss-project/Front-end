@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { categoryList } from "../constants/category";
 import useSpendingInfo from "../stores/spendingInfo";
 import { useMovePage } from "../hooks/useMovePage";
@@ -54,6 +54,7 @@ const PayDay: React.FC<PayDayProps> = ({ data, onClick }) => {
 
 // 전체 소비리스트
 const PayList: React.FC<PayListProps> = ({ startDate, endDate }) => {
+  const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 관리
   const { moveToPage } = useMovePage();
   const { spendingRecords, setSpendingData } = useSpendingInfo();
   const { selectName } = useCategoryInfo();
@@ -82,37 +83,38 @@ const PayList: React.FC<PayListProps> = ({ startDate, endDate }) => {
       }
     };
     fetchConsumption();
-  }, []);
+  }, [startDate, endDate]);
 
   return (
     <div className="flex w-full flex-col px-6">
-      {spendingRecords.map((dayData) => (
-        <div key={dayData.day} className="mb-5">
-          {/* 날짜 및 하루 총액 표시 */}
-          <div className="flex flex-row justify-between py-5">
-            <p className="text-sm text-second">
-              {formatDateWithWeekday(dayData.month, dayData.day)}
-            </p>
-            <p className="text-base font-medium text-second-dark">
-              {dayData.datePrice.toLocaleString()}원
-            </p>
-          </div>
+      {spendingRecords.length > 0 ? (
+        spendingRecords.map((dayData) => (
+          <div key={dayData.day} className="mb-5">
+            {/* 날짜 및 하루 총액 표시 */}
+            <div className="flex flex-row justify-between py-5">
+              <p className="text-sm text-second">
+                {formatDateWithWeekday(dayData.month, dayData.day)}
+              </p>
+              <p className="text-base font-medium text-second-dark">
+                {dayData.datePrice.toLocaleString()}원
+              </p>
+            </div>
 
-          {/* 해당 날짜의 지출 목록 */}
-          {dayData.consumptionInfoList.map((item) => (
-            <PayDay
-              key={item.id}
-              data={item}
-              onClick={() => clickDetails(item.id)}
-            />
-          ))}
-        </div>
-      ))}
+            {/* 해당 날짜의 지출 목록 */}
+            {dayData.consumptionInfoList.map((item) => (
+              <PayDay
+                key={item.id}
+                data={item}
+                onClick={() => clickDetails(item.id)}
+              />
+            ))}
+          </div>
+        ))
+      ) : (
+        <p className="p-2 text-center text-gray-500">소비 기록이 없습니다.</p>
+      )}
     </div>
   );
 };
 
 export default PayList;
-function setLoading(arg0: boolean) {
-  throw new Error("Function not implemented.");
-}
