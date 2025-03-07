@@ -82,6 +82,7 @@ const PayRecodePage = () => {
   }, [activeStartDate, selectName]); // 카테고리 변경 시에도 API 호출
 
   return (
+<<<<<<< HEAD
     <div className="flex w-full flex-col">
       <CustomCalendar
         activeStartDate={activeStartDate}
@@ -89,6 +90,11 @@ const PayRecodePage = () => {
         onSelectDateChange={handleSelectDateChange}
       />
       <div className="mt-5 flex w-full flex-col rounded-lg bg-white">
+=======
+    <div className="flex flex-col w-full gap-2">
+      <CustomCalendar />
+      <div className="flex flex-col w-full mt-5 bg-white rounded-lg">
+>>>>>>> origin
         {/* 드롭 클릭시 아래로 나오기  */}
         <DropButton
           title={selectName || "전체 항목"}

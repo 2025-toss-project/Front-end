@@ -3,7 +3,7 @@ import IconMyLocation from "../../assets/IconMyLocation";
 import { LucidePlus } from "lucide-react";
 import { useMovePage } from "../../hooks/useMovePage";
 import { CategoryProps } from "../../constants/category";
-import { formatPrice } from "../../utils/formatPrice";
+import { formatPrice } from "../../utils/formatFunc";
 import useMapInfo from "../../stores/mapInfo";
 import useClickOutside from "../../hooks/useClickOutside";
 
@@ -13,7 +13,7 @@ const IconMoveMyLocation: React.FC<{ moveToCurrentLocation: () => void }> = ({
   return (
     <div
       onClick={moveToCurrentLocation}
-      className="z-10 grid w-10 bg-white rounded-full aspect-square place-items-center drop-shadow-50"
+      className="z-10 grid aspect-square w-10 place-items-center rounded-full bg-white drop-shadow-50"
     >
       <IconMyLocation />
     </div>
@@ -24,7 +24,7 @@ const IconFastInputPay: React.FC = () => {
   return (
     <div
       onClick={() => moveToPage("/addpay")}
-      className="z-10 grid rounded-full aspect-square w-11 place-items-center bg-main drop-shadow-50"
+      className="z-10 grid aspect-square w-11 place-items-center rounded-full bg-main drop-shadow-50"
     >
       <LucidePlus size={24} color="#FFF" />
     </div>
@@ -47,7 +47,7 @@ const ShowDetailInfo: React.FC<{
   return (
     <div
       ref={showBubbleRef}
-      className="flex flex-col gap-2 p-3 bg-white rounded-lg drop-shadow-10"
+      className="flex flex-col gap-2 rounded-lg bg-white p-3 drop-shadow-10"
     >
       <div className="flex items-center justify-between">
         {selectedData!.place}

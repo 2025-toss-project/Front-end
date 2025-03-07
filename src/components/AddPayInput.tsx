@@ -12,7 +12,7 @@ interface AddPayInputProps {
   isOpen?: boolean; // 오픈 상태 저장
 }
 
-const AddPayInput: React.FC<AddPayInputProps> = ({ toggle }) => {
+const AddPayInput: React.FC<AddPayInputProps> = ({ toggle, isOpen }) => {
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
   const { selectPlace } = usePlaceInfo();
   const { addpayInfo, setAddPayInfo } = useAddPayInfo();

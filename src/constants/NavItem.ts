@@ -15,7 +15,7 @@ export const NAV_ITEMS = [
     icon: LucideCircleDollarSign,
     label: "예산관리",
     navId: 3,
-    url: PageUrls.BUDGET_SET,
+    url: PageUrls.BUDGET,
   },
   { icon: LucideUserRound, label: "내정보", navId: 4, url: PageUrls.MY_PAGE },
 ];
