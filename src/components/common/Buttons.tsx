@@ -25,7 +25,7 @@ export const SaveButton: React.FC<MainButtonProps> = ({
   onClick,
 }) => {
   return (
-    <div className="flex w-full justify-center">
+    <div className="flex justify-center w-full">
       <button
         onClick={onClick}
         className={`my-5 flex h-12 w-full items-center justify-center rounded-lg bg-main text-lg font-medium text-white ${style}`}
@@ -44,7 +44,7 @@ export const DropButton: React.FC<DropButtonProps> = ({
   return (
     <div
       onClick={toggle}
-      className="m-3 flex h-7 w-24 flex-row items-center justify-center gap-1 rounded-sm bg-second-lighter"
+      className="flex flex-row items-center justify-center w-24 gap-1 rounded-sm h-7 bg-second-lighter"
     >
       <p className="text-sm">{title}</p>
       <LucideChevronDown
@@ -58,7 +58,7 @@ export const DropButton: React.FC<DropButtonProps> = ({
 export const AddressButton: React.FC<AddressButtonProps> = ({ title }) => {
   return (
     <div className="m-1 inline-block rounded-md border border-second px-2 py-0.5">
-      <p className="text-base text-sm font-light text-second"> {title}</p>
+      <p className="text-sm text-base font-light text-second"> {title}</p>
     </div>
   );
 };
