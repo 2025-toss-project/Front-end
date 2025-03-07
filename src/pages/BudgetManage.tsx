@@ -1,41 +1,55 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import MonthlyBudget from "../components/MonthlyBudget";
 import BudgetStatus from "../components/BudgetStatus";
 import CategoryStatus from "../components/CategoryStatus";
+import MonthlyBudget from "../components/MonthlyBudget";
+import { fetchBudgetInfo, BudgetInfo } from "../stores/budgetInfo"; 
 
 const BudgetManage = () => {
   const navigate = useNavigate();
+  const [budgetData, setBudgetData] = useState<BudgetInfo | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const [categoryBudgets, setCategoryBudgets] = useState([
-    { category: "식비", budget: 180000, pay: 180000 },
-    { category: "교육", budget: 60000, pay: 50000 },
-    { category: "주거", budget: 320000, pay: 310000 },
-    { category: "문화생활", budget: 150000, pay: 120000 },
-    { category: "교통", budget: 50000, pay: 70000 },
-    { category: "저축", budget: 10, pay: 0 },
-    { category: "통신", budget: 10, pay: 0 },
-    { category: "경조사", budget: 10, pay: 150000 },
-    { category: "건강", budget: 10, pay: 0 },
-    { category: "기타", budget: 10, pay: 0 },
-    { category: "쇼핑", budget: 10, pay: 0 },
-    { category: "취미", budget: 10, pay: 0 },
-  ]);
+
+  //api 사용시
+useEffect(() => {
+  const getBudgetData = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchBudgetInfo(); // ✅ API 호출
+      setBudgetData(data.result);
+    } catch (error) {
+      console.error("예산 데이터 로딩 실패:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  getBudgetData();
+}, []);
+// 여까지
+
 
   return (
     <div className="flex flex-col w-full h-full bg-second-bg">
       <div onClick={() => navigate("/budgetset")} className="cursor-pointer">
         <MonthlyBudget />
       </div>
-      <BudgetStatus />
-      <CategoryStatus
-        categoryBudgets={categoryBudgets.map(({ category, budget, pay }) => ({
-          category,
-          budgetPrice: budget,
-          spendPrice: pay,
-          percentage: Math.round((pay / budget) * 100), // 비율 계산
-        }))}
-      />
+      <BudgetStatus
+  totalBudget={budgetData?.totalBudget ?? 0} // ✅ budgetData가 null이면 0
+  totalSpend={budgetData?.totalSpend ?? 0}
+  totalPercentage={budgetData?.totalPercentage ?? 0}
+/>
+<CategoryStatus
+  categoryBudgets={budgetData?.budgetInfoList?.map(
+    ({ category, budgetPrice, spendPrice, percentage }) => ({
+      category,
+      budgetPrice,
+      spendPrice,
+      percentage,
+    })
+  ) ?? []} // ✅ budgetData가 없으면 빈 배열([]) 반환
+/>
     </div>
   );
 };
