@@ -4,7 +4,7 @@ interface BarGraphProps {
 }
 
 const BarGraph: React.FC<BarGraphProps> = ({ props, height = "h-2" }) => {
-  const limitedPercentage = Math.min(props, 100);
+  const limitedPercentage = Math.min(props,100);
   const barColor = props >= 100 ? "bg-main" : "bg-marker-home";
 
   return (

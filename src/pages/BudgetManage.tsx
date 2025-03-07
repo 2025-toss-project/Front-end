@@ -10,7 +10,7 @@ const BudgetManage = () => {
   const [budgetData, setBudgetData] = useState<BudgetInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  /*
+
   //api 사용시
 useEffect(() => {
   const getBudgetData = async () => {
@@ -28,24 +28,24 @@ useEffect(() => {
   getBudgetData();
 }, []);
 // 여까지
-*/
 
-/*
+
+
 // 더미데이터 사용시
-  useEffect(() => {
-    const loadBudgetData = async () => {
-      const data = await fetchBudgetInfo(); // 더미 데이터 가져오기
-      setBudgetData(data);
-    };
+  // useEffect(() => {
+  //   const loadBudgetData = async () => {
+  //     const data = await fetchBudgetInfo(); // 더미 데이터 가져오기
+  //     setBudgetData(data);
+  //   };
 
-    loadBudgetData();
-  }, []);
+  //   loadBudgetData();
+  // }, []);
 
-  if (!budgetData) {
-    return <div>Loading...</div>; // 데이터 로딩 중 표시
-  }
+  // if (!budgetData) {
+  //   return <div>Loading...</div>; // 데이터 로딩 중 표시
+  // }
 // 여까지
-*/  
+
 
   return (
     <div className="flex flex-col w-full h-full bg-second-bg">

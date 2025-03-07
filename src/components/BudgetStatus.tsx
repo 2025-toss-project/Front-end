@@ -13,18 +13,23 @@ const getDaysLeftInMonth = (): number => {
   return lastDayOfMonth.getDate() - today.getDate();
 };
 
-const BudgetStatus: React.FC<BudgetStatusProps> = ({ totalBudget, totalSpend, totalPercentage }) => {
+const BudgetStatus: React.FC<BudgetStatusProps> = ({
+  totalBudget,
+  totalSpend,
+  totalPercentage,
+}) => {
   const daysLeft = getDaysLeftInMonth();
-
 
   // ✅ 예산 계산
   const remainBudget = totalBudget - totalSpend;
   const budgetPerDay = daysLeft > 0 ? remainBudget / daysLeft : remainBudget;
-
+  const monthPercent = totalSpend / totalBudget * 100;
   return (
     <div className="p-4 mb-4 bg-white rounded-2xl drop-shadow-10">
       <p className="mb-1 text-lg font-bold">
-        현재 예산의 <span className="text-main">{totalPercentage}%</span>를 사용했어요
+        현재 예산의{" "}
+        <span className="text-main">{Math.floor(monthPercent)}%</span>
+를 사용했어요.
       </p>
       <div className="flex flex-col text-sm">
         남은 기간 동안 하루에{" "}
@@ -34,7 +39,7 @@ const BudgetStatus: React.FC<BudgetStatusProps> = ({ totalBudget, totalSpend, to
         을 사용할 수 있어요.
       </div>
       <div className="flex justify-center my-4">
-        <HalfCircleGauge totalPercentage={totalPercentage} size={220} />
+        <HalfCircleGauge totalPercentage={monthPercent} size={220} />
       </div>
       <div className="flex justify-between mt-2">
         <div className="flex flex-col">
