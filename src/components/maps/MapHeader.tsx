@@ -5,6 +5,7 @@ import useClickOutside from "../../hooks/useClickOutside";
 import { payTypeList, PayTypeProps } from "../../constants/payType";
 import useUserInfo from "../../stores/userInfo";
 import { findType } from "../../utils/findTypeOrCategory";
+import IconMyPay from "../../assets/payTypeIcons/IconMyPay";
 
 const Category: React.FC<
   CategoryProps & {
@@ -53,13 +54,13 @@ interface DropDownProps {
 }
 
 const DropDown: React.FC<DropDownProps> = ({ isOpen, setIsOpen }) => {
-  const [type, setType] = useState<PayTypeProps>({
-    type: "모든사람",
-    discription: "",
-    icon: () => <></>,
-  });
+  const myPay = {
+    type: "나의 소비",
+    icon: (props: { size?: number }) => <IconMyPay {...props} />,
+  };
+  const [selectedType, setSelectedType] = useState<PayTypeProps>(myPay);
 
-  const types = payTypeList;
+  const types = [myPay, ...payTypeList];
   const dropdownRef = React.useRef<HTMLDivElement>(null!);
 
   useClickOutside(dropdownRef, () => setIsOpen(false));
@@ -71,8 +72,8 @@ const DropDown: React.FC<DropDownProps> = ({ isOpen, setIsOpen }) => {
       className="relative flex h-fit w-[134px] items-center justify-between gap-1 rounded-lg bg-[#EEE] px-3 py-2 text-sm font-medium"
     >
       <div className="flex items-center gap-1">
-        {type.icon({ size: 20 })}
-        {type.type}
+        {selectedType.icon({ size: 20 })}
+        {selectedType.type}
       </div>
       <ChevronDown size={16} color="#666" strokeWidth={4} />
       <div
@@ -81,8 +82,8 @@ const DropDown: React.FC<DropDownProps> = ({ isOpen, setIsOpen }) => {
         {types.map((type) => (
           <div
             key={type.type}
-            onClick={() => setType(type)}
-            className="flex gap-1 py-2 border-b border-b-second last:border-none"
+            onClick={() => setSelectedType(type)}
+            className={`flex gap-1 border-b border-b-second py-2 last:border-none ${selectedType.type === type.type ? "font-bold text-main" : ""}`}
           >
             {type.icon({ size: 20 })}
             {type.type}
@@ -117,7 +118,7 @@ const MyProperty: React.FC<{ name: string; property: string }> = ({
 const MapHeader: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   return (
-    <div className="z-10 flex flex-col max-w-full">
+    <div className="z-10 flex max-w-full flex-col">
       <CategoryList />
       <div className="flex items-center justify-between py-1">
         <MyProperty name="희연" property="플렉스" />
