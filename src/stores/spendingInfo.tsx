@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-interface ConsumptionInfo {
+export interface ConsumptionInfo {
   id: number;
   price: number;
   category: string;

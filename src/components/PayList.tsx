@@ -1,9 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { categoryList } from "../constants/category";
-import { api } from "../utils/api";
-import { useCategoryInfo } from "../stores/CategoryInfo";
-import usePayListInfo from "../stores/payListInfo";
 import useSpendingInfo from "../stores/spendingInfo";
+import { useMovePage } from "../hooks/useMovePage";
+import PageUrls from "../constants/PageUrls";
+import { Key } from "lucide-react";
+
+interface PayDayProps {
+  data: any; // 필요한 타입으로 수정
+  onClick: () => void; // onClick 핸들러
+}
 
 // 아이콘 가져오기 ( {<IconFood/>} 이런식으로 반환됨)
 const getIcon = (categoryText: string) => {
@@ -18,10 +23,10 @@ const formatDateWithWeekday = (month: number, day: number) => {
 };
 
 // 하루치 소비 리스트
-const PayDay: React.FC<{ data: any }> = ({ data }) => {
+const PayDay: React.FC<PayDayProps> = ({ data, onClick }) => {
   const categoryIcon = getIcon(data.category);
   return (
-    <div className="flex w-full flex-col">
+    <div onClick={onClick} className="flex w-full flex-col">
       <div className="flex flex-row items-center">
         {/* 카테고리 아이콘 */}
         <div className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-second-lighter">
@@ -43,7 +48,15 @@ const PayDay: React.FC<{ data: any }> = ({ data }) => {
 
 // 전체 소비리스트
 const PayList = () => {
+  const { moveToPage } = useMovePage();
   const { spendingRecords } = useSpendingInfo();
+
+  // 소비 기록 클릭 시 상세 페이지로 이동
+  const clickDetails = (id: number) => {
+    console.log(id);
+    // 페이지 이동 시 id를 URL 쿼리로 전달
+    moveToPage(`${PageUrls.PAY_DETAIL}?id=${id}`);
+  };
 
   return (
     <div className="flex w-full flex-col px-6">
@@ -61,7 +74,11 @@ const PayList = () => {
 
           {/* 해당 날짜의 지출 목록 */}
           {dayData.consumptionInfoList.map((item) => (
-            <PayDay key={item.id} data={item} />
+            <PayDay
+              key={item.id}
+              data={item}
+              onClick={() => clickDetails(item.id)}
+            />
           ))}
         </div>
       ))}

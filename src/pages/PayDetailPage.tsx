@@ -1,19 +1,17 @@
 import React, { useState } from "react";
 
-import AddPayInput from "../components/AddPayInput";
 import SelectCategory from "../components/SelectCategory";
 import { SaveButton } from "../components/common/Buttons";
+import { useCategoryInfo } from "../stores/CategoryInfo";
+import ReadPayInput from "../components/ReadPayinput";
 
 const PayDetailPage = () => {
-  const [selectName, setSelectName] = useState(""); // 선택한 값 저장
+  const { isOpen, setIsOpen } = useCategoryInfo();
 
   return (
     <div className="flex w-full flex-col">
-      <AddPayInput />
-      <SelectCategory
-        selectName={selectName}
-        setSelectName={() => setSelectName(selectName)}
-      />
+      <ReadPayInput toggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
+      <SelectCategory classname={isOpen ? "block" : "hidden"} />
       <SaveButton title="수정하기" />
     </div>
   );

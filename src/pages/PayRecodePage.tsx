@@ -16,17 +16,40 @@ export interface paylistInfo {
 
 const PayRecodePage = () => {
   const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 관리
+  const [activeStartDate, setActiveDate] = useState(new Date()); // 캘린더 선택 날짜
   const { selectName, isOpen, setIsOpen } = useCategoryInfo();
   const { payListInfo } = usePayListInfo();
   const { totalPrice, spendingRecords, setSpendingData, resetSpendingData } =
     useSpendingInfo();
 
+  // 보고 있는 달력 상태 관리
+  const handleActiveDateChange = (date: Date) => {
+    setActiveDate(date); // 자식에서 받은 값으로 부모 상태 업데이트
+  };
+
+  // 보고 있는 달력 전체 날짜 구하기
+  const getStartAndEndDateOfMonth = (activeStartDate: Date) => {
+    const startDate = new Date(activeStartDate);
+    startDate.setDate(1); // 해당 월의 1일로 설정
+
+    const endDate = new Date(activeStartDate);
+    endDate.setMonth(endDate.getMonth() + 1); // 다음 달로 이동
+    endDate.setDate(0); // 그 달의 마지막 날로 설정
+
+    return {
+      startDate: startDate.toISOString().split("T")[0], // 'YYYY-MM-DD' 형식
+      endDate: endDate.toISOString().split("T")[0], // 'YYYY-MM-DD' 형식
+    };
+  };
+
   useEffect(() => {
     const fetchPay = async () => {
       try {
         setLoading(true);
+        const { startDate, endDate } =
+          getStartAndEndDateOfMonth(activeStartDate);
         const res = await api.get(
-          `consumption?category=${payListInfo.category}&startDate=${payListInfo.startDate}&endDate=${payListInfo.endDate}`,
+          `consumption?category=${selectName}&startDate=${startDate}&endDate=${endDate}`,
         );
         console.log(res.data);
         // 받아온 데이터 store 저장
@@ -46,7 +69,10 @@ const PayRecodePage = () => {
 
   return (
     <div className="flex w-full flex-col">
-      <CustomCalendar />
+      <CustomCalendar
+        activeStartDate={activeStartDate}
+        onActiveStartDateChange={handleActiveDateChange}
+      />
       <div className="mt-5 flex w-full flex-col rounded-lg bg-white">
         {/* 드롭 클릭시 아래로 나오기  */}
         <DropButton
