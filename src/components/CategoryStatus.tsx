@@ -1,6 +1,3 @@
-import { useState } from "react";
-import MonthlyBudget from "../components/MonthlyBudget";
-import BudgetStatus from "../components/BudgetStatus";
 import IconFood from "../assets/categoryIcons/IconFood";
 import IconEducation from "../assets/categoryIcons/IconEducation";
 import IconHome from "../assets/categoryIcons/IconHome";

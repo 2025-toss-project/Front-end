@@ -1,230 +1,240 @@
-import React, { useState, useEffect } from "react";
-import { SaveButton } from "../components/common/Buttons";
-import { categoryList } from "../constants/category";
-import BarGraph from "../components/BarGraph";
+  import React, { useState, useEffect, Component, ErrorInfo, ReactNode } from "react";
+  import { Routes, Route, useNavigate } from "react-router-dom";
+  import { SaveButton } from "../components/common/Buttons"; // 기존 SaveButton 사용
+  import { categoryList } from "../constants/category";
+  import BarGraph from "../components/BarGraph";
+  import { fetchBudgetInfo, BudgetInfo } from "../stores/budgetInfo";
+  import CategoryBudgetInput from "../components/CategoryBudgetInput";
+  
+  // --- 에러 바운더리 ---
+  interface ErrorBoundaryProps {
+    children: ReactNode;
+  }
 
-// 전체 월 예산 기본값 (예: 1,000,000원)
-const totalBudget = 1000000;
+  interface ErrorBoundaryState {
+    hasError: boolean;
+  }
 
-interface CategoryBudget {
-  category: string; // 카테고리 이름
-  budgetPrice: number; // 카테고리별 예산 금액
-  percentage: number; // (카테고리 예산 / 전체 예산) * 100
-}
+  class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+    constructor(props: ErrorBoundaryProps) {
+      super(props);
+      this.state = { hasError: false };
+    }
 
-// 더미 데이터 (실제 서버 호출 대신)
-const dummyData: CategoryBudget[] = [
-  { category: "식비", budgetPrice: 150000, percentage: 15 },
-  { category: "교통", budgetPrice: 80000, percentage: 8 },
-  { category: "쇼핑", budgetPrice: 200000, percentage: 20 },
-  { category: "건강", budgetPrice: 100000, percentage: 5 },
-  { category: "주거", budgetPrice: 150000, percentage: 15 },
-  { category: "통신", budgetPrice: 80000, percentage: 8 },
-  { category: "교육", budgetPrice: 50000, percentage: 5 },
-  { category: "문화생활", budgetPrice: 150000, percentage: 15 },
-  { category: "저축", budgetPrice: 0, percentage: 0 },
-  { category: "경조사", budgetPrice: 0, percentage: 0 },
-  { category: "기타", budgetPrice: 50000, percentage: 5 },
-];
+    static getDerivedStateFromError(_: Error): ErrorBoundaryState {
+      return { hasError: true };
+    }
 
-// monthBudget(현재 월 예산)과 setMonthBudget(월 예산 변경) 함수를 props로 받음
-const MonthlyBudgetSet: React.FC<{
-  monthBudget: number;
-  setMonthBudget: (value: number) => void;
-}> = ({ monthBudget, setMonthBudget }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // 쉼표 제거 후 숫자 변환
-    const cleaned = e.target.value.replace(/,/g, "");
-    const num = Number(cleaned);
-    // 입력이 비었으면 0, 숫자가 아니면 기본값, 아니면 해당 숫자
-    setMonthBudget(cleaned === "" ? 0 : isNaN(num) ? totalBudget : num);
-  };
+    componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+      console.error("Uncaught error:", error, errorInfo);
+    }
 
-  return (
-    <div className="p-4 mb-4 bg-white rounded-2xl drop-shadow-10">
-      <div className="text-lg font-bold">
-        한달에 소비할 <span className="text-marker-home">예산</span>
-      </div>
-      <div className="text-sm">대략 한 달에 얼마를 사용할지 예상해보세요.</div>
-      <div className="text-sm">예산은 언제든지 수정이 가능해요.</div>
+    render() {
+      if (this.state.hasError) {
+        return <h1>Something went wrong.</h1>;
+      }
+      return this.props.children;
+    }
+  }
 
-      <div className="flex flex-col items-center pt-9">
-        <div className="flex flex-row items-center text-2xl font-bold text-main">
-          <input
-            maxLength={11}
-            type="text"
-            // 0원이면 빈 문자열, 아니면 쉼표로 표시
-            value={monthBudget === 0 ? "" : monthBudget.toLocaleString()}
-            onChange={handleChange}
-            // 입력 길이에 맞춰 너비 증가
-            style={{
-              width: `${(monthBudget === 0 ? 1 : monthBudget.toString().length) + 2}ch`,
-            }}
-            className="p-1 text-2xl font-bold text-center border-b-2 border-second-lighter text-main focus-within:border-main focus:outline-none"
-          />
-          <span className="ml-1 text-2xl font-bold text-main">원</span>
+  // --- 타입 정의 ---
+  interface CategoryBudget {
+    id?: number;
+    category: string;
+    budgetPrice: number;
+    percentage: number;
+  }
+
+
+  // --- MonthlyBudgetSet ---
+  const MonthlyBudgetSet: React.FC<{
+    monthBudget: number;
+    setMonthBudget: (value: number) => void;
+  }> = ({ monthBudget, setMonthBudget }) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const cleaned = e.target.value.replace(/,/g, "");
+      const num = Number(cleaned);
+      setMonthBudget(cleaned === "" ? 0 : isNaN(num) ? monthBudget : num);
+    };
+
+    return (
+      <div className="p-4 mb-4 bg-white rounded-2xl drop-shadow-10">
+        <div className="text-lg font-bold">
+          한달에 소비할 <span className="text-marker-home">예산</span>
         </div>
-        <div className="pt-3 text-sm">
-          하루당
-          <span className="text-sm font-bold text-[#006f6f]">
-            {" " + Math.round(monthBudget / 30).toLocaleString()}원{" "}
-          </span>
-          소비가 가능해요.
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// 카테고리별 막대 그래프
-/** (중요) monthBudget을 props로 받아서, 카테고리별 예산이 전체 예산에서 차지하는 비율을 계산 */
-const MonthlyBudgetBar: React.FC<{
-  monthBudget: number;
-  categoryBudgets: CategoryBudget[];
-  onChangeCategoryBudget: (category: string, newPrice: number) => void;
-}> = ({ monthBudget, categoryBudgets, onChangeCategoryBudget }) => {
-  return (
-    <>
-      {categoryList.map((cat, i) => {
-        // 현재 카테고리에 해당하는 예산 데이터 찾기
-        const data = categoryBudgets.find((c) => c.category === cat.text);
-        // 없으면 기본값
-        const budgetPrice = data?.budgetPrice ?? 0;
-        // (monthBudget이 0이 아니면) 퍼센티지 계산
-        const percentage = monthBudget ? (budgetPrice / monthBudget) * 100 : 0;
-
-        // 예산 입력 변경 시
-        const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-          // 숫자 이외 제거
-          const val = Number(e.target.value.replace(/\D/g, ""));
-          onChangeCategoryBudget(cat.text, isNaN(val) ? 0 : val);
-        };
-
-        return (
-          <div key={i} className="flex pt-2 gap-y-3">
-            <div className="w-full rounded-2xl bg-[#f8f8f8] px-2 py-2.5">
-              <div className="flex items-center justify-between pb-2 mb-1">
-                <div className="z-20 flex items-center space-x-2">
-                  <div className="flex rounded-full bg-second-lighter">
-                    {cat.icon({})}
-                  </div>
-                  <div className="text-sm font-medium shrink-0">{cat.text}</div>
-                  {/* 퍼센티지 표시 (소수점 반올림) */}
-                  <div className="text-xs font-medium">
-                    {Math.round(percentage)}%
-                  </div>
-                </div>
-                <div className="flex items-center border-b-2 border-transparent border-b-second focus-within:border-b-main">
-                  <input
-                    type="text"
-                    style={{
-                      width: `${(monthBudget === 0 ? 1 : monthBudget.toString().length) + 2}ch`,
-                    }}
-                    className="border-0 bg-[#f8f8f8] text-right text-sm font-bold focus:outline-none"
-                    value={
-                      budgetPrice === 0 ? "0" : budgetPrice.toLocaleString()
-                    }
-                    onChange={handleInputChange}
-                  />
-                  <span className="text-sm font-bold">원</span>
-                </div>
-              </div>
-
-              {/* 막대 그래프: 퍼센티지에 따라 길이 조절 */}
-             
-              <BarGraph props={percentage} />
-            </div>
+        <div className="text-sm">대략 한 달에 얼마를 사용할지 예상해보세요.</div>
+        <div className="text-sm">예산은 언제든지 수정이 가능해요.</div>
+        <div className="flex flex-col items-center pt-9">
+          <div className="flex flex-row items-center text-2xl font-bold border-b-2 border-b-second text-main focus-within:border-b-main">
+            <input
+              maxLength={11}
+              type="text"
+              value={monthBudget ? monthBudget.toLocaleString() : ""}
+              onChange={handleChange}
+              style={{
+                width: `${(monthBudget === 0 ? 1 : monthBudget.toString().length) + 1}ch`,
+              }}
+              className="text-2xl font-bold text-right bg-white border-0 focus:outline-none"
+            />
+            <span className="ml-1 text-2xl font-bold text-main">원</span>
           </div>
-        );
-      })}
-    </>
-  );
-};
-
-const BudgetManageSet: React.FC = () => {
-  const [monthBudget, setMonthBudget] = useState<number>(totalBudget);
-  const [categoryBudgets, setCategoryBudgets] = useState<CategoryBudget[]>([]);
-
-  // (핵심) 카테고리별 예산 변경 시 → 해당 카테고리의 퍼센티지를 재계산
-  const handleCategoryBudgetChange = (category: string, newPrice: number) => {
-    setCategoryBudgets((prev) =>
-      prev.map((item) => {
-        if (item.category === category) {
-          const newPercentage = monthBudget
-            ? (newPrice / monthBudget) * 100
-            : 0;
-          return { ...item, budgetPrice: newPrice, percentage: newPercentage };
-        }
-        return item;
-      }),
+          <div className="pt-3 text-sm">
+            하루당{" "}
+            <span className="text-sm font-bold text-[#006f6f]">
+              {Math.round(monthBudget / 30).toLocaleString()}원
+            </span>{" "}
+            소비가 가능해요.
+          </div>
+        </div>
+      </div>
     );
   };
 
-  // 컴포넌트 마운트 시 더미데이터로 초기화
-  useEffect(() => {
-    setCategoryBudgets(dummyData);
-  }, []);
+  // --- MonthlyBudgetBar ---
+  const MonthlyBudgetBar: React.FC<{
+    totalBudget: number;
+    categoryBudgets: CategoryBudget[];
+    onChangeCategoryBudget: (category: string, newPrice: number) => void;
+  }> = ({ totalBudget, categoryBudgets, onChangeCategoryBudget }) => {
+    return (
+      <>
+        {categoryList.map((cat, i) => {
+          const data = categoryBudgets.find((c) => c.category === cat.text);
+          const budgetPrice = data?.budgetPrice ?? 0;
+          const percentage = totalBudget ? (budgetPrice / totalBudget) * 100 : 0;
 
-  // 사용된 예산 (카테고리별 합)
-  const used = categoryBudgets.reduce((sum, c) => sum + c.budgetPrice, 0);
-  // 남은 예산
-  const remain = Math.max(monthBudget - used);
-
-  return (
-    <div className="flex flex-col w-full h-full bg-second-bg">
-      <div className="flex h-full flex-col bg-[#f8f8f8] py-5">
-        {/* 월 전체 예산 입력 */}
-        <MonthlyBudgetSet
-          monthBudget={monthBudget}
-          setMonthBudget={setMonthBudget}
-        />
-
-        {/* 카테고리별 예산 설정 */}
-        <div className="p-4 mt-4 text-lg bg-white rounded-2xl drop-shadow-10">
-          <div className="font-bold">
-            카테고리별 소비{" "}
-            <span className="font-bold text-marker-home">예산</span>
-          </div>
-          <div className="flex text-sm">카테고리별 예산으로 더욱 정확하게,</div>
-          <div className="flex text-sm">
-            원하는 카테고리 예산을 설정할 수 있어요.
-          </div>
-
-          {/* 남은예산 표시 */}
-          <div className="flex flex-col items-end">
-            <div className="flex flex-col items-end pb-2.5 pt-2.5 text-base">
-              남은예산
-              <div>
-                {remain < 0 ? (
-                  <div className="flex flex-col items-end m-0 text-base font-bold tb-0 text-main">
-                    {remain.toLocaleString()}원
+          return (
+            <div key={i} className="flex pt-2 gap-y-3">
+              <div className="w-full rounded-2xl bg-[#f8f8f8] px-2 py-2.5">
+                <div className="flex items-center justify-between pb-2 mb-1">
+                  <div className="z-20 flex items-center space-x-2">
+                    <div className="flex rounded-full bg-second-lighter">
+                      {cat.icon({})}
+                    </div>
+                    <div className="text-sm font-medium shrink-0">{cat.text}</div>
+                    <div className="text-xs font-medium">
+                      {totalBudget ? Math.round(percentage) : 0}%
+                    </div>
                   </div>
-                ) : (
-                  <div className="text-base font-bold text-main">
-                    {remain.toLocaleString()}원
+                  <div className="flex justify-end border-b-2 border-transparent border-b-second focus-within:border-b-main "
+                  style={{ width: "100px" }}>
+                    <CategoryBudgetInput
+                      category={cat.text}
+                      budgetPrice={budgetPrice}
+                      onChangeCategoryBudget={onChangeCategoryBudget}
+                    />
+                    <span className="text-sm font-bold">원</span>
                   </div>
-                )}
+                </div>
+                <BarGraph props={percentage} />
               </div>
             </div>
-          </div>
+          );
+        })}
+      </>
+    );
+  };
 
-          {/* 카테고리별 막대 그래프 */}
-          <MonthlyBudgetBar
-            monthBudget={monthBudget}
-            categoryBudgets={categoryBudgets}
-            onChangeCategoryBudget={handleCategoryBudgetChange}
-          />
-        </div>
-      </div>
-      <SaveButton
-        title={
-          remain >= 0
-            ? `남은 금액: ${remain.toLocaleString()}원`
-            : `예산 초과: ${Math.abs(remain).toLocaleString()}원`
+  // --- BudgetManageSet ---
+  const BudgetManageSet: React.FC = () => {
+    const navigate = useNavigate();
+    const [totalBudget, setTotalBudget] = useState<number>(0);
+    const [categoryBudgets, setCategoryBudgets] = useState<CategoryBudget[]>([]);
+
+    useEffect(() => {
+      const getBudgetData = async () => {
+        try {
+          // const data: BudgetInfo = await fetchBudgetInfo(); // 더미데이터 사용시
+          
+          // api 연동시
+           const response = await fetchBudgetInfo(); // ✅ API 호출
+           const data: BudgetInfo = response.result; // ✅ data.result 사용
+          // 여까지
+          
+          setTotalBudget(data.totalBudget ?? 0);
+          setCategoryBudgets(
+            data.budgetInfoList?.map((item) => ({
+              category: item.category,
+              budgetPrice: item.budgetPrice,
+              percentage: item.percentage,
+            })) ?? []
+          );
+        } catch (error) {
+          console.error("예산 데이터 로딩 실패:", error);
         }
-      />
-    </div>
-  );
-};
+      };
+    
+      getBudgetData();
+    }, []);
+    
 
-export default BudgetManageSet;
+    const handleCategoryBudgetChange = (category: string, newPrice: number) => {
+      setCategoryBudgets((prev) =>
+        prev.map((item) => {
+          if (item.category === category) {
+            const newPerc = totalBudget ? (newPrice / totalBudget) * 100 : 0;
+            return { ...item, budgetPrice: newPrice, percentage: newPerc };
+          }
+          return item;
+        })
+      );
+    };
+
+    const used = categoryBudgets.reduce((sum, c) => sum + c.budgetPrice, 0);
+    const remain = totalBudget - used;
+
+    return (
+      <div className="flex flex-col w-full h-full bg-second-bg">
+        <div className="flex h-full flex-col bg-[#f8f8f8] py-5">
+          <MonthlyBudgetSet monthBudget={totalBudget} setMonthBudget={setTotalBudget} />
+          <div className="p-4 mt-4 text-lg bg-white rounded-2xl drop-shadow-10">
+            <div className="font-bold">
+              카테고리별 소비 <span className="font-bold text-marker-home">예산</span>
+            </div>
+            <div className="flex text-sm">
+              카테고리별 예산으로 더욱 정확하게,
+            </div>
+            <div className="flex text-sm">
+              원하는 카테고리 예산을 설정할 수 있어요.
+            </div>
+            <div className="flex flex-col items-end">
+              <div className="flex flex-col items-end pb-2.5 pt-2.5 text-base">
+                남은예산
+                <div className="text-base font-bold text-main">
+                  {remain ? remain.toLocaleString() : "0"}원
+                </div>
+              </div>
+            </div>
+            <MonthlyBudgetBar
+              totalBudget={totalBudget}
+              categoryBudgets={categoryBudgets}
+              onChangeCategoryBudget={handleCategoryBudgetChange}
+            />
+          </div>
+        </div>
+        <SaveButton
+          title={
+            remain >= 0
+              ? `남은 금액: ${remain.toLocaleString()}원`
+              : `예산 초과: ${Math.abs(remain).toLocaleString()}원`
+          }
+        />
+      </div>
+    );
+  };
+
+  // --- App 컴포넌트 (라우터 중첩 제거) ---
+  // 만약 최상위 index.tsx에서 이미 <BrowserRouter>로 감싸고 있다면,
+  // 여기서는 <Routes>만 사용하면 됩니다.
+  const App: React.FC = () => {
+    return (
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/" element={<BudgetManageSet />} />
+          {/* 필요한 추가 라우트가 있으면 추가 */}
+        </Routes>
+      </ErrorBoundary>
+    );
+  };
+
+  export default App;
