@@ -6,24 +6,17 @@ import { payTypeList, PayTypeProps } from "../../constants/payType";
 import useUserInfo from "../../stores/userInfo";
 import { findType } from "../../utils/findTypeOrCategory";
 import IconMyPay from "../../assets/payTypeIcons/IconMyPay";
+import useMapInfo from "../../stores/mapInfo";
 
-const Category: React.FC<
-  CategoryProps & {
-    selectedCategory: string;
-    setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
-  }
-> = ({ text, icon, selectedCategory, setSelectedCategory }) => {
-  const handleClickCategory = (text: string) => {
-    text === selectedCategory
-      ? setSelectedCategory("")
-      : setSelectedCategory(text);
-  };
+const Category: React.FC<CategoryProps> = ({ text, icon }) => {
+  const { setUserSelect, userSelect } = useMapInfo();
+
   return (
     <div
       onClick={() => {
-        handleClickCategory(text);
+        setUserSelect({ category: text });
       }}
-      className={`flex w-fit flex-shrink-0 items-center gap-1 rounded-full border bg-white px-2.5 py-2 font-medium drop-shadow-10 ${selectedCategory === text ? "border-main" : "border-white"}`}
+      className={`flex w-fit flex-shrink-0 items-center gap-1 rounded-full border bg-white px-2.5 py-2 font-medium drop-shadow-10 ${userSelect.category === text ? "border-main" : "border-white"}`}
     >
       {icon({})}
       <div>{text}</div>
@@ -32,17 +25,10 @@ const Category: React.FC<
 };
 
 const CategoryList: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
   return (
     <div className="flex w-[calc(100vw-24px)] max-w-[476px] gap-2 overflow-x-scroll py-2 pr-6">
       {categoryList.map(({ text, icon }) => (
-        <Category
-          key={text}
-          text={text}
-          icon={icon}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-        />
+        <Category key={text} text={text} icon={icon} />
       ))}
     </div>
   );
@@ -54,14 +40,14 @@ interface DropDownProps {
 }
 
 const DropDown: React.FC<DropDownProps> = ({ isOpen, setIsOpen }) => {
+  const dropdownRef = React.useRef<HTMLDivElement>(null!);
   const myPay = {
     type: "나의 소비",
     icon: (props: { size?: number }) => <IconMyPay {...props} />,
   };
-  const [selectedType, setSelectedType] = useState<PayTypeProps>(myPay);
-
+  const { userSelect, setUserSelect } = useMapInfo();
   const types = [myPay, ...payTypeList];
-  const dropdownRef = React.useRef<HTMLDivElement>(null!);
+  const selectedType = findType(userSelect.type) || myPay;
 
   useClickOutside(dropdownRef, () => setIsOpen(false));
 
@@ -73,7 +59,7 @@ const DropDown: React.FC<DropDownProps> = ({ isOpen, setIsOpen }) => {
     >
       <div className="flex items-center gap-1">
         {selectedType.icon({ size: 20 })}
-        {selectedType.type}
+        {userSelect.type}
       </div>
       <ChevronDown size={16} color="#666" strokeWidth={4} />
       <div
@@ -82,7 +68,7 @@ const DropDown: React.FC<DropDownProps> = ({ isOpen, setIsOpen }) => {
         {types.map((type) => (
           <div
             key={type.type}
-            onClick={() => setSelectedType(type)}
+            onClick={() => setUserSelect({ type: type.type })}
             className={`flex gap-1 border-b border-b-second py-2 last:border-none ${selectedType.type === type.type ? "font-bold text-main" : ""}`}
           >
             {type.icon({ size: 20 })}

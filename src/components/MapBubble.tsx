@@ -36,6 +36,10 @@ const MapMarker: React.FC<MapMarkerProps> = ({
     }
   }, [categoryData, type]);
 
+  useEffect(() => {
+    console.log(type, position, category, price, count, onClick);
+  }, []);
+
   return (
     <CustomOverlayMap position={position}>
       {type === "icon" ? (
@@ -53,12 +57,14 @@ const MapMarker: React.FC<MapMarkerProps> = ({
             backgroundColor: categoryData?.background,
             borderColor: categoryData?.border,
           }}
-          className="flex items-end gap-1 text-sm border bubble"
+          className="bubble flex items-end gap-1 border text-sm"
         >
           {categoryData?.icon && categoryData.icon({})}
           <div>
             ₩{formatPrice(price || 0)}
-            <span className="text-[10px]">({count})</span>
+            {count && count > 1 && (
+              <span className="text-[10px]">({count})</span>
+            )}
           </div>
         </div>
       )}
