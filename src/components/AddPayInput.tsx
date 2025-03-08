@@ -4,11 +4,15 @@ import { useMovePage } from "../hooks/useMovePage";
 
 interface AddPayInputProps {
   toggle?: () => void; // 선택시 함수 전달
-  isOpen: boolean; // 오픈 상태 저장
-  selectName: string; // 선택한 값
+  isOpen?: boolean; // 오픈 상태 저장
+  selectName?: string; // 선택한 값
 }
 
-const AddPayInput: React.FC<AddPayInputProps> = ({ toggle, selectName }) => {
+const AddPayInput: React.FC<AddPayInputProps> = ({
+  toggle,
+  isOpen,
+  selectName,
+}) => {
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
 
   return (

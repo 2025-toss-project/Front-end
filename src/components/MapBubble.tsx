@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { CustomOverlayMap } from "react-kakao-maps-sdk";
 import { findCategory } from "../utils/findTypeOrCategory";
-import { formatPrice } from "../utils/formatPrice";
+import { formatPrice } from "../utils/formatFunc";
 import IconMapMarker from "../assets/IconMapMarker";
 import "../assets/css/bubble.css";
 

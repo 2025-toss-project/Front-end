@@ -3,7 +3,7 @@ import IconMyLocation from "../../assets/IconMyLocation";
 import { LucidePlus } from "lucide-react";
 import { useMovePage } from "../../hooks/useMovePage";
 import { CategoryProps } from "../../constants/category";
-import { formatPrice } from "../../utils/formatPrice";
+import { formatPrice } from "../../utils/formatFunc";
 import useMapInfo from "../../stores/mapInfo";
 import useClickOutside from "../../hooks/useClickOutside";
 import { DataProps } from "../../pages/MainPage";
