@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 export const useMovePage = () => {
   const navigate = useNavigate();
 
-  const moveToPage = (path: string) => {
-    navigate(path);
+  const moveToPage = (path: string, info?: any) => {
+    navigate(path, info ? { state: info } : undefined);
   };
 
   const moveToBack = () => {

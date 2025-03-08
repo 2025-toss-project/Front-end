@@ -7,6 +7,7 @@ import { formatPrice } from "../../utils/formatFunc";
 import useMapInfo from "../../stores/mapInfo";
 import useClickOutside from "../../hooks/useClickOutside";
 import { DataProps } from "../../pages/MainPage";
+import PageUrls from "../../constants/PageUrls";
 
 const IconMoveMyLocation: React.FC<{ moveToCurrentLocation: () => void }> = ({
   moveToCurrentLocation,
@@ -37,9 +38,11 @@ const ShowDetailInfo: React.FC<{
   selectedData: DataProps;
   categoryInfo: CategoryProps;
 }> = ({ showBubbleRef, selectedData, categoryInfo }) => {
+  const { moveToPage } = useMovePage();
   return (
     <div
       ref={showBubbleRef}
+      onClick={() => moveToPage(PageUrls.PAY_DETAIL, { id: selectedData.id })}
       className="flex flex-col gap-2 rounded-lg bg-white p-3 drop-shadow-10"
     >
       <div className="flex items-center justify-between">
