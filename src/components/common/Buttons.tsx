@@ -66,3 +66,11 @@ export const AddressButton: React.FC<AddressButtonProps> = ({ title }) => {
     </div>
   );
 };
+
+export const IconButton = (icon: React.ReactNode, onClick: () => void) => {
+  return (
+    <div className="flex rounded-md border">
+      <div onClick={() => console.log("button")}> {icon} </div>
+    </div>
+  );
+};

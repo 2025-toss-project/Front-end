@@ -53,7 +53,7 @@ const PayRecodePage = () => {
 
         console.log(res.data);
 
-        // Zustand에 데이터 저장
+        // 데이터 저장
         setDayData({
           totalPrice: res.data.totalPrice,
           consumptionInfoByDateDTOS: res.data.consumptionInfoByDateDTOS,

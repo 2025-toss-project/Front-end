@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import SelectCategory from "../components/SelectCategory";
-import { SaveButton } from "../components/common/Buttons";
+import { IconButton, SaveButton } from "../components/common/Buttons";
 import { useCategoryInfo } from "../stores/CategoryInfo";
 import ReadPayInput from "../components/ReadPayinput";
 import useAddPayInfo from "../stores/addpayInfo";
@@ -10,6 +10,7 @@ import { usePlaceInfo } from "../stores/placeInfo";
 import { useLocation } from "react-router-dom";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
+import { LucideTrash, LucideTrash2, LucideX } from "lucide-react";
 
 const PayDetailPage = () => {
   const { isOpen, setIsOpen } = useCategoryInfo();
@@ -57,11 +58,51 @@ const PayDetailPage = () => {
     }
   };
 
+  const handleClickDelete = async () => {
+    if (!id) {
+      alert("삭제할 항목이 없습니다.");
+      return;
+    }
+    const confirmDelete = window.confirm("정말 삭제하시겠습니까?");
+    if (!confirmDelete) return;
+
+    try {
+      const res = await api.delete(`consumption/delete/${id}`);
+      console.log("삭제 성공:", res.data);
+    } catch (error) {
+      console.error("삭제 실패:", error);
+    } finally {
+      resetAddPayInfo();
+      moveToPage(PageUrls.PAY_RECODE);
+    }
+  };
+
   return (
     <div className="flex w-full flex-col">
-      <ReadPayInput toggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
-      <SelectCategory classname={isOpen ? "block" : "hidden"} />
-      <SaveButton title="수정하기" onClick={handleClickUpdate} />
+      <div className="flex flex-col px-2">
+        <div
+          onClick={() => moveToPage(PageUrls.PAY_RECODE)}
+          className="flex justify-end"
+        >
+          <LucideX />
+        </div>
+        <ReadPayInput toggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
+        <SelectCategory classname={isOpen ? "block" : "hidden"} />
+      </div>
+      <div className="flex flex-row items-center gap-3">
+        <SaveButton
+          style={"flex-grow"}
+          title="수정하기"
+          onClick={handleClickUpdate}
+        />
+        <div
+          onClick={handleClickDelete}
+          className="flex h-12 w-12 items-center justify-center rounded-md border border-gray-500"
+        >
+          {" "}
+          <LucideTrash2 size={26} color="#777" />{" "}
+        </div>
+      </div>
     </div>
   );
 };
