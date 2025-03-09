@@ -89,9 +89,7 @@ const PayList: React.FC<PayListProps> = ({
 
         if (!startDate || !endDate) {
           if (refresh) {
-            console.warn(
-              "캘린더에서 날짜가 선택되지 않았지만 refresh 값 변경 → 실행",
-            );
+            console.warn("refresh 값 변경으로 실행", refresh);
           } else {
             console.warn("캘린더에서 날짜가 선택되지 않음 → API 호출 중단");
             return;

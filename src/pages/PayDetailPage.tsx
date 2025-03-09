@@ -75,14 +75,29 @@ const PayDetailPage = () => {
     const confirmDelete = window.confirm("정말 삭제하시겠습니까?");
     if (!confirmDelete) return;
 
+    let deleteDate: string | Date = new Date();
+
     try {
-      const res = await api.delete(`consumption/delete/${id}`);
+      const res = await api.delete(`consumption/delete?consumptionId=${id}`);
       console.log("삭제 성공:", res.data);
+
+      // 만약 삭제된 항목이 반환되면 날짜 정보 추출
+      if (res.data && res.data.length > 0) {
+        const deletedItem = res.data[0]; // 삭제된 항목
+        deleteDate = deletedItem.date; // 날짜 정보
+      }
     } catch (error) {
       console.error("삭제 실패:", error);
     } finally {
-      resetAddPayInfo();
-      moveToPage(`${PageUrls.PAY_RECODE}?refresh=${Date.now()}`);
+      if (deleteDate) {
+        const formattedDate = formatDateToYMD(new Date(deleteDate));
+        moveToPage(`${PageUrls.PAY_RECODE}?refresh=${formattedDate}`);
+      } else {
+        // 날짜 정보를 알 수 없는 경우 현재 날짜로 설정
+        moveToPage(
+          `${PageUrls.PAY_RECODE}?refresh=${formatDateToYMD(new Date())}`,
+        );
+      }
     }
   };
 
