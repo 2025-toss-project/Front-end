@@ -12,7 +12,6 @@ import PageUrls from "../constants/PageUrls";
 const PayRecodePage = () => {
   const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 관리
   const [activeStartDate, setActiveDate] = useState(new Date()); // 캘린더 선택 날짜
-  const [validDates, setValidDates] = useState<string[]>([]); // API 호출 가능한 날짜 리스트
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const { selectName, isOpen, setIsOpen } = useCategoryInfo();
@@ -66,7 +65,7 @@ const PayRecodePage = () => {
       }
     };
 
-    //fetchCalendar();
+    fetchCalendar();
   }, [activeStartDate]);
 
   return (
@@ -80,11 +79,7 @@ const PayRecodePage = () => {
           isOpen={isOpen}
         />
         <SelectCategory classname={isOpen ? "block" : "hidden"} />
-        <PayList
-          startDate={startDate}
-          endDate={endDate}
-          validDates={validDates}
-        />
+        <PayList startDate={startDate} endDate={endDate} />
       </div>
     </div>
   );

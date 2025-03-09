@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import SelectCategory from "../components/SelectCategory";
 import { IconButton, SaveButton } from "../components/common/Buttons";
 import { useCategoryInfo } from "../stores/CategoryInfo";
-import ReadPayInput from "../components/ReadPayinput";
 import useAddPayInfo from "../stores/addpayInfo";
 import { api } from "../utils/api";
 import { usePlaceInfo } from "../stores/placeInfo";
@@ -12,6 +11,7 @@ import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
 import { LucideTrash, LucideTrash2, LucideX } from "lucide-react";
 import useSpendingInfo, { ConsumptionInfo } from "../stores/spendingInfo";
+import PayInput from "../components/PayInput";
 
 const PayDetailPage = () => {
   const { isOpen, setIsOpen } = useCategoryInfo();
@@ -27,7 +27,7 @@ const PayDetailPage = () => {
 
   const formatDateToYMD = (date: Date) => {
     const year = date.getFullYear();
-    const month = `0${date.getMonth() + 1}`.slice(-2); // 월은 0부터 시작하므로 1을 더해줍니다.
+    const month = `0${date.getMonth() + 1}`.slice(-2);
     const day = `0${date.getDate()}`.slice(-2); // 1일, 2일 같은 단일 숫자를 두 자리로 포맷
 
     return `${year}-${month}-${day}`;
@@ -93,7 +93,7 @@ const PayDetailPage = () => {
       if (deletedItem) {
         // deletedItem은 ConsumptionInfoByDate 타입
         const { year, month, day } = deletedItem; // 삭제된 항목의 날짜 정보
-        const deleteDate = new Date(year, month - 1, day); // JavaScript Date는 월이 0부터 시작하므로, month-1로 설정
+        const deleteDate = new Date(year, month - 1, day);
 
         const formattedDate = formatDateToYMD(deleteDate);
         moveToPage(`${PageUrls.PAY_RECODE}?refresh=${formattedDate}`);
@@ -115,7 +115,7 @@ const PayDetailPage = () => {
         >
           <LucideX />
         </div>
-        <ReadPayInput toggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
+        <PayInput toggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
         <SelectCategory classname={isOpen ? "block" : "hidden"} />
       </div>
       <div className="flex flex-row items-center gap-3">

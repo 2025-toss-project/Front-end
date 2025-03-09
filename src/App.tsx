@@ -14,7 +14,6 @@ import SearchLocation from "./pages/SearchLocation";
 import StatisticPage from "./pages/StatisticPage";
 import PayDetailPage from "./pages/PayDetailPage";
 import MapPinPage from "./pages/SearchPlaceMapPage";
-import { SearchPlaceProvider } from "./contexts/SearchPlaceContext";
 import PageUrls from "./constants/PageUrls";
 import NavBarLayout from "./layouts/NavBarLayout";
 

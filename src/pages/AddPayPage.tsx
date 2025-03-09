@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 
-import AddPayInput from "../components/AddPayInput";
 import SelectCategory from "../components/SelectCategory";
 import { SaveButton } from "../components/common/Buttons";
 import { api } from "../utils/api";
@@ -9,6 +8,7 @@ import { useCategoryInfo } from "../stores/CategoryInfo";
 import { usePlaceInfo } from "../stores/placeInfo";
 import PageUrls from "../constants/PageUrls";
 import { useMovePage } from "../hooks/useMovePage";
+import PayInput from "../components/PayInput";
 
 export interface addpayInfo {
   price: number;
@@ -50,14 +50,14 @@ const AddPayPage = () => {
     } catch (error) {
       console.error(error);
     } finally {
+      moveToPage(`${PageUrls.PAY_RECODE}?refresh=${addpayInfo.date}`);
       resetAddPayInfo();
-      moveToPage(PageUrls.PAY_RECODE);
     }
   };
 
   return (
     <div className="flex w-full flex-col">
-      <AddPayInput toggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
+      <PayInput toggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
       <SelectCategory classname={isOpen ? "block" : "hidden"} />
       <SaveButton title="저장하기" onClick={handleClickSubmit} />
     </div>
