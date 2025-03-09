@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
 export interface ConsumptionInfo {
+  consumptionInfoList: any;
   id: number;
   price: number;
   category: string;

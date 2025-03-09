@@ -11,6 +11,7 @@ import { useLocation } from "react-router-dom";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
 import { LucideTrash, LucideTrash2, LucideX } from "lucide-react";
+import useSpendingInfo, { ConsumptionInfo } from "../stores/spendingInfo";
 
 const PayDetailPage = () => {
   const { isOpen, setIsOpen } = useCategoryInfo();
@@ -18,6 +19,7 @@ const PayDetailPage = () => {
   const { selectName } = useCategoryInfo();
   const { selectPlace, placeInfo } = usePlaceInfo();
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
+  const { spendingRecords } = useSpendingInfo();
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -75,22 +77,25 @@ const PayDetailPage = () => {
     const confirmDelete = window.confirm("정말 삭제하시겠습니까?");
     if (!confirmDelete) return;
 
-    let deleteDate: string | Date = new Date();
+    // spendingRecords에서 id에 해당하는 항목을 찾는 부분
+    const deletedItem = spendingRecords.find((dayData) =>
+      dayData.consumptionInfoList.some(
+        (item: ConsumptionInfo) => item.id === Number(id),
+      ),
+    ); // dayData.consumptionInfoList에서 id를 찾은 항목
 
     try {
       const res = await api.delete(`consumption/delete?consumptionId=${id}`);
       console.log("삭제 성공:", res.data);
-
-      // 만약 삭제된 항목이 반환되면 날짜 정보 추출
-      if (res.data && res.data.length > 0) {
-        const deletedItem = res.data[0]; // 삭제된 항목
-        deleteDate = deletedItem.date; // 날짜 정보
-      }
     } catch (error) {
       console.error("삭제 실패:", error);
     } finally {
-      if (deleteDate) {
-        const formattedDate = formatDateToYMD(new Date(deleteDate));
+      if (deletedItem) {
+        // deletedItem은 ConsumptionInfoByDate 타입
+        const { year, month, day } = deletedItem; // 삭제된 항목의 날짜 정보
+        const deleteDate = new Date(year, month - 1, day); // JavaScript Date는 월이 0부터 시작하므로, month-1로 설정
+
+        const formattedDate = formatDateToYMD(deleteDate);
         moveToPage(`${PageUrls.PAY_RECODE}?refresh=${formattedDate}`);
       } else {
         // 날짜 정보를 알 수 없는 경우 현재 날짜로 설정
