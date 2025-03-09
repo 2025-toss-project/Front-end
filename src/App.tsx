@@ -13,7 +13,7 @@ import SearchPlacePage from "./pages/SearchPlacePage";
 import SearchLocation from "./pages/SearchLocation";
 import StatisticPage from "./pages/StatisticPage";
 import PayDetailPage from "./pages/PayDetailPage";
-import MapPinPage from "./pages/MapPinPage";
+import MapPinPage from "./pages/SearchPlaceMapPage";
 import { SearchPlaceProvider } from "./contexts/SearchPlaceContext";
 import PageUrls from "./constants/PageUrls";
 import NavBarLayout from "./layouts/NavBarLayout";
@@ -32,14 +32,8 @@ const App: React.FC = () => {
         <Route path={PageUrls.STATISTIC} element={<StatisticPage />} />
         <Route path={PageUrls.PAY_DETAIL} element={<PayDetailPage />} />
         <Route path={PageUrls.ADD_PAY} element={<AddPayPage />} />
-        <Route
-          path={PageUrls.ADD_PAY_SEARCH_PLACE}
-          element={<SearchPlacePage />}
-        />
-        <Route
-          path={PageUrls.ADD_PAY_SEARCH_PLACE_MAP}
-          element={<MapPinPage />}
-        />
+        <Route path={PageUrls.SEARCH_PLACE} element={<SearchPlacePage />} />
+        <Route path={PageUrls.SEARCH_PLACE_MAP} element={<MapPinPage />} />
       </Route>
       {/* Header */}
       <Route element={<HeaderLayout />}>

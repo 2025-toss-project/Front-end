@@ -42,7 +42,10 @@ const AddPayInput: React.FC<AddPayInputProps> = ({ toggle, isOpen }) => {
           label="장소"
           placeholder="장소를 입력하세요"
           value={selectPlace}
-          onClick={() => moveToPage(PageUrls.ADD_PAY_SEARCH_PLACE)}
+          onClick={() => {
+            const mode = "add";
+            moveToPage(`${PageUrls.SEARCH_PLACE}?mode=${mode}`);
+          }}
         />
         <InputDefault
           label="내용"

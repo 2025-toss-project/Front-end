@@ -5,6 +5,7 @@ import { LucideMapPin } from "lucide-react";
 import { createRoot } from "react-dom/client";
 import PageUrls from "../constants/PageUrls";
 import { usePlaceInfo } from "../stores/placeInfo";
+import { useLocation } from "react-router-dom";
 
 declare global {
   interface Window {
@@ -18,6 +19,10 @@ const Map = () => {
   const [loaded, setLoaded] = useState(false);
   const { moveToBack } = useMovePage();
   const { selectPlace, setPlaceInfo } = usePlaceInfo();
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const mode = searchParams.get("mode") || "add";
 
   useEffect(() => {
     // Kakao API 로드 확인
@@ -111,19 +116,29 @@ const Map = () => {
 
 const MapInfo = () => {
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const mode = searchParams.get("mode") || "add"; // 기본값 "add"
+  const id = searchParams.get("id");
+
+  const buttonText = mode === "edit" ? "수정하기" : "저장하기";
+  const targetUrl =
+    mode === "edit" && id
+      ? `${PageUrls.PAY_DETAIL}?id=${id}`
+      : PageUrls.ADD_PAY;
 
   return (
     <div className="pointer-events-auto absolute bottom-10 left-1/2 z-10 w-80 -translate-x-1/2">
       <SaveButton
-        title="저장하기"
+        title={buttonText}
         style="px-6"
-        onClick={() => moveToPage(PageUrls.ADD_PAY)}
+        onClick={() => moveToPage(targetUrl)}
       />
     </div>
   );
 };
 
-const MapPinPage = () => {
+const SearchPlaceMapPage = () => {
   return (
     <div className="relative">
       <Map />
@@ -132,4 +147,4 @@ const MapPinPage = () => {
   );
 };
 
-export default MapPinPage;
+export default SearchPlaceMapPage;

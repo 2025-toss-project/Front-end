@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { AddressButton } from "./common/Buttons";
 import { usePlaceInfo } from "../stores/placeInfo";
 import { useMovePage } from "../hooks/useMovePage";
+import { useLocation } from "react-router-dom";
+import PageUrls from "../constants/PageUrls";
 
 declare global {
   interface Window {
@@ -23,14 +25,26 @@ export default function SearchPlace() {
   const { place, selectPlace, setSelectPlace } = usePlaceInfo();
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
 
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const mode = searchParams.get("mode") || "add";
+  const id = searchParams.get("id");
+
   useEffect(() => {
     setSelectPlace(""); // Reset the selected place when component mounts
     setPlaces([]); // Reset the places list
   }, []);
 
   useEffect(() => {
+    console.log("현재 모드:", mode);
+  }, [mode]);
+
+  useEffect(() => {
     if (selectPlace) {
-      setTimeout(() => moveToPage("./map"), 0); // Short delay to trigger page transition
+      setTimeout(
+        () => moveToPage(`${PageUrls.SEARCH_PLACE_MAP}?mode=${mode}&id=${id}`),
+        0,
+      );
     }
   }, [selectPlace]);
 

@@ -98,8 +98,11 @@ const ReadPayInput: React.FC<ReadPayInputProps> = ({ toggle }) => {
           <InputDefault
             label="장소"
             placeholder="장소를 입력하세요"
-            value={itemData.point_name || selectPlace}
-            onClick={() => moveToPage(PageUrls.ADD_PAY_SEARCH_PLACE)}
+            value={selectPlace || itemData.point_name}
+            onClick={() => {
+              const mode = itemData ? "edit" : "add"; // itemData가 있으면 수정 모드
+              moveToPage(`${PageUrls.SEARCH_PLACE}?mode=${mode}&id=${id}`);
+            }}
           />
 
           <InputDefault
@@ -122,7 +125,7 @@ const ReadPayInput: React.FC<ReadPayInputProps> = ({ toggle }) => {
           <InputDefault
             label="카테고리"
             type="category"
-            value={itemData.category || selectName}
+            value={selectName || itemData.category}
             placeholder="미선택"
             isReadOnly={true}
             onClick={toggle}

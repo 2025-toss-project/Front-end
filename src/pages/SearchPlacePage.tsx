@@ -2,6 +2,7 @@ import { LucideCircleX, LucideSearch } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import SearchPlace from "../components/SearchPlace";
 import { usePlaceInfo } from "../stores/placeInfo";
+import { useLocation } from "react-router-dom";
 
 const SearchHeader = () => {
   const { place, setPlace, setSelectPlace } = usePlaceInfo();
