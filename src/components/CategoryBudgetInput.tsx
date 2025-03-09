@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 interface CategoryBudgetInputProps {
   category: string;
@@ -11,20 +11,18 @@ const CategoryBudgetInput: React.FC<CategoryBudgetInputProps> = ({
   budgetPrice,
   onChangeCategoryBudget,
 }) => {
-  // 초기값도 쉼표가 포함된 문자열로 설정
   const [rawValue, setRawValue] = useState<string>(budgetPrice.toLocaleString());
+  const inputRef = useRef<HTMLInputElement>(null); // input 요소 참조
 
-  // 상위 budgetPrice 변경 시 쉼표 포함된 값으로 업데이트
   useEffect(() => {
     setRawValue(budgetPrice.toLocaleString());
   }, [budgetPrice]);
 
-  // 입력 변경 핸들러 (빈 값이어도 "0" 유지)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const onlyNums = e.target.value.replace(/\D/g, ""); // 숫자만 유지
+    const onlyNums = e.target.value.replace(/\D/g, "");
 
     if (onlyNums === "") {
-      setRawValue("0"); // 빈 값 입력하면 즉시 "0" 표시
+      setRawValue("0");
       onChangeCategoryBudget(category, 0);
     } else {
       setRawValue(onlyNums);
@@ -33,19 +31,29 @@ const CategoryBudgetInput: React.FC<CategoryBudgetInputProps> = ({
     }
   };
 
-  // 포커스 아웃 시 쉼표 추가
   const handleBlur = () => {
     const parsed = parseInt(rawValue.replace(/,/g, ""), 10);
-    setRawValue(isNaN(parsed) ? "0" : parsed.toLocaleString()); // NaN 방지
+    setRawValue(isNaN(parsed) ? "0" : parsed.toLocaleString());
+  };
+
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    const length = e.target.value.length;
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.setSelectionRange(length, length); // 커서를 끝으로 이동
+      }
+    }, 0);
   };
 
   return (
     <input
+      ref={inputRef} // input 요소 참조 연결
       type="text"
       maxLength={10}
       value={rawValue}
       onChange={handleChange}
       onBlur={handleBlur}
+      onFocus={handleFocus} // 포커스 시 커서 이동
       className="border-0 bg-[#f8f8f8] text-right text-sm font-bold focus:outline-none"
     />
   );

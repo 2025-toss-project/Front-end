@@ -10,7 +10,8 @@ import { categoryList } from "../constants/category";
 import BarGraph from "../components/BarGraph";
 import { fetchBudgetInfo, BudgetInfo } from "../stores/budgetInfo";
 import CategoryBudgetInput from "../components/CategoryBudgetInput";
-import BudgetUpdate from "../components/bedgetUpdate";
+import BudgetUpdate, { updateBudgetInfo } from "../components/bedgetUpdate";
+import Loading from "../components/loading";
 
 // --- 에러 바운더리 ---
 interface ErrorBoundaryProps {
@@ -74,7 +75,7 @@ const MonthlyBudgetSet: React.FC<{
           <input
             maxLength={11}
             type="text"
-            value={monthBudget ? monthBudget.toLocaleString() : ""}
+            value={monthBudget ? monthBudget.toLocaleString() : "0"}
             onChange={handleChange}
             style={{
               width: `${(monthBudget === 0 ? 1 : monthBudget.toString().length) + 1}ch`,
@@ -148,14 +149,16 @@ const BudgetManageSet: React.FC = () => {
   const [totalId, setTotalId] = useState<number>(0);
   const [totalBudget, setTotalBudget] = useState<number>(0);
   const [categoryBudgets, setCategoryBudgets] = useState<CategoryBudget[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const getBudgetData = async () => {
       try {
-        
         // api 연동시
         const response = await fetchBudgetInfo(); // ✅ API 호출
         const data: BudgetInfo = response.result; // ✅ data.result 사용
+        setLoading(true);
+         // await new Promise((resolve) => setTimeout(resolve, 3000));
 
         setTotalId(data.totalId ?? 0);
         setTotalBudget(data.totalBudget ?? 0);
@@ -169,11 +172,40 @@ const BudgetManageSet: React.FC = () => {
         );
       } catch (error) {
         console.error("예산 데이터 로딩 실패:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     getBudgetData();
   }, []);
+
+  // 클릭 시 POST API 호출 후 navigate("/budget")로 전환하는 함수 추가
+  const saveAndPost = async () => {
+    try {
+      const payroad = {
+        budgetUpdateDTOList: [
+          { budgetId: totalId, price: totalBudget },
+          ...categoryBudgets.map((item) => ({
+            budgetId: item.id ?? 0,
+            price: item.budgetPrice ?? 0,
+          })),
+        ],
+      };
+      await updateBudgetInfo(payroad);
+      navigate("/budget");
+    } catch (error) {
+      console.error("API 데이터 전송 실패:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
 
   const handleCategoryBudgetChange = (category: string, newPrice: number) => {
     setCategoryBudgets((prev) =>
@@ -189,7 +221,14 @@ const BudgetManageSet: React.FC = () => {
 
   const used = categoryBudgets.reduce((sum, c) => sum + c.budgetPrice, 0);
   const remain = totalBudget - used;
+  const isOverBudget = remain < 0;
+  const isBudgetDepleted = remain == 0;
+  
+ 
+  
+  
 
+  
   return (
     <div className="flex flex-col w-full h-full bg-second-bg">
       <div className="flex h-full flex-col bg-[#f8f8f8] py-5">
@@ -209,8 +248,12 @@ const BudgetManageSet: React.FC = () => {
           <div className="flex flex-col items-end">
             <div className="flex flex-col items-end pb-2.5 pt-2.5 text-base">
               남은예산
-              <div className="text-base font-bold text-main">
-                {remain ? remain.toLocaleString() : "0"}원
+              <div className={`text-marker-home font-bold ${isOverBudget ? "text-main" : isBudgetDepleted ? "text-black" : ""}`}>
+              {isOverBudget
+                    ? `${Math.abs(remain).toLocaleString()}원 초과`
+                    : isBudgetDepleted
+                      ? "소진"
+                      : `${remain.toLocaleString()}원 남음`}
               </div>
             </div>
           </div>
@@ -221,7 +264,7 @@ const BudgetManageSet: React.FC = () => {
           />
         </div>
       </div>
-      <div onClick={() => navigate("/budget")} className="cursor-pointer">
+      <div onClick={saveAndPost} className="cursor-pointer">
         <BudgetUpdate
           totalId={totalId}
           totalBudget={totalBudget}

@@ -41,8 +41,12 @@ interface CategoryStatusProps {
 const CategoryStatus: React.FC<CategoryStatusProps> = ({ categoryBudgets }) => {
   // 퍼센티지 기준 내림차순 정렬 (높은 값이 먼저 오도록)
   const sortedBudgets = [...categoryBudgets]
-  .filter((budget) => budget.budgetPrice > 0) // ✅ 예산이 0보다 큰 항목만 표시
-  .sort((a, b) => b.percentage - a.percentage);
+  .filter((budget) => budget.budgetPrice > 0) // 예산이 0보다 큰 항목만 표시
+  .sort((a, b) => {
+    const aPercent = a.budgetPrice > 0 ? (a.spendPrice / a.budgetPrice) * 100 : 0;
+    const bPercent = b.budgetPrice > 0 ? (b.spendPrice / b.budgetPrice) * 100 : 0;
+    return bPercent - aPercent;
+  });
 
   return (
     <div className="mb-5 gap-x-2.5 gap-y-2.5 rounded-2xl bg-white px-3 py-5 drop-shadow-10">
@@ -57,7 +61,7 @@ const CategoryStatus: React.FC<CategoryStatusProps> = ({ categoryBudgets }) => {
           const isOverBudget = remainBudget < 0;
           const isBudgetDepleted = remainBudget === 0;
           const IconComponent = categoryIcons[category] || IconEtc;
-          const categoryPercent = spendPrice / budgetPrice * 100;
+          const categoryPercent =  Math.min(spendPrice / budgetPrice * 100, 100);
 
           return (
             <div

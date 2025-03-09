@@ -1,27 +1,54 @@
-import { create } from "zustand";
-import { PayTypeProps } from "../constants/payType";
-// userInfo 상태관리
+// stores/userInfo.ts
+import { api } from "../utils/api"; // axios 인스턴스 가져오기
 
-interface UserInfo {
-  id: string;
-  email: string;
+// 유저 홈 정보(위도, 경도)
+export interface userInfoAd {
+  lan: number;
+  lat: number;
+}
+
+// 유저 정보(서버 GET)
+export interface userInfo {
   nickname: string;
+  email: string;
   type: string;
+  ageGroup: string;
+  home: userInfoAd;
 }
 
-interface UserStore {
-  userInfo: UserInfo;
-  setUserInfo: (userInfo: UserInfo) => void;
+// GET
+export const fetchUserInfo = async (): Promise<{ result: userInfo }> => {
+  try {
+    const response = await api.get("/members/info");
+    return response.data;
+  } catch (error) {
+    console.error("API 요청 중 오류 발생:", error);
+    throw error;
+  }
+};
+
+
+export interface ProfileUpdateDTO {
+  nickname: string;
+  ageGroup: string;
+  home: userInfoAd;
 }
 
-const useUserInfo = create<UserStore>((set) => ({
-  userInfo: {
-    id: "",
-    email: "",
-    nickname: "희연",
-    type: "올인형",
-  },
-  setUserInfo: (userInfo: UserInfo) => set({ userInfo }),
-}));
+export interface UpdateProfilePayroad {
+  profileUpdateDTOList: ProfileUpdateDTO[];
+}
 
-export default useUserInfo;
+// POST
+export const updateProfileInfo = async (
+  updateProfileData: UpdateProfilePayroad
+): Promise<any> => {
+  try {
+    const response = await api.post("/members/update", updateProfileData);
+    return response.data;
+  } catch (error) {
+    console.error("프로필 업데이트 요청 중 오류 발생:", error);
+    throw error;
+  }
+};
+
+export default fetchUserInfo;

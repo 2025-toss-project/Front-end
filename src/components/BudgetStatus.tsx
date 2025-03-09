@@ -23,7 +23,8 @@ const BudgetStatus: React.FC<BudgetStatusProps> = ({
   // ✅ 예산 계산
   const remainBudget = totalBudget - totalSpend;
   const budgetPerDay = daysLeft > 0 ? remainBudget / daysLeft : remainBudget;
-  const monthPercent = totalSpend / totalBudget * 100;
+  const monthPercent = totalBudget > 0 ? (totalSpend / totalBudget) * 100 : 0;
+
   return (
     <div className="p-4 mb-4 bg-white rounded-2xl drop-shadow-10">
       <p className="mb-1 text-lg font-bold">
