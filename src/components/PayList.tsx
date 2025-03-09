@@ -99,8 +99,8 @@ const PayList: React.FC<PayListProps> = ({
         }
 
         // refresh 값이 있으면 날짜로 startDate와 endDate 설정
-        const effectiveStartDate = refresh || startDate;
-        const effectiveEndDate = refresh || endDate;
+        const effectiveStartDate = startDate || refresh;
+        const effectiveEndDate = endDate || refresh;
 
         if (!effectiveStartDate || !effectiveEndDate) {
           console.warn("유효한 날짜가 없으므로 API 호출을 중단합니다.");
