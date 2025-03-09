@@ -1,6 +1,8 @@
 import { LucidePlus, LucideTriangle } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import useCalendarInfo from "../stores/CalendarInfo";
+import { useMovePage } from "../hooks/useMovePage";
+import PageUrls from "../constants/PageUrls";
 
 interface CustomCalendarProps {
   onDateChange: (startDate: string, endDate: string) => void;
@@ -20,7 +22,8 @@ interface CalendarBodyProps {
   selectedYear: number;
   selectedMonth: number;
   isSingleSelect: boolean;
-  consumptionInfoByDateDTOS: {
+  calenderInfoDTOS: {
+    year: number;
     month: number;
     day: number;
     datePrice: number;
@@ -33,7 +36,7 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
   selectedYear,
   selectedMonth,
   isSingleSelect,
-  consumptionInfoByDateDTOS,
+  calenderInfoDTOS,
 }) => {
   const updateStartDate = (newStartDate: string) => {
     setTripDate((prev) => ({
@@ -80,10 +83,10 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
 
   // 해당 달의 1일의 요일
   const firstDay = new Date(selectedYear, selectedMonth - 1, 1).getDay();
-
   // 해당 달의 마지막 날
   const lastDay = new Date(selectedYear, selectedMonth, 0).getDate();
 
+  // 날짜 렌더
   const renderDays = () => {
     const daysOfMonth = [];
     for (let i = 0; i < firstDay; i++) {
@@ -108,11 +111,12 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
       const isStartDate = currentDate === tripDate.startDate;
       const isEndDate = currentDate === tripDate.endDate;
 
-      // 내 데이터에서 달력 날짜랑 같은 날짜 찾기
-      const dayRecord = consumptionInfoByDateDTOS.find(
+      // calenderInfoDTOS에서 해당 날짜의 데이터 가져오기
+      const dayRecord = calenderInfoDTOS?.find(
         (record) =>
-          String(record.month) === String(selectedMonth) &&
-          String(record.day) === String(day),
+          record.year === selectedYear &&
+          record.month === selectedMonth &&
+          record.day === day,
       );
 
       return (
@@ -139,8 +143,8 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
           </span>
           {/* 지출금액 표시할 곳 */}
           {isSingleSelect && dayRecord && (
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-xs text-red-500">
-              {dayRecord.datePrice.toLocaleString()}원
+            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-xs text-red-500">
+              {dayRecord.datePrice.toLocaleString()}
             </div>
           )}
           {!isSingleSelect && (isStartDate || isEndDate) && (
@@ -156,7 +160,7 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
   };
 
   return (
-    <div className={"grid h-fit w-full grid-cols-7 gap-y-1 pt-2"}>
+    <div className={"grid h-fit w-full grid-cols-7 gap-y-3 pt-2"}>
       {renderDays()}
     </div>
   );
@@ -183,7 +187,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedDate, _] = useState(new Date().getDate());
   const [isSingleSelect, setIsSingleSelect] = useState(true);
-  const { totalPrice, consumptionInfoByDateDTOS } = useCalendarInfo();
+  const { totalPrice, calenderInfoDTOS = [] } = useCalendarInfo();
+  const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
 
   const [tripDate, setTripDate] = useState({
     startDate: `${String(selectedYear)}-${String(selectedMonth).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`,
@@ -275,11 +280,13 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
             {isSingleSelect ? "단일선택" : "기간선택"}
           </div>
         </div>
-        <div className="flex items-center justify-between py-2">
+        <div className="flex items-center justify-between px-2 py-3">
           <div className="text-xl font-bold">
             {totalPrice.toLocaleString()} 원
           </div>
-          <LucidePlus size={24} color="#333" />
+          <div onClick={() => moveToPage(PageUrls.ADD_PAY)}>
+            <LucidePlus size={24} color="#333" />
+          </div>
         </div>
         <DaysOfWeek />
         <CalendarBody
@@ -288,7 +295,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
           selectedYear={selectedYear}
           selectedMonth={selectedMonth}
           isSingleSelect={isSingleSelect}
-          consumptionInfoByDateDTOS={consumptionInfoByDateDTOS}
+          calenderInfoDTOS={calenderInfoDTOS}
         />
       </div>
     </>

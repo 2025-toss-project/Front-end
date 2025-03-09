@@ -5,7 +5,7 @@ import PayList from "../components/PayList";
 import SelectCategory from "../components/SelectCategory";
 import { useCategoryInfo } from "../stores/CategoryInfo";
 import { api } from "../utils/api";
-import useCalendarInfo, { ConsumptionInfoByDate } from "../stores/CalendarInfo";
+import useCalendarInfo, { calenderInfoDTOS } from "../stores/CalendarInfo";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
 
@@ -48,25 +48,17 @@ const PayRecodePage = () => {
         const formatActive = formatDate(activeStartDate);
 
         const res = await api.get(
-          `consumption/calender?currentDate=${formatActive}`,
+          `consumption/calender?&currentDate=${formatActive}`,
         );
 
         console.log(res.data);
 
         // 데이터 저장
         setDayData({
-          totalPrice: res.data.totalPrice,
-          consumptionInfoByDateDTOS: res.data.consumptionInfoByDateDTOS,
+          totalPrice: res.data.result.totalPrice,
+          calenderInfoDTOS: res.data.result.calenderInfoDTOS,
         });
-
-        // datePrice가 0보다 큰 날짜만 필터링
-        const validDays = res.data.consumptionInfoByDateDTOS
-          .filter((day: ConsumptionInfoByDate) => day.datePrice > 0)
-          .map(
-            (day: ConsumptionInfoByDate) =>
-              `${day.year}-${String(day.month).padStart(2, "0")}-${String(day.day).padStart(2, "0")}`,
-          );
-        setValidDates(validDays); // 상태 저장
+        console.log(totalPrice);
       } catch (err) {
         console.error(err);
       } finally {
@@ -75,7 +67,7 @@ const PayRecodePage = () => {
     };
 
     //fetchCalendar();
-  }, [activeStartDate, selectName]); // 카테고리 변경 시에도 API 호출
+  }, [activeStartDate]);
 
   return (
     <div className="flex w-full flex-col gap-2">

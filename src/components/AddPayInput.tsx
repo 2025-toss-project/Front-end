@@ -30,7 +30,7 @@ const AddPayInput: React.FC<AddPayInputProps> = ({ toggle, isOpen }) => {
         <InputDefault
           label="금액"
           type="price"
-          value={String(addpayInfo.price)} // 숫자를 문자열로 변환하여 전달
+          value={String(addpayInfo.price) || ""}
           placeholder="금액을 입력하세요"
           onChange={(value) => {
             const numericValue = formatPrice(value); // 숫자로 변환

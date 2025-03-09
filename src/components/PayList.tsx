@@ -117,7 +117,7 @@ const PayList: React.FC<PayListProps> = ({
         setLoading(false);
       }
     };
-    ReadConsumption();
+    //ReadConsumption();
   }, [startDate, endDate, refresh]);
 
   return (
