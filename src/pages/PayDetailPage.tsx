@@ -23,6 +23,14 @@ const PayDetailPage = () => {
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");
 
+  const formatDateToYMD = (date: Date) => {
+    const year = date.getFullYear();
+    const month = `0${date.getMonth() + 1}`.slice(-2); // 월은 0부터 시작하므로 1을 더해줍니다.
+    const day = `0${date.getDate()}`.slice(-2); // 1일, 2일 같은 단일 숫자를 두 자리로 포맷
+
+    return `${year}-${month}-${day}`;
+  };
+
   const isAddpayInfoComplete = Object.values(addpayInfo).every((value) => {
     if (typeof value === "object" && value !== null) {
       // 내부 객체가 있을 경우, 그 값들에 대해서 다시 검사
@@ -53,8 +61,9 @@ const PayDetailPage = () => {
     } catch (error) {
       console.error(error);
     } finally {
+      const formattedDate = formatDateToYMD(new Date(addpayInfo.date));
+      moveToPage(`${PageUrls.PAY_RECODE}?refresh=${formattedDate}`);
       resetAddPayInfo();
-      moveToPage(PageUrls.PAY_RECODE);
     }
   };
 
@@ -73,7 +82,7 @@ const PayDetailPage = () => {
       console.error("삭제 실패:", error);
     } finally {
       resetAddPayInfo();
-      moveToPage(PageUrls.PAY_RECODE);
+      moveToPage(`${PageUrls.PAY_RECODE}?refresh=${Date.now()}`);
     }
   };
 

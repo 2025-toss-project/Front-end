@@ -5,6 +5,7 @@ import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
 import { useCategoryInfo } from "../stores/CategoryInfo";
 import { api } from "../utils/api";
+import { useLocation } from "react-router-dom";
 
 interface PayDayProps {
   data: any; // 필요한 타입으로 수정
@@ -63,6 +64,9 @@ const PayList: React.FC<PayListProps> = ({
   const { moveToPage } = useMovePage();
   const { spendingRecords, setSpendingData } = useSpendingInfo();
   const { selectName } = useCategoryInfo();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const refresh = searchParams.get("refresh");
 
   // 소비 기록 클릭 시 상세 페이지로 이동
   const clickDetails = (id: number) => {
@@ -84,12 +88,28 @@ const PayList: React.FC<PayListProps> = ({
         //
 
         if (!startDate || !endDate) {
-          console.warn("캘린더에서 날짜가 선택되지 않음 → API 호출 중단");
+          if (refresh) {
+            console.warn(
+              "캘린더에서 날짜가 선택되지 않았지만 refresh 값 변경 → 실행",
+            );
+          } else {
+            console.warn("캘린더에서 날짜가 선택되지 않음 → API 호출 중단");
+            return;
+          }
+        }
+
+        // refresh 값이 있으면 날짜로 startDate와 endDate 설정
+        const effectiveStartDate = refresh || startDate;
+        const effectiveEndDate = refresh || endDate;
+
+        if (!effectiveStartDate || !effectiveEndDate) {
+          console.warn("유효한 날짜가 없으므로 API 호출을 중단합니다.");
           return;
         }
         const res = await api.get(
-          `consumption?category="식비"&startDate=${startDate}&endDate=${endDate}`,
+          `consumption?category="식비"&startDate=${effectiveStartDate}&endDate=${effectiveEndDate}`,
         );
+
         console.log(res.data);
         // 받아온 데이터 store 저장
         setSpendingData(res.data.result);
@@ -100,7 +120,7 @@ const PayList: React.FC<PayListProps> = ({
       }
     };
     ReadConsumption();
-  }, [startDate, endDate]);
+  }, [startDate, endDate, refresh]);
 
   return (
     <div className="flex w-full flex-col px-6">
