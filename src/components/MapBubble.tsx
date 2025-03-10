@@ -36,10 +36,6 @@ const MapMarker: React.FC<MapMarkerProps> = ({
     }
   }, [categoryData, type]);
 
-  useEffect(() => {
-    console.log(type, position, category, price, count, onClick);
-  }, []);
-
   return (
     <CustomOverlayMap position={position}>
       {type === "icon" ? (

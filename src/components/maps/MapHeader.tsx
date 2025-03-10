@@ -10,11 +10,15 @@ import useMapInfo from "../../stores/mapInfo";
 
 const Category: React.FC<CategoryProps> = ({ text, icon }) => {
   const { setUserSelect, userSelect } = useMapInfo();
+  const handleClickCategory = (text: string) => {
+    if (userSelect.category === text) setUserSelect({ category: "" });
+    else setUserSelect({ category: text });
+  };
 
   return (
     <div
       onClick={() => {
-        setUserSelect({ category: text });
+        handleClickCategory(text);
       }}
       className={`flex w-fit flex-shrink-0 items-center gap-1 rounded-full border bg-white px-2.5 py-2 font-medium drop-shadow-10 ${userSelect.category === text ? "border-main" : "border-white"}`}
     >

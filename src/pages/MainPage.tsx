@@ -39,7 +39,6 @@ const MainPage: React.FC = () => {
   const [showBubble, setShowBubble] = useState<boolean>(false);
   const [selectedData, setSelectedBubble] = useState<DataProps>();
   const [categoryInfo, setCategoryInfo] = useState<CategoryProps>();
-
   const [mapDatas, setMapDatas] = useState<any>();
 
   const showBubbleInfo = (idx: number) => {
@@ -51,14 +50,13 @@ const MainPage: React.FC = () => {
     );
   };
   const getPayList = async () => {
-    const url = userSelect.type === "나의 소비" ? "/map/all" : "/map/other";
     try {
       let res;
       if (userSelect.type === "나의 소비") {
         res = await api.get("/map/all", {
           params: {
-            lan: mapCenter.lat,
-            lon: mapCenter.lng,
+            lat: mapCenter.lat,
+            lng: mapCenter.lng,
             radius: 500000,
           },
         });
@@ -66,8 +64,8 @@ const MainPage: React.FC = () => {
         res = await api.get("/map/other", {
           params: {
             type: userSelect.type,
-            lan: mapCenter.lat,
-            lon: mapCenter.lng,
+            lat: mapCenter.lat,
+            lng: mapCenter.lng,
             radius: 500000,
           },
         });
@@ -80,22 +78,19 @@ const MainPage: React.FC = () => {
   };
 
   const showDatas = () => {
-    if (userSelect.type === "나의 소비") {
-      if (userSelect.category === "") {
-        return (
-          mapDatas?.mapInfoListDTOList?.flatMap(
-            (info: any) => info.mapInfoDTOList,
-          ) || []
-        );
-      } else {
-        return (
-          mapDatas?.mapInfoListDTOList.find(
-            (info: any) => info.category === userSelect.category,
-          )?.mapInfoDTOList || []
-        );
-      }
+    if (userSelect.category === "") {
+      return (
+        mapDatas?.mapInfoListDTOList?.flatMap(
+          (info: any) => info.mapInfoDTOList,
+        ) || []
+      );
+    } else {
+      return (
+        mapDatas?.mapInfoListDTOList.find(
+          (info: any) => info.category === userSelect.category,
+        )?.mapInfoDTOList || []
+      );
     }
-    return [];
   };
 
   useEffect(() => {

@@ -39,10 +39,16 @@ const ShowDetailInfo: React.FC<{
   categoryInfo: CategoryProps;
 }> = ({ showBubbleRef, selectedData, categoryInfo }) => {
   const { moveToPage } = useMovePage();
+  const { userSelect } = useMapInfo();
+  const handleClickShowDetail = () => {
+    if (userSelect.type === "나의 소비") {
+      moveToPage(PageUrls.PAY_DETAIL, { id: selectedData.id });
+    }
+  };
   return (
     <div
       ref={showBubbleRef}
-      onClick={() => moveToPage(PageUrls.PAY_DETAIL, { id: selectedData.id })}
+      onClick={handleClickShowDetail}
       className="flex flex-col gap-2 rounded-lg bg-white p-3 drop-shadow-10"
     >
       <div className="flex items-center justify-between">
