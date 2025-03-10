@@ -25,7 +25,7 @@ export const formatDateNum = (
   return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 };
 
-// Date -> YYYY-MM-DD
+// Date -> YYYY-MM-D
 export const formatDateToYMD = (date: Date) => {
   const year = date.getFullYear();
   const month = `0${date.getMonth() + 1}`.slice(-2);
