@@ -3,8 +3,9 @@ import { categoryList, CategoryProps } from "../../constants/category";
 import { ChevronDown } from "lucide-react";
 import useClickOutside from "../../hooks/useClickOutside";
 import { payTypeList, PayTypeProps } from "../../constants/payType";
-import useUserInfo from "../../stores/userInfo";
+import useUserInfo from "../../apis/userInfo";
 import { findType } from "../../utils/findTypeOrCategory";
+import userStore from "../../stores/user";
 
 const Category: React.FC<
   CategoryProps & {
@@ -82,7 +83,7 @@ const DropDown: React.FC<DropDownProps> = ({ isOpen, setIsOpen }) => {
           <div
             key={type.type}
             onClick={() => setType(type)}
-            className="flex gap-1 py-2 border-b border-b-second last:border-none"
+            className="flex gap-1 border-b border-b-second py-2 last:border-none"
           >
             {type.icon({ size: 20 })}
             {type.type}
@@ -97,7 +98,7 @@ const MyProperty: React.FC<{ name: string; property: string }> = ({
   name,
   property,
 }) => {
-  const { userInfo } = useUserInfo();
+  const { userInfo } = userStore();
   const typeInfo: PayTypeProps = findType(userInfo.type) || {
     type: "",
     discription: "",
@@ -117,7 +118,7 @@ const MyProperty: React.FC<{ name: string; property: string }> = ({
 const MapHeader: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   return (
-    <div className="z-10 flex flex-col max-w-full">
+    <div className="z-10 flex max-w-full flex-col">
       <CategoryList />
       <div className="flex items-center justify-between py-1">
         <MyProperty name="희연" property="플렉스" />

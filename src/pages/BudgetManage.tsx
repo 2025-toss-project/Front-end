@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import BudgetStatus from "../components/BudgetStatus";
 import CategoryStatus from "../components/CategoryStatus";
 import MonthlyBudget from "../components/MonthlyBudget";
-import { fetchBudgetInfo, BudgetInfo } from "../stores/budgetInfo";
+import { fetchBudgetInfo, BudgetInfo } from "../apis/BudgetInfo";
 import Loading from "../components/loading";
 
 const BudgetManage = () => {
@@ -17,8 +17,8 @@ const BudgetManage = () => {
       try {
         setLoading(true);
         // 로딩 화면 테스트
-        // await new Promise((resolve) => setTimeout(resolve, 3000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+
         const data = await fetchBudgetInfo(); // ✅ API 호출
         setBudgetData(data.result);
       } catch (error) {
@@ -54,7 +54,7 @@ const BudgetManage = () => {
   }
 
   return (
-    <div className="flex flex-col w-full h-full bg-second-bg">
+    <div className="flex h-full w-full flex-col bg-second-bg">
       <div onClick={() => navigate("/budgetset")} className="cursor-pointer">
         <MonthlyBudget />
       </div>

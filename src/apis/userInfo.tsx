@@ -3,17 +3,17 @@ import { api } from "../utils/api"; // axios 인스턴스 가져오기
 
 // 유저 홈 정보(위도, 경도)
 export interface userInfoAd {
-  lan: number;
+  lng: number;
   lat: number;
 }
 
 // 유저 정보(서버 GET)
 export interface userInfo {
-  nickName: string;
+  nickname: string;
   email: string;
   type: string;
   ageGroup: string;
-  home: userInfoAd;
+  home: userInfoAd | string;
 }
 
 // GET

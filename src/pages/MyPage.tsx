@@ -1,41 +1,43 @@
 import React, { useEffect, useState } from "react";
-import { userInfo as UserInfoType, fetchUserInfo } from "../stores/userInfo";
+import { userInfo as UserInfoType, fetchUserInfo } from "../apis/userInfo";
 import { findType } from "../utils/findTypeOrCategory";
-import PayTypeSection from "../components/sections/PayTypeSection";
-import { SaveButton } from "../components/common/Buttons";
-import ProfileUpdate from "../components/ProfileUpdate";
+  
+import ProfileUpdate from "../apis/ProfileUpdate";
 import { LucideLogOut } from "lucide-react";
+import TypeTab from "../components/TypeTab";
+import userStore from "../stores/user";
 
 interface TypeTabProps {
   userData: UserInfoType | null;
 }
 
-const TypeTab: React.FC<TypeTabProps> = ({ userData }) => {
-  const [selectedPayType, setSelectedPayType] = useState<string>(
-    userData?.type || "",
-  );
+// const TypeTab: React.FC<TypeTabProps> = ({ userData }) => {
+//   const [selectedPayType, setSelectedPayType] = useState<string>(
+//     userData?.type || "",
+//   );
 
-  return (
-    <>
-      <div className="flex flex-col gap-5 rounded-lg border border-second-light px-3 py-7">
-        <div className="flex flex-col">
-          <div className="text-lg font-bold">소비성향 설정</div>
-          <div className="text-sm">
-            자신의 소비패턴과 가장 잘 맞는 유형을 선택하세요.
-          </div>
-        </div>
-        <PayTypeSection
-          selectedPayType={selectedPayType}
-          setSelectedPayType={setSelectedPayType}
-        />
-      </div>
-      <SaveButton title="저장하기" />
-    </>
-  );
-};
+//   return (
+//     <>
+//       <div className="flex flex-col gap-5 px-3 border rounded-lg border-second-light py-7">
+//         <div className="flex flex-col">
+//           <div className="text-lg font-bold">소비성향 설정</div>
+//           <div className="text-sm">
+//             자신의 소비패턴과 가장 잘 맞는 유형을 선택하세요.
+//           </div>
+//         </div>
+//         <PayTypeSection
+//           selectedPayType={selectedPayType}
+//           setSelectedPayType={setSelectedPayType}
+//         />
+//       </div>
+//       <SaveButton title="저장하기" />
+//     </>
+//   );
+// };
 
 const MyPage: React.FC = () => {
-  const [userData, setUserData] = useState<UserInfoType | null>(null);
+  // const [userData, setUserData] = useState<UserInfoType | null>(null);
+  const { userInfo, setUserInfo } = userStore();
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const tabs = ["프로필", "성향"];
 
@@ -43,7 +45,7 @@ const MyPage: React.FC = () => {
     const getUserData = async () => {
       try {
         const { result } = await fetchUserInfo();
-        setUserData(result);
+        setUserInfo(result);
       } catch (error) {
         console.error(error);
       }
@@ -51,10 +53,10 @@ const MyPage: React.FC = () => {
     getUserData();
   }, []);
 
-  const userType = findType(userData?.type ?? "");
+  const userType = findType(userInfo?.type ?? "");
 
   return (
-    <div className="flex w-full flex-col gap-2">
+    <div className="flex flex-col w-full gap-2">
       <div className="flex items-center gap-2 py-4">
         {userType?.icon && <div>{userType.icon({ size: 48 })}</div>}
         <div>
@@ -63,7 +65,7 @@ const MyPage: React.FC = () => {
             {!(userType?.type === "무소비형") && "하는"}
           </div>
           <div className="text-lg font-bold text-main">
-            {userData?.nickName}
+            {userInfo?.nickname}
             {" 님"}
           </div>
         </div>
@@ -87,9 +89,9 @@ const MyPage: React.FC = () => {
       </div>
 
       {selectedTab === 0 ? (
-        <ProfileUpdate userData={userData} />
+        <ProfileUpdate userData={userInfo} />
       ) : (
-        <TypeTab userData={userData} />
+        <TypeTab userData={userInfo} />
       )}
     </div>
   );

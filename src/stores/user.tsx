@@ -1,26 +1,25 @@
 import { create } from "zustand";
-import { userInfo } from "./userInfo";
+import { userInfo } from "../apis/userInfo";
 interface userStore {
   userInfo: userInfo;
   setUserInfo: (userInfo: userInfo) => void;
 }
 
-const useMapInfo = create<userStore>((set) => ({
+const userStore = create<userStore>((set) => ({
   userInfo: {
-    nickName: "",
+    nickname: "",
     email: "",
     type: "",
     ageGroup: "",
     home: {
       lat: 0,
-      lan: 0,
+      lng: 0,
     },
   },
-  setUserInfo: () => {
-    set((prev) => ({
-      userInfo: {
-        ...prev.userInfo,
-      },
+  setUserInfo: (updated) => {
+    set(() => ({
+      userInfo: updated,
     }));
   },
 }));
+export default userStore;
