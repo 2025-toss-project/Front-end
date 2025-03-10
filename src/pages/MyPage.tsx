@@ -12,12 +12,12 @@ interface TypeTabProps {
 
 const TypeTab: React.FC<TypeTabProps> = ({ userData }) => {
   const [selectedPayType, setSelectedPayType] = useState<string>(
-    userData?.type || ""
+    userData?.type || "",
   );
 
   return (
     <>
-      <div className="flex flex-col gap-5 px-3 border rounded-lg border-second-light py-7">
+      <div className="flex flex-col gap-5 rounded-lg border border-second-light px-3 py-7">
         <div className="flex flex-col">
           <div className="text-lg font-bold">소비성향 설정</div>
           <div className="text-sm">
@@ -54,7 +54,7 @@ const MyPage: React.FC = () => {
   const userType = findType(userData?.type ?? "");
 
   return (
-    <div className="flex flex-col w-full gap-2">
+    <div className="flex w-full flex-col gap-2">
       <div className="flex items-center gap-2 py-4">
         {userType?.icon && <div>{userType.icon({ size: 48 })}</div>}
         <div>
@@ -63,7 +63,7 @@ const MyPage: React.FC = () => {
             {!(userType?.type === "무소비형") && "하는"}
           </div>
           <div className="text-lg font-bold text-main">
-            {userData?.nickname}
+            {userData?.nickName}
             {" 님"}
           </div>
         </div>

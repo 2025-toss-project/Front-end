@@ -21,38 +21,38 @@ const ProfileUpdate: React.FC<ProfileUpdateProps> = ({ userData }) => {
   const [ageGroup, setAgeGroup] = useState<string>("");
   const [type, setType] = useState<string>("");
   const [lat, setLat] = useState<number>(0);
-  const [lng, setLng] = useState<number>(0);
+  const [lan, setLan] = useState<number>(0);
   const [message, setMessage] = useState<string>("");
 
   useEffect(() => {
     if (userData) {
-      setNickname(userData.nickname);
+      setNickname(userData.nickName);
       setEmail(userData.email);
       setAgeGroup(userData.ageGroup);
       setLat(userData.home?.lat || 0);
-      setLng(userData.home?.lan || 0);
-      setType(userData.type); 
+      setLan(userData.home?.lan || 0);
+      setType(userData.type);
     }
   }, [userData]);
 
   const handleSave = async () => {
     setMessage("");
-    
+
     const updateProfileData = {
       email,
       nickName,
       type,
       home: {
         lat,
-        lng,
+        lan,
       },
       ageGroup,
     };
 
-    console.log(updateProfileData)
-    
+    console.log(updateProfileData);
+
     try {
-      await updateProfileInfo(updateProfileData); 
+      await updateProfileInfo(updateProfileData);
       setMessage("프로필 업데이트 성공!");
     } catch (error) {
       console.error(error);
@@ -97,11 +97,7 @@ const ProfileUpdate: React.FC<ProfileUpdateProps> = ({ userData }) => {
 
         <InputDefault
           label="집 정보"
-          placeholder={
-            lat !== 0 || lng !== 0
-              ? `(${lat}, ${lng})`
-              : "집 정보"
-          }
+          placeholder={lat !== 0 || lan !== 0 ? `(${lat}, ${lan})` : "집 정보"}
           isReadOnly
           onClick={() => moveToPage(PageUrls.SEARCH_LOCATION)}
         />
@@ -111,7 +107,7 @@ const ProfileUpdate: React.FC<ProfileUpdateProps> = ({ userData }) => {
 
       {message && <div className="mt-2 text-sm">{message}</div>}
 
-      <div className="flex items-center justify-center gap-5 mt-4 text-xs font-bold">
+      <div className="mt-4 flex items-center justify-center gap-5 text-xs font-bold">
         로그아웃
         <LucideLogOut size={16} />
       </div>

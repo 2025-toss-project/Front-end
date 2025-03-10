@@ -9,7 +9,7 @@ export interface userInfoAd {
 
 // 유저 정보(서버 GET)
 export interface userInfo {
-  nickname: string;
+  nickName: string;
   email: string;
   type: string;
   ageGroup: string;
@@ -27,20 +27,19 @@ export const fetchUserInfo = async (): Promise<{ result: userInfo }> => {
   }
 };
 
+// export interface ProfileUpdateDTO {
+//   nickname: string;
+//   ageGroup: string;
+//   home: userInfoAd;
+// }
 
-export interface ProfileUpdateDTO {
-  nickname: string;
-  ageGroup: string;
-  home: userInfoAd;
-}
-
-export interface UpdateProfilePayroad {
-  profileUpdateDTOList: ProfileUpdateDTO[];
-}
+// export interface UpdateProfilePayroad {
+//   profileUpdateDTOList: ProfileUpdateDTO[];
+// }
 
 // POST
 export const updateProfileInfo = async (
-  updateProfileData: UpdateProfilePayroad
+  updateProfileData: userInfo,
 ): Promise<any> => {
   try {
     const response = await api.post("/members/update", updateProfileData);
