@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { categoryList } from "../constants/category";
-import useSpendingInfo from "../stores/spendingInfo";
+import useSpendingInfo, { ConsumptionInfoByDate } from "../stores/spendingInfo";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
 import { useCategoryInfo } from "../stores/categoryInfo";
@@ -61,6 +61,9 @@ const PayList: React.FC<PayListProps> = ({
   validDates,
 }) => {
   const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 관리
+  const [filteredRecords, setFilteredRecords] = useState<
+    ConsumptionInfoByDate[]
+  >([]);
   const { moveToPage } = useMovePage();
   const { spendingRecords, setSpendingData } = useSpendingInfo();
   const { selectCategory } = useCategoryInfo();
@@ -121,6 +124,20 @@ const PayList: React.FC<PayListProps> = ({
         console.log(res.data);
         // 받아온 데이터 store 저장
         setSpendingData(res.data.result);
+
+        const filtered = spendingRecords
+          .map((record) => ({
+            ...record,
+            consumptionInfoList:
+              selectCategory === "" // 선택된 카테고리가 없으면 필터링 없이 전체 유지
+                ? record.consumptionInfoList
+                : record.consumptionInfoList.filter(
+                    (item) => item.category === selectCategory,
+                  ),
+          }))
+          .filter((record) => record.consumptionInfoList.length > 0);
+        console.log("필터링된 데이터:", filtered);
+        setFilteredRecords(filtered);
       } catch (err) {
         console.error(err);
       } finally {
@@ -132,10 +149,9 @@ const PayList: React.FC<PayListProps> = ({
 
   return (
     <div className="flex w-full flex-col px-6">
-      {spendingRecords.length > 0 ? (
-        spendingRecords.map((dayData) => (
+      {filteredRecords.length > 0 ? (
+        filteredRecords.map((dayData) => (
           <div key={dayData.day} className="mb-5">
-            {/* 날짜 및 하루 총액 표시 */}
             <div className="flex flex-row justify-between py-5">
               <p className="text-sm text-second">
                 {formatDateWithWeekday(dayData.month, dayData.day)}
@@ -145,7 +161,6 @@ const PayList: React.FC<PayListProps> = ({
               </p>
             </div>
 
-            {/* 해당 날짜의 지출 목록 */}
             {dayData.consumptionInfoList.map((item) => (
               <PayDay
                 key={item.id}

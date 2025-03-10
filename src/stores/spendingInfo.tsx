@@ -11,7 +11,7 @@ export interface ConsumptionInfo {
   point_name: string;
 }
 
-interface ConsumptionInfoByDate {
+export interface ConsumptionInfoByDate {
   datePrice: number;
   consumptionInfoList: ConsumptionInfo[];
   month: number;
