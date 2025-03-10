@@ -1,5 +1,6 @@
 import React from "react";
 import HalfCircleGauge from "./HalfCircleGauge";
+import HalfDoughnutChart from "./charts/HalfDoughnutChart";
 
 interface BudgetStatusProps {
   totalBudget: number;
@@ -40,7 +41,8 @@ const BudgetStatus: React.FC<BudgetStatusProps> = ({
         을 사용할 수 있어요.
       </div>
       <div className="flex justify-center my-4">
-        <HalfCircleGauge totalPercentage={monthPercent} size={220} />
+         <HalfCircleGauge totalPercentage={monthPercent} size={220} />
+         {/* <HalfDoughnutChart /> */}
       </div>
       <div className="flex justify-between mt-2">
         <div className="flex flex-col">

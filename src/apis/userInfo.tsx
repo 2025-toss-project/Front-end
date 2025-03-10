@@ -1,5 +1,6 @@
 // stores/userInfo.ts
 import { api } from "../utils/api"; // axios 인스턴스 가져오기
+import { useState } from "react";
 
 // 유저 홈 정보(위도, 경도)
 export interface userInfoAd {
@@ -18,7 +19,11 @@ export interface userInfo {
 
 // GET
 export const fetchUserInfo = async (): Promise<{ result: userInfo }> => {
+  // const [loading, setLoading] = useState<boolean>(true);
   try {
+    // setLoading(true);
+    // // 로딩 화면 테스트
+    //  await new Promise((resolve) => setTimeout(resolve, 3000));
     const response = await api.get("/members/info");
     return response.data;
   } catch (error) {

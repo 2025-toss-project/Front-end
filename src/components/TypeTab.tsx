@@ -4,7 +4,7 @@ import PayTypeSection from "../components/sections/PayTypeSection";
 import { SaveButton } from "../components/common/Buttons";
 import { updateProfileInfo, userInfo } from "../apis/userInfo";
 import userStore from "../stores/user";
-
+import Loading from "./loading";
 
 interface TypeTab {
   userData: UserInfoType | null;
@@ -31,6 +31,7 @@ const TypeTab: React.FC<{ userData: userInfo }> = ({ userData }) => {
   
 
     try {
+     
       await updateProfileInfo(updatedData);
       setUserInfo(updatedData);
       setMessage("프로필 업데이트 성공!");
@@ -42,6 +43,7 @@ const TypeTab: React.FC<{ userData: userInfo }> = ({ userData }) => {
     }
   };
 
+    
   return (
     <>
       <div className="flex flex-col gap-5 px-3 border rounded-lg border-second-light py-7">

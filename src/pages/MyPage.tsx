@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { userInfo as UserInfoType, fetchUserInfo } from "../apis/userInfo";
 import { findType } from "../utils/findTypeOrCategory";
-  
 import ProfileUpdate from "../apis/ProfileUpdate";
-import { LucideLogOut } from "lucide-react";
 import TypeTab from "../components/TypeTab";
 import userStore from "../stores/user";
 
@@ -11,32 +9,7 @@ interface TypeTabProps {
   userData: UserInfoType | null;
 }
 
-// const TypeTab: React.FC<TypeTabProps> = ({ userData }) => {
-//   const [selectedPayType, setSelectedPayType] = useState<string>(
-//     userData?.type || "",
-//   );
-
-//   return (
-//     <>
-//       <div className="flex flex-col gap-5 px-3 border rounded-lg border-second-light py-7">
-//         <div className="flex flex-col">
-//           <div className="text-lg font-bold">소비성향 설정</div>
-//           <div className="text-sm">
-//             자신의 소비패턴과 가장 잘 맞는 유형을 선택하세요.
-//           </div>
-//         </div>
-//         <PayTypeSection
-//           selectedPayType={selectedPayType}
-//           setSelectedPayType={setSelectedPayType}
-//         />
-//       </div>
-//       <SaveButton title="저장하기" />
-//     </>
-//   );
-// };
-
 const MyPage: React.FC = () => {
-  // const [userData, setUserData] = useState<UserInfoType | null>(null);
   const { userInfo, setUserInfo } = userStore();
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const tabs = ["프로필", "성향"];

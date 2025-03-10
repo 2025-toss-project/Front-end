@@ -15,23 +15,11 @@ import Loading from "../components/loading";
 
 const ProfileUpdate: React.FC<{ userData: userInfo }> = ({ userData }) => {
   const { moveToPage } = useMovePage();
-  // 로컬 상태는 메시지와 로딩만 필요합니다.
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false); // 컴포넌트 최상단에 선언
   const { setUserInfo } = userStore();
   const [originUserInfo, setOriginUserInfo] = useState(userData);
 
-  // useEffect(() => {
-  //   if (userData) {
-  //     setUserInfo({
-  //       nickname: userData.nickname || "",
-  //       email: userData.email || "",
-  //       type: userData.type || "",
-  //       ageGroup: userData.ageGroup || "",
-  //       home: userData.home, // home 임시방편
-  //     });
-  //   }
-  // }, [userData, setUserInfo]);
 
   const handlenicknameChange = (val: string) => {
     setOriginUserInfo((prev) => ({
@@ -111,7 +99,7 @@ const ProfileUpdate: React.FC<{ userData: userInfo }> = ({ userData }) => {
           setSelectedAge={handleAgeGroupChange}
           style="mb-5"
         />
-
+  
         <InputDefault
           label="집 정보"
           placeholder={renderHomePlaceholder()}
