@@ -7,11 +7,6 @@ import { useCategoryInfo } from "../stores/categoryInfo";
 import { useLocation } from "react-router-dom";
 import useSpendingInfo from "../stores/spendingInfo";
 import useAddPayInfo from "../stores/addpayInfo";
-import {
-  formatDateNum,
-  formatPrice,
-  inputFormatPrice,
-} from "../utils/formatFunc";
 
 interface PayInputProps {
   toggle?: () => void;
@@ -52,14 +47,25 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
     [id, spendingRecords],
   );
 
+  // string -> number 변환 함수
+  const formatPrice = (value: string): number => {
+    const numericValue = parseInt(value.replace(/,/g, ""), 10);
+    return isNaN(numericValue) ? 0 : numericValue;
+  };
+
+  // 날짜 포맷팅 함수 (YYYY-MM-DD)
+  const formatDate = (year: number, month: number, day: number): string => {
+    return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  };
+
   // itemData가 변경될 때 초기 값 설정 (읽기 모드)
   useEffect(() => {
     if (itemData) {
-      setAddPayInfo("price", inputFormatPrice(itemData.price));
+      setAddPayInfo("price", String(itemData.price));
       setAddPayInfo("detail", itemData.details);
       setAddPayInfo(
         "date",
-        formatDateNum(itemData.year, itemData.month, itemData.day),
+        formatDate(itemData.year, itemData.month, itemData.day),
       );
 
       if (!selectCategory) setSelectCategory(itemData.category);
@@ -78,15 +84,13 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
           type="price"
           value={
             isEditMode
-              ? itemData?.price
-                ? inputFormatPrice(itemData.price)
-                : ""
-              : addpayInfo.price
-                ? inputFormatPrice(addpayInfo.price)
-                : ""
+              ? String(itemData?.price || "")
+              : String(addpayInfo.price) || ""
           }
           placeholder="금액을 입력하세요"
-          onChange={(value) => setAddPayInfo("price", inputFormatPrice(value))}
+          onChange={(value) =>
+            setAddPayInfo("price", String(formatPrice(value)))
+          }
         />
 
         <InputDefault
@@ -114,7 +118,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
           placeholder="날짜를 입력하세요"
           value={
             isEditMode
-              ? formatDateNum(itemData?.year!, itemData?.month!, itemData?.day!)
+              ? formatDate(itemData?.year!, itemData?.month!, itemData?.day!)
               : addpayInfo.date || ""
           }
           onChange={(value) => setAddPayInfo("date", value)}
