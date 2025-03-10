@@ -3,7 +3,7 @@ import { categoryList } from "../constants/category";
 import useSpendingInfo from "../stores/spendingInfo";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
-import { useCategoryInfo } from "../stores/CategoryInfo";
+import { useCategoryInfo } from "../stores/categoryInfo";
 import { api } from "../utils/api";
 import { useLocation } from "react-router-dom";
 
@@ -15,6 +15,7 @@ interface PayDayProps {
 interface PayListProps {
   startDate: string;
   endDate: string;
+  validDates: string[];
 }
 
 // 아이콘 가져오기 ( {<IconFood/>} 이런식으로 반환됨)
@@ -54,7 +55,11 @@ const PayDay: React.FC<PayDayProps> = ({ data, onClick }) => {
 };
 
 // 전체 소비리스트
-const PayList: React.FC<PayListProps> = ({ startDate, endDate }) => {
+const PayList: React.FC<PayListProps> = ({
+  startDate,
+  endDate,
+  validDates,
+}) => {
   const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 관리
   const { moveToPage } = useMovePage();
   const { spendingRecords, setSpendingData } = useSpendingInfo();
@@ -92,9 +97,26 @@ const PayList: React.FC<PayListProps> = ({ startDate, endDate }) => {
           console.warn("유효한 날짜가 없으므로 API 호출을 중단합니다.");
           return;
         }
-        const res = await api.get(
-          `consumption?category=${selectName}&startDate=${effectiveStartDate}&endDate=${effectiveEndDate}`,
-        );
+
+        // 단일 선택일 때
+        if (effectiveStartDate == effectiveEndDate) {
+          const hasValidDate = validDates.some(
+            (date) => date >= startDate && date <= endDate,
+          );
+          if (!hasValidDate) {
+            console.warn(
+              "소비 기록이 없는 기간이므로 API 호출을 하지 않습니다.",
+            );
+            return; // API 호출 중단
+          }
+        }
+
+        const params = {
+          category: selectName,
+          startDate: effectiveStartDate,
+          endDate: effectiveEndDate,
+        };
+        const res = await api.get("consumption", { params });
 
         console.log(res.data);
         // 받아온 데이터 store 저장

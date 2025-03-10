@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import SelectCategory from "../components/SelectCategory";
 import { IconButton, SaveButton } from "../components/common/Buttons";
-import { useCategoryInfo } from "../stores/CategoryInfo";
+import { useCategoryInfo } from "../stores/categoryInfo";
 import useAddPayInfo from "../stores/addpayInfo";
 import { api } from "../utils/api";
 import { usePlaceInfo } from "../stores/placeInfo";

@@ -4,7 +4,7 @@ import SelectCategory from "../components/SelectCategory";
 import { SaveButton } from "../components/common/Buttons";
 import { api } from "../utils/api";
 import useAddPayInfo from "../stores/addpayInfo";
-import { useCategoryInfo } from "../stores/CategoryInfo";
+import { useCategoryInfo } from "../stores/categoryInfo";
 import { usePlaceInfo } from "../stores/placeInfo";
 import PageUrls from "../constants/PageUrls";
 import { useMovePage } from "../hooks/useMovePage";

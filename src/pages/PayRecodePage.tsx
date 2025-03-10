@@ -3,27 +3,22 @@ import CustomCalendar from "../components/CustomCalendar";
 import { DropButton } from "../components/common/Buttons";
 import PayList from "../components/PayList";
 import SelectCategory from "../components/SelectCategory";
-import { useCategoryInfo } from "../stores/CategoryInfo";
+import { useCategoryInfo } from "../stores/categoryInfo";
 import { api } from "../utils/api";
 import useCalendarInfo, { calenderInfoDTOS } from "../stores/CalendarInfo";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
+import { formatDateToYMD } from "../utils/formatFunc";
 
 const PayRecodePage = () => {
   const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 관리
   const [activeStartDate, setActiveDate] = useState(new Date()); // 캘린더 선택 날짜
+  const [validDates, setValidDates] = useState<string[]>([]); // 유효한 날짜
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const { selectName, isOpen, setIsOpen } = useCategoryInfo();
   const { totalPrice, setDayData } = useCalendarInfo();
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
-
-  const formatDate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작하므로 +1 해줌
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
 
   const handleDateChange = (startDate: string, endDate: string) => {
     if (startDate) {
@@ -44,12 +39,11 @@ const PayRecodePage = () => {
     const fetchCalendar = async () => {
       try {
         setLoading(true);
-        const formatActive = formatDate(activeStartDate);
-
-        const res = await api.get(
-          `consumption/calender?&currentDate=${formatActive}`,
-        );
-
+        const formatActive = formatDateToYMD(activeStartDate);
+        const params = {
+          currentDate: formatActive,
+        };
+        const res = await api.get("consumption/calender", { params });
         console.log(res.data);
 
         // 데이터 저장
@@ -57,7 +51,17 @@ const PayRecodePage = () => {
           totalPrice: res.data.result.totalPrice,
           calenderInfoDTOS: res.data.result.calenderInfoDTOS,
         });
-        console.log(totalPrice);
+
+        // validDates 배열 업데이트
+        const validDays = res.data.result.calenderInfoDTOS
+          .filter((item: calenderInfoDTOS) => item.datePrice > 0)
+          .map(
+            (item: calenderInfoDTOS) =>
+              `${item.year}-${String(item.month).padStart(2, "0")}-${String(item.day).padStart(2, "0")}`,
+          );
+
+        setValidDates(validDays); // 상태 저장
+        console.log("Valid Dates:", validDays);
       } catch (err) {
         console.error(err);
       } finally {
@@ -79,7 +83,11 @@ const PayRecodePage = () => {
           isOpen={isOpen}
         />
         <SelectCategory classname={isOpen ? "block" : "hidden"} />
-        <PayList startDate={startDate} endDate={endDate} />
+        <PayList
+          startDate={startDate}
+          endDate={endDate}
+          validDates={validDates}
+        />
       </div>
     </div>
   );

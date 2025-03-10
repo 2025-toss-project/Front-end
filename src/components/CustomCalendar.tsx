@@ -122,7 +122,7 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
       return (
         <div
           onClick={() => handleClickDate(currentDate)}
-          className={`relative my-1 grid h-9 w-full place-items-center text-center text-xs font-medium ${
+          className={`relative my-1 grid aspect-square w-full place-items-center text-center text-xs font-medium ${
             isInRange
               ? "bg-main text-white"
               : isStartDate || isEndDate

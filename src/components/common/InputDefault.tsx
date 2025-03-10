@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useCategoryInfo } from "../../stores/CategoryInfo";
+import { useCategoryInfo } from "../../stores/categoryInfo";
 import useAddPayInfo from "../../stores/addpayInfo";
 
 interface PayInputProps {

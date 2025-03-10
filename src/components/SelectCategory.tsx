@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { categoryList } from "../constants/category";
 import CategorySection from "./sections/CategorySection";
-import { useCategoryInfo } from "../stores/CategoryInfo";
+import { useCategoryInfo } from "../stores/categoryInfo";
 
 interface CategoryProps {
   classname?: string;

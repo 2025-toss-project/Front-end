@@ -3,7 +3,7 @@ import InputDefault from "./common/InputDefault";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
 import { usePlaceInfo } from "../stores/placeInfo";
-import { useCategoryInfo } from "../stores/CategoryInfo";
+import { useCategoryInfo } from "../stores/categoryInfo";
 import { useLocation } from "react-router-dom";
 import useSpendingInfo from "../stores/spendingInfo";
 import useAddPayInfo from "../stores/addpayInfo";
