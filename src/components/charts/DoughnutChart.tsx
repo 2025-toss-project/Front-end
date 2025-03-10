@@ -1,9 +1,16 @@
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
 import { findCategory } from "../../utils/findTypeOrCategory";
+import { CategoryPay } from "../../pages/StatisticPage";
 
-const DoughnutChart = () => {
-  const labels = ["1월", "2월", "3월"];
+const DoughnutChart: React.FC<{ categoryPay: CategoryPay[] }> = ({
+  categoryPay,
+}) => {
+  const labels = categoryPay
+    .filter((item) => item.spendPrice > 0)
+    .slice(0, 3)
+    .map((item) => item.category);
+
   const data = {
     labels,
     datasets: [
