@@ -32,3 +32,10 @@ export const formatDateToYMD = (date: Date) => {
   const day = `0${date.getDate()}`.slice(-2);
   return `${year}-${month}-${day}`;
 };
+
+// Input용 Price 변환
+export const inputFormatPrice = (value: number | string) => {
+  if (!value || isNaN(Number(value)) || value === 0 || value === "0") return ""; // 값이 없거나 숫자가 아닐 경우 빈 값 반환
+  const numValue = Number(String(value).replace(/,/g, "")); // 쉼표 제거 후 숫자로 변환
+  return numValue.toLocaleString(); // 다시 문자열로 변환하여 리턴
+};

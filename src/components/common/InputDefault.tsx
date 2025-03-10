@@ -57,7 +57,6 @@ const InputDefault: React.FC<PayInputProps> = ({
     onChange?.(newValue);
   };
 
-  // selectName이 변경되면 값 업데이트
   useEffect(() => {
     if (type === "category" && selectCategory) {
       setInputValue(selectCategory);

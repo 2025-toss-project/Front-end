@@ -66,6 +66,7 @@ const PayDetailPage = () => {
       const formattedDate = formatDateToYMD(new Date(addpayInfo.date));
       moveToPage(`${PageUrls.PAY_RECODE}?refresh=${formattedDate}`);
       resetAddPayInfo();
+      console.log("add", addpayInfo.date);
     }
   };
 
