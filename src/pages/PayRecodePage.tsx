@@ -16,7 +16,7 @@ const PayRecodePage = () => {
   const [validDates, setValidDates] = useState<string[]>([]); // 유효한 날짜
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const { selectName, isOpen, setIsOpen } = useCategoryInfo();
+  const { selectCategory, isOpen, setIsOpen } = useCategoryInfo();
   const { totalPrice, setDayData } = useCalendarInfo();
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
 
@@ -78,7 +78,7 @@ const PayRecodePage = () => {
       <div className="mt-5 flex w-full flex-col rounded-lg bg-white">
         {/* 드롭 클릭시 아래로 나오기  */}
         <DropButton
-          title={selectName || "전체 항목"}
+          title={selectCategory || "전체 항목"}
           toggle={() => setIsOpen(!isOpen)}
           isOpen={isOpen}
         />

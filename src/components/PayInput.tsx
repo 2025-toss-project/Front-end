@@ -17,7 +17,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
   const { moveToPage } = useMovePage();
   const { spendingRecords } = useSpendingInfo();
   const { addpayInfo, setAddPayInfo } = useAddPayInfo();
-  const { selectName, setSelectName } = useCategoryInfo();
+  const { selectCategory, setSelectCategory } = useCategoryInfo();
   const { selectPlace, setSelectPlace, setPlaceInfo } = usePlaceInfo();
 
   const location = useLocation();
@@ -68,7 +68,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
         formatDate(itemData.year, itemData.month, itemData.day),
       );
 
-      if (!selectName) setSelectName(itemData.category);
+      if (!selectCategory) setSelectCategory(itemData.category);
       if (!selectPlace) {
         setSelectPlace(itemData.point_name);
         setPlaceInfo(itemData.lat, itemData.lng);
@@ -127,7 +127,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
         <InputDefault
           label="카테고리"
           type="category"
-          value={isEditMode ? itemData?.category || "" : selectName || ""}
+          value={isEditMode ? itemData?.category || "" : selectCategory || ""}
           placeholder="미선택"
           isReadOnly={true}
           onClick={toggle}

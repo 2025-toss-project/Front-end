@@ -18,7 +18,8 @@ export interface addpayInfo {
 
 const AddPayPage = () => {
   const { addpayInfo, setAddPayInfo, resetAddPayInfo } = useAddPayInfo();
-  const { selectName, setSelectName, isOpen, setIsOpen } = useCategoryInfo();
+  const { selectCategory, setSelectCategory, isOpen, setIsOpen } =
+    useCategoryInfo();
   const { placeInfo, selectPlace } = usePlaceInfo();
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
 
@@ -40,7 +41,7 @@ const AddPayPage = () => {
       const res = await api.post("/consumption/create", {
         price: Number(addpayInfo.price),
         detail: addpayInfo.detail,
-        category: selectName,
+        category: selectCategory,
         lat: Number(placeInfo.lat),
         lng: Number(placeInfo.lng),
         locationName: selectPlace,

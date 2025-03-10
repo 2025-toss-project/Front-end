@@ -2,14 +2,29 @@ import React, { useEffect } from "react";
 import { categoryList } from "../constants/category";
 import CategorySection from "./sections/CategorySection";
 import { useCategoryInfo } from "../stores/categoryInfo";
+import IconAll from "../assets/categoryIcons/IconAll";
 
 interface CategoryProps {
   classname?: string;
 }
 
 const SelectCategory: React.FC<CategoryProps> = ({ classname }) => {
-  const { setSelectName, setIsOpen } = useCategoryInfo();
-  const { selectName } = useCategoryInfo();
+  const { setSelectCategory, setIsOpen } = useCategoryInfo();
+
+  const newCategory = () => {
+    return (
+      <div>
+        <CategorySection
+          icon={<IconAll />}
+          name="전체항목"
+          toggle={() => {
+            setSelectCategory("");
+            setIsOpen(false);
+          }}
+        />
+      </div>
+    );
+  };
 
   return (
     <div
@@ -21,11 +36,13 @@ const SelectCategory: React.FC<CategoryProps> = ({ classname }) => {
           icon={item.icon({})}
           name={item.text}
           toggle={() => {
-            setSelectName(item.text);
+            setSelectCategory(item.text);
             setIsOpen(false);
           }}
         />
       ))}
+
+      {newCategory()}
     </div>
   );
 };

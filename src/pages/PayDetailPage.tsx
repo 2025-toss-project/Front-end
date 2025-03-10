@@ -16,7 +16,7 @@ import PayInput from "../components/PayInput";
 const PayDetailPage = () => {
   const { isOpen, setIsOpen } = useCategoryInfo();
   const { addpayInfo, resetAddPayInfo } = useAddPayInfo();
-  const { selectName } = useCategoryInfo();
+  const { selectCategory } = useCategoryInfo();
   const { selectPlace, placeInfo } = usePlaceInfo();
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
   const { spendingRecords } = useSpendingInfo();
@@ -53,7 +53,7 @@ const PayDetailPage = () => {
         id: id,
         price: Number(addpayInfo.price),
         detail: addpayInfo.detail,
-        category: selectName,
+        category: selectCategory,
         lat: Number(placeInfo.lat),
         lng: Number(placeInfo.lng),
         locationName: selectPlace,

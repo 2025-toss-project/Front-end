@@ -63,7 +63,7 @@ const PayList: React.FC<PayListProps> = ({
   const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 관리
   const { moveToPage } = useMovePage();
   const { spendingRecords, setSpendingData } = useSpendingInfo();
-  const { selectName } = useCategoryInfo();
+  const { selectCategory } = useCategoryInfo();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const refresh = searchParams.get("refresh");
@@ -112,7 +112,7 @@ const PayList: React.FC<PayListProps> = ({
         }
 
         const params = {
-          category: selectName,
+          category: selectCategory,
           startDate: effectiveStartDate,
           endDate: effectiveEndDate,
         };
@@ -128,7 +128,7 @@ const PayList: React.FC<PayListProps> = ({
       }
     };
     ReadConsumption();
-  }, [startDate, endDate, refresh]);
+  }, [startDate, endDate, refresh, selectCategory]);
 
   return (
     <div className="flex w-full flex-col px-6">

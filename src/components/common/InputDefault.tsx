@@ -24,7 +24,7 @@ const InputDefault: React.FC<PayInputProps> = ({
   onChange,
 }) => {
   const [inputValue, setInputValue] = useState(value);
-  const { selectName } = useCategoryInfo();
+  const { selectCategory } = useCategoryInfo();
   const { setAddPayInfo } = useAddPayInfo();
 
   const formatPrice = (val: string) => {
@@ -59,15 +59,15 @@ const InputDefault: React.FC<PayInputProps> = ({
 
   // selectName이 변경되면 값 업데이트
   useEffect(() => {
-    if (type === "category" && selectName) {
-      setInputValue(selectName);
+    if (type === "category" && selectCategory) {
+      setInputValue(selectCategory);
     } else if (type === "date" && !inputValue) {
       // date 타입일 경우, 값이 비어 있으면 오늘 날짜로 기본값 설정
       const today = new Date().toISOString().split("T")[0]; // 'YYYY-MM-DD' 형식
       setInputValue(today);
       setAddPayInfo("date", today);
     }
-  }, [selectName, type, inputValue]);
+  }, [selectCategory, type, inputValue]);
 
   return (
     <div onClick={onClick} className={`h-15 ${style}`}>
