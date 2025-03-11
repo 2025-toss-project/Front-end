@@ -7,6 +7,7 @@ import { useCategoryInfo } from "../stores/categoryInfo";
 import { useLocation } from "react-router-dom";
 import useSpendingInfo from "../stores/spendingInfo";
 import useAddPayInfo from "../stores/addpayInfo";
+import { inputFormatPrice } from "../utils/formatFunc";
 
 interface PayInputProps {
   toggle?: () => void;
@@ -74,7 +75,18 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
         setPlaceInfo(itemData.lat, itemData.lng);
       }
     }
-  }, [itemData]);
+    return () => {
+      // 페이지 언마운트시 데이터 삭제
+      setAddPayInfo("price", "");
+      setAddPayInfo("detail", "");
+      setAddPayInfo("date", "");
+      if (!selectCategory) setSelectCategory("");
+      if (!selectPlace) {
+        setSelectPlace("");
+        setPlaceInfo(0, 0);
+      }
+    };
+  }, []);
 
   return (
     <div>
@@ -84,8 +96,8 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
           type="price"
           value={
             isEditMode
-              ? String(itemData?.price || "")
-              : String(addpayInfo.price) || ""
+              ? inputFormatPrice(itemData?.price || "")
+              : inputFormatPrice(addpayInfo.price) || ""
           }
           placeholder="금액을 입력하세요"
           onChange={(value) =>
