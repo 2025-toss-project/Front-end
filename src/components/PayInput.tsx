@@ -7,7 +7,11 @@ import { useCategoryInfo } from "../stores/categoryInfo";
 import { useLocation } from "react-router-dom";
 import useSpendingInfo from "../stores/spendingInfo";
 import useAddPayInfo from "../stores/addpayInfo";
-import { inputFormatPrice } from "../utils/formatFunc";
+import {
+  formatDateNum,
+  InputformatPrice,
+  inputFormatPriceCheck,
+} from "../utils/formatFunc";
 
 interface PayInputProps {
   toggle?: () => void;
@@ -48,17 +52,6 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
     [id, spendingRecords],
   );
 
-  // string -> number 변환 함수
-  const formatPrice = (value: string): number => {
-    const numericValue = parseInt(value.replace(/,/g, ""), 10);
-    return isNaN(numericValue) ? 0 : numericValue;
-  };
-
-  // 날짜 포맷팅 함수 (YYYY-MM-DD)
-  const formatDate = (year: number, month: number, day: number): string => {
-    return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-  };
-
   // itemData가 변경될 때 초기 값 설정 (읽기 모드)
   useEffect(() => {
     if (itemData) {
@@ -66,7 +59,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
       setAddPayInfo("detail", itemData.details);
       setAddPayInfo(
         "date",
-        formatDate(itemData.year, itemData.month, itemData.day),
+        formatDateNum(itemData.year, itemData.month, itemData.day),
       );
 
       if (!selectCategory) setSelectCategory(itemData.category);
@@ -75,18 +68,24 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
         setPlaceInfo(itemData.lat, itemData.lng);
       }
     }
-    return () => {
-      // 페이지 언마운트시 데이터 삭제
-      setAddPayInfo("price", "");
-      setAddPayInfo("detail", "");
-      setAddPayInfo("date", "");
-      if (!selectCategory) setSelectCategory("");
-      if (!selectPlace) {
+    const handleBeforeUnload = () => {
+      // 장소 검색 후 돌아온 경우 유지, 다른 페이지로 나가면 초기화
+      if (!window.location.pathname.includes(PageUrls.SEARCH_PLACE)) {
+        setAddPayInfo("price", "");
+        setAddPayInfo("detail", "");
+        setAddPayInfo("date", "");
+        setSelectCategory("");
         setSelectPlace("");
         setPlaceInfo(0, 0);
       }
     };
-  }, []);
+
+    window.addEventListener("popstate", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("popstate", handleBeforeUnload);
+    };
+  }, [itemData]);
 
   return (
     <div>
@@ -96,12 +95,12 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
           type="price"
           value={
             isEditMode
-              ? inputFormatPrice(itemData?.price || "")
-              : inputFormatPrice(addpayInfo.price) || ""
+              ? inputFormatPriceCheck(itemData?.price || "")
+              : inputFormatPriceCheck(addpayInfo.price) || ""
           }
           placeholder="금액을 입력하세요"
           onChange={(value) =>
-            setAddPayInfo("price", String(formatPrice(value)))
+            setAddPayInfo("price", String(InputformatPrice(value)))
           }
         />
 
@@ -130,7 +129,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
           placeholder="날짜를 입력하세요"
           value={
             isEditMode
-              ? formatDate(itemData?.year!, itemData?.month!, itemData?.day!)
+              ? formatDateNum(itemData?.year!, itemData?.month!, itemData?.day!)
               : addpayInfo.date || ""
           }
           onChange={(value) => setAddPayInfo("date", value)}
