@@ -14,6 +14,8 @@ interface MapStore {
     type: string;
   };
   setUserSelect: (update: Partial<{ category: string; type: string }>) => void;
+  mapDatas: any;
+  setMapDatas: (data: any) => void;
 }
 
 const useMapInfo = create<MapStore>((set) => ({
@@ -33,6 +35,8 @@ const useMapInfo = create<MapStore>((set) => ({
     set((state) => ({
       userSelect: { ...state.userSelect, ...update },
     })),
+  mapDatas: {},
+  setMapDatas: (data) => set({ mapDatas: data }),
 }));
 
 export default useMapInfo;

@@ -7,7 +7,6 @@ import { CategoryProps } from "../constants/category";
 import useMapInfo from "../stores/mapInfo";
 import KakaoMap from "../components/maps/KakaoMap";
 import MapBottom from "../components/maps/MapBottom";
-import { api } from "../utils/api";
 
 const MyCurrentLocation: React.FC<{
   location: { lat: number; lng: number };
@@ -35,11 +34,11 @@ export interface DataProps {
 }
 
 const MainPage: React.FC = () => {
-  const { level, myLocation, mapCenter, userSelect } = useMapInfo();
+  const { level, myLocation, mapCenter, userSelect, mapDatas, setMapDatas } =
+    useMapInfo();
   const [showBubble, setShowBubble] = useState<boolean>(false);
   const [selectedData, setSelectedBubble] = useState<DataProps>();
   const [categoryInfo, setCategoryInfo] = useState<CategoryProps>();
-  const [mapDatas, setMapDatas] = useState<any>();
 
   const showBubbleInfo = (idx: number) => {
     setShowBubble(true);
@@ -48,33 +47,6 @@ const MainPage: React.FC = () => {
         .flatMap((info: any) => info.mapInfoDTOList)
         .find((data: any) => data.id === idx),
     );
-  };
-  const getPayList = async () => {
-    try {
-      let res;
-      if (userSelect.type === "나의 소비") {
-        res = await api.get("/map/all", {
-          params: {
-            lat: mapCenter.lat,
-            lng: mapCenter.lng,
-            radius: 500000,
-          },
-        });
-      } else {
-        res = await api.get("/map/other", {
-          params: {
-            type: userSelect.type,
-            lat: mapCenter.lat,
-            lng: mapCenter.lng,
-            radius: 500000,
-          },
-        });
-      }
-      console.log(res.data);
-      setMapDatas(res.data.result);
-    } catch (error) {
-      console.error(error);
-    }
   };
 
   const showDatas = () => {
@@ -100,7 +72,7 @@ const MainPage: React.FC = () => {
 
   useEffect(() => {
     if (mapCenter.lat === 0 && mapCenter.lng === 0) return;
-    getPayList();
+    // getPayList();
   }, [mapCenter, userSelect.type]);
 
   return (
