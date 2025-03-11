@@ -8,7 +8,7 @@ import {
 import PageUrls from "./PageUrls";
 
 export const NAV_ITEMS = [
-  { icon: LucideWallet, label: "소비기록", navId: 0, url: PageUrls.ADD_PAY },
+  { icon: LucideWallet, label: "소비기록", navId: 0, url: PageUrls.PAY_RECODE },
   { icon: LucideChartPie, label: "통계", navId: 1, url: PageUrls.STATISTIC },
   { icon: LucideHouse, label: "홈", navId: 2, url: PageUrls.HOME },
   {

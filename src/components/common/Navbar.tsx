@@ -12,7 +12,7 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="sticky inset-0 z-50 h-16 w-full shrink-0 rounded-t-2xl border-t-[1px] border-t-second-lightest">
-      <div className="flex items-center justify-between h-full px-5 bg-white rounded-t-2xl">
+      <div className="flex h-full items-center justify-between rounded-t-2xl bg-white px-5">
         {NAV_ITEMS.map(({ icon: Icon, label, navId, url }, idx) => (
           <div
             onClick={() => handleClickNavbar(url)}
@@ -24,7 +24,7 @@ const Navbar: React.FC = () => {
               strokeWidth={1.5}
             />
             <p
-              className={`text-xs text-second ${location.pathname === url ? "text-[#666]" : "text-second"}`}
+              className={`text-xs ${location.pathname === url ? "text-[#666]" : "text-second"}`}
             >
               {label}
             </p>

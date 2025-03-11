@@ -115,7 +115,7 @@ const MyProperty = () => {
     icon: () => <></>,
   };
   return (
-    <div className="flex items-center gap-1.5 rounded-full bg-white px-2 py-2 drop-shadow-10">
+    <div className="flex items-center gap-1.5 rounded-full bg-white px-2.5 py-2 drop-shadow-10">
       {typeInfo.icon({ size: 20 })}
       <div>
         {userInfo.nickname}님은

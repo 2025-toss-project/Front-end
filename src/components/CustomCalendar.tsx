@@ -1,5 +1,12 @@
 import { LucidePlus, LucideTriangle } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import useCalendarInfo from "../stores/CalendarInfo";
+import { useMovePage } from "../hooks/useMovePage";
+import PageUrls from "../constants/PageUrls";
+
+interface CustomCalendarProps {
+  onDateChange: (startDate: string, endDate: string) => void;
+}
 
 interface CalendarBodyProps {
   tripDate: {
@@ -15,6 +22,12 @@ interface CalendarBodyProps {
   selectedYear: number;
   selectedMonth: number;
   isSingleSelect: boolean;
+  calenderInfoDTOS: {
+    year: number;
+    month: number;
+    day: number;
+    datePrice: number;
+  }[];
 }
 
 const CalendarBody: React.FC<CalendarBodyProps> = ({
@@ -23,6 +36,7 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
   selectedYear,
   selectedMonth,
   isSingleSelect,
+  calenderInfoDTOS,
 }) => {
   const updateStartDate = (newStartDate: string) => {
     setTripDate((prev) => ({
@@ -40,10 +54,10 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
 
   const handleClickDate = (date: string) => {
     if (isSingleSelect) {
-      // 단일 선택 모드에서는 startDate만 설정하고, 같은 날짜 클릭 시 선택 해제
+      // 단일 선택 모드에서는 startDate로 모두 설정, 같은 날짜 클릭 시 선택 해제
       setTripDate((prev) => ({
         startDate: prev.startDate === date ? "" : date,
-        endDate: "",
+        endDate: prev.startDate === date ? "" : date,
       }));
     } else {
       // 기간 선택 모드
@@ -69,10 +83,10 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
 
   // 해당 달의 1일의 요일
   const firstDay = new Date(selectedYear, selectedMonth - 1, 1).getDay();
-
   // 해당 달의 마지막 날
   const lastDay = new Date(selectedYear, selectedMonth, 0).getDate();
 
+  // 날짜 렌더
   const renderDays = () => {
     const daysOfMonth = [];
     for (let i = 0; i < firstDay; i++) {
@@ -97,12 +111,26 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
       const isStartDate = currentDate === tripDate.startDate;
       const isEndDate = currentDate === tripDate.endDate;
 
+      // calenderInfoDTOS에서 해당 날짜의 데이터 가져오기
+      const dayRecord = calenderInfoDTOS?.find(
+        (record) =>
+          record.year === selectedYear &&
+          record.month === selectedMonth &&
+          record.day === day,
+      );
+
       return (
         <div
           onClick={() => handleClickDate(currentDate)}
-          className={`relative my-1 grid h-9 w-full place-items-center text-center text-xs font-medium ${
-            isInRange ? "bg-main text-white" : ""
-          } ${isInRange && isStartDate ? "rounded-l-full" : ""} ${isInRange && isEndDate ? "rounded-r-full" : ""}`}
+          className={`relative my-1 grid aspect-square w-full place-items-center text-center text-xs font-medium ${
+            isInRange
+              ? "bg-main text-white"
+              : isStartDate || isEndDate
+                ? "bg-white text-second-dark"
+                : ""
+          } ${isInRange && isStartDate ? "rounded-l-full" : ""} ${
+            isInRange && isEndDate ? "rounded-r-full" : ""
+          }`}
           key={index}
         >
           <span
@@ -110,12 +138,14 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
           >
             {day}
             {isSingleSelect && isStartDate && (
-              <span className="absolute inset-0 h-full rounded-full -z-10 aspect-square bg-main"></span>
+              <span className="absolute inset-0 -z-10 aspect-square h-full rounded-full bg-main"></span>
             )}
           </span>
           {/* 지출금액 표시할 곳 */}
-          {isSingleSelect && (
-            <div className="h-3 text-[10px] text-[#FF4D4D]">{"11,000"}</div>
+          {isSingleSelect && dayRecord && (
+            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-xs text-red-500">
+              {dayRecord.datePrice.toLocaleString()}
+            </div>
           )}
           {!isSingleSelect && (isStartDate || isEndDate) && (
             <div
@@ -130,7 +160,7 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
   };
 
   return (
-    <div className={"grid h-fit w-full grid-cols-7 gap-y-1 pt-2"}>
+    <div className={"grid h-fit w-full grid-cols-7 gap-y-3 pt-2"}>
       {renderDays()}
     </div>
   );
@@ -143,7 +173,7 @@ const DaysOfWeek: React.FC = () => {
       {DAYS.map((day) => (
         <div
           key={day}
-          className="w-full text-sm font-normal text-center text-second"
+          className="w-full text-center text-sm font-normal text-second"
         >
           {day}
         </div>
@@ -152,16 +182,19 @@ const DaysOfWeek: React.FC = () => {
   );
 };
 
-const CustomCalendar: React.FC = () => {
+const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedDate, _] = useState(new Date().getDate());
   const [isSingleSelect, setIsSingleSelect] = useState(true);
+  const { totalPrice, calenderInfoDTOS = [] } = useCalendarInfo();
+  const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
 
   const [tripDate, setTripDate] = useState({
-    startDate: `${selectedYear}-${selectedMonth}-${selectedDate}`,
+    startDate: `${String(selectedYear)}-${String(selectedMonth).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`,
     endDate: "",
   });
+
   const handleClickArrow = (isLeft: boolean) => {
     if (isLeft) {
       if (selectedMonth === 1) {
@@ -180,6 +213,7 @@ const CustomCalendar: React.FC = () => {
       }
     }
   };
+
   const handleClickSelectBtn = () => {
     setTripDate({
       startDate: "",
@@ -188,10 +222,37 @@ const CustomCalendar: React.FC = () => {
     setIsSingleSelect((prev) => !prev);
   };
 
-  useEffect(() => {
-    console.log(tripDate);
-  }, [tripDate]);
+  const formatDate = (date: string) => {
+    if (!date) return ""; // date가 비어있으면 빈 문자열 반환
 
+    const [year, month, day] = date.split("-");
+
+    if (!month || !day) return date;
+
+    const formattedMonth = month.padStart(2, "0"); // 두 자릿수로 포맷팅
+    const formattedDay = day.padStart(2, "0"); // 두 자릿수로 포맷팅
+
+    return `${year}-${formattedMonth}-${formattedDay}`;
+  };
+
+  const prevTripDateRef = useRef(tripDate);
+
+  useEffect(() => {
+    const formattedStartDate = formatDate(tripDate.startDate);
+    const formattedEndDate = formatDate(tripDate.endDate);
+
+    if (
+      prevTripDateRef.current.startDate !== formattedStartDate ||
+      prevTripDateRef.current.endDate !== formattedEndDate
+    ) {
+      console.log("onDateChange :", formattedStartDate, formattedEndDate);
+      onDateChange(formattedStartDate, formattedEndDate);
+      prevTripDateRef.current = {
+        startDate: formattedStartDate,
+        endDate: formattedEndDate,
+      };
+    }
+  }, [tripDate, onDateChange]);
   return (
     <>
       <div className={"w-full"}>
@@ -214,14 +275,18 @@ const CustomCalendar: React.FC = () => {
 
           <div
             onClick={handleClickSelectBtn}
-            className="px-3 py-2 text-sm font-bold text-white rounded-lg bg-main"
+            className="rounded-lg bg-main px-3 py-2 text-sm font-bold text-white"
           >
             {isSingleSelect ? "단일선택" : "기간선택"}
           </div>
         </div>
-        <div className="flex items-center justify-between py-2">
-          <div className="text-xl font-bold">122,200원</div>
-          <LucidePlus size={24} color="#333" />
+        <div className="flex items-center justify-between px-2 py-3">
+          <div className="text-xl font-bold">
+            {totalPrice.toLocaleString()} 원
+          </div>
+          <div onClick={() => moveToPage(PageUrls.ADD_PAY)}>
+            <LucidePlus size={24} color="#333" />
+          </div>
         </div>
         <DaysOfWeek />
         <CalendarBody
@@ -230,6 +295,7 @@ const CustomCalendar: React.FC = () => {
           selectedYear={selectedYear}
           selectedMonth={selectedMonth}
           isSingleSelect={isSingleSelect}
+          calenderInfoDTOS={calenderInfoDTOS}
         />
       </div>
     </>

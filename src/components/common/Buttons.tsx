@@ -25,9 +25,13 @@ export const SaveButton: React.FC<MainButtonProps> = ({
   onClick,
 }) => {
   return (
-    <div className="flex justify-center w-full">
+    <div className="flex w-full justify-center">
       <button
-        onClick={onClick}
+        type="submit"
+        onClick={(e) => {
+          e.preventDefault(); // 기본 제출 방지
+          if (onClick) onClick(); //  onClick이 있을 때만 실행
+        }}
         className={`my-5 flex h-12 w-full items-center justify-center rounded-lg bg-main text-lg font-medium text-white ${style}`}
       >
         {title}
@@ -44,7 +48,7 @@ export const DropButton: React.FC<DropButtonProps> = ({
   return (
     <div
       onClick={toggle}
-      className="flex flex-row items-center justify-center w-24 gap-1 rounded-sm h-7 bg-second-lighter"
+      className="flex h-7 w-24 flex-row items-center justify-center gap-1 rounded-sm bg-second-lighter"
     >
       <p className="text-sm">{title}</p>
       <LucideChevronDown
@@ -58,7 +62,15 @@ export const DropButton: React.FC<DropButtonProps> = ({
 export const AddressButton: React.FC<AddressButtonProps> = ({ title }) => {
   return (
     <div className="m-1 inline-block rounded-md border border-second px-2 py-0.5">
-      <p className="text-sm text-base font-light text-second"> {title}</p>
+      <p className="text-sm font-light text-second"> {title}</p>
+    </div>
+  );
+};
+
+export const IconButton = (icon: React.ReactNode, onClick: () => void) => {
+  return (
+    <div className="flex rounded-md border">
+      <div onClick={() => console.log("button")}> {icon} </div>
     </div>
   );
 };
