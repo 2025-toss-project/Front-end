@@ -87,6 +87,7 @@ const PayRecodePage = () => {
           startDate={startDate}
           endDate={endDate}
           validDates={validDates}
+          activeStartDate={activeStartDate}
         />
       </div>
     </div>

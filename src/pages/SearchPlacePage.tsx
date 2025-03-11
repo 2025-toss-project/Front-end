@@ -8,6 +8,7 @@ const SearchHeader = () => {
   const { place, setPlace, setSelectPlace } = usePlaceInfo();
 
   useEffect(() => {
+    //setPlace("");
     console.log("Current place:", place);
   }, [place]);
 

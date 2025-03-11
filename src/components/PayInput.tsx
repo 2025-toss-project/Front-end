@@ -20,10 +20,11 @@ interface PayInputProps {
 
 const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
   const { moveToPage } = useMovePage();
-  const { spendingRecords } = useSpendingInfo();
   const { addpayInfo, setAddPayInfo } = useAddPayInfo();
+  const { spendingRecords } = useSpendingInfo();
   const { selectCategory, setSelectCategory } = useCategoryInfo();
-  const { selectPlace, setSelectPlace, setPlaceInfo } = usePlaceInfo();
+  const { selectPlace, setSelectPlace, setPlace, setPlaceInfo } =
+    usePlaceInfo();
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -77,6 +78,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
         setSelectCategory("");
         setSelectPlace("");
         setPlaceInfo(0, 0);
+        setPlace(""); // 검색 기록 삭제
       }
     };
 

@@ -45,3 +45,14 @@ export const inputFormatPriceCheck = (value: number | string) => {
   const numValue = Number(String(value).replace(/,/g, "")); // 쉼표 제거 후 숫자로 변환
   return numValue.toLocaleString(); // 다시 문자열로 변환하여 리턴
 };
+
+// 요일 반환 포맷
+export const formatDateWithWeekday = (
+  year: number,
+  month: number,
+  day: number,
+) => {
+  const date = new Date(Number(year), Number(month) - 1, Number(day)); // 월은 0부터 시작
+  const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
+  return `${day}일 ${weekdays[date.getDay()]}요일`;
+};

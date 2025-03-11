@@ -31,8 +31,8 @@ export default function SearchPlace() {
   const id = searchParams.get("id");
 
   useEffect(() => {
-    setSelectPlace(""); // Reset the selected place when component mounts
-    setPlaces([]); // Reset the places list
+    setSelectPlace("");
+    setPlaces([]);
   }, []);
 
   useEffect(() => {

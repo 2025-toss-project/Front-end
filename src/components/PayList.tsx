@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { categoryList } from "../constants/category";
-import useSpendingInfo, { ConsumptionInfoByDate } from "../stores/spendingInfo";
+import useSpendingInfo, {
+  ConsumptionInfo,
+  ConsumptionInfoByDate,
+} from "../stores/spendingInfo";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
 import { useCategoryInfo } from "../stores/categoryInfo";
 import { api } from "../utils/api";
 import { useLocation } from "react-router-dom";
+import { formatDateWithWeekday } from "../utils/formatFunc";
 
 interface PayDayProps {
   data: any; // 필요한 타입으로 수정
@@ -16,18 +20,12 @@ interface PayListProps {
   startDate: string;
   endDate: string;
   validDates: string[];
+  activeStartDate: Date;
 }
 
 // 아이콘 가져오기 ( {<IconFood/>} 이런식으로 반환됨)
 const getIcon = (categoryText: string) => {
   return categoryList.find((category) => category.text === categoryText);
-};
-
-// 날짜 포맷팅 (년도 추가 필요)
-const formatDateWithWeekday = (month: number, day: number) => {
-  const date = new Date(Number(2025), Number(month) - 1, Number(day)); // 월은 0부터 시작
-  const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
-  return `${day}일 ${weekdays[date.getDay()]}요일`;
 };
 
 // 하루치 소비 리스트
@@ -59,6 +57,7 @@ const PayList: React.FC<PayListProps> = ({
   startDate,
   endDate,
   validDates,
+  activeStartDate,
 }) => {
   const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 관리
   const [filteredRecords, setFilteredRecords] = useState<
@@ -78,39 +77,34 @@ const PayList: React.FC<PayListProps> = ({
     moveToPage(`${PageUrls.PAY_DETAIL}?id=${id}`);
   };
 
+  const activeMonth = (activeStartDate: Date) => {
+    const year = activeStartDate.getFullYear();
+    const month = activeStartDate.getMonth() + 1;
+    const startOfMonth = `${year}-${String(month).padStart(2, "0")}-01`;
+    const endOfMonth = `${year}-${String(month).padStart(2, "0")}-${new Date(year, month, 0).getDate()}`;
+    return { startOfMonth, endOfMonth };
+  };
+
   useEffect(() => {
     const ReadConsumption = async () => {
       try {
         setLoading(true);
 
-        if (!startDate || !endDate) {
-          if (refresh) {
-            console.warn("refresh 값 변경으로 실행", refresh);
-          } else {
-            console.warn("캘린더에서 날짜가 선택되지 않음 → API 호출 중단");
-            return;
-          }
-        }
-
-        // refresh 값이 있으면 날짜로 startDate와 endDate 설정
-        const effectiveStartDate = startDate || refresh;
-        const effectiveEndDate = endDate || refresh;
+        let effectiveStartDate = startDate || refresh;
+        let effectiveEndDate = endDate || refresh;
 
         if (!effectiveStartDate || !effectiveEndDate) {
-          console.warn("유효한 날짜가 없으므로 API 호출을 중단합니다.");
-          return;
+          console.warn("start, end, refresh 모두 없음 → 해당 월 전체 조회");
+          const { startOfMonth, endOfMonth } = activeMonth(activeStartDate);
+          effectiveStartDate = startOfMonth;
+          effectiveEndDate = endOfMonth;
         }
 
-        // 단일 선택일 때
-        if (effectiveStartDate == effectiveEndDate) {
-          const hasValidDate = validDates.some(
-            (date) => date >= startDate && date <= endDate,
-          );
-          if (!hasValidDate) {
-            console.warn(
-              "소비 기록이 없는 기간이므로 API 호출을 하지 않습니다.",
-            );
-            return; // API 호출 중단
+        // 단일 선택 날짜일 때, 기록이 없으면 API 호출 중단
+        if (effectiveStartDate === effectiveEndDate) {
+          if (!validDates.includes(effectiveStartDate)) {
+            console.warn("소비 기록이 없는 날짜 → API 호출 중단");
+            return;
           }
         }
 
@@ -121,12 +115,12 @@ const PayList: React.FC<PayListProps> = ({
         };
         const res = await api.get("consumption", { params });
 
-        console.log(res.data);
-        // 받아온 데이터 store 저장
         setSpendingData(res.data.result);
+        const data = res.data.result.consumptionInfoByDateDTOS;
+        console.log("dataaaa", spendingRecords);
 
-        const filtered = spendingRecords
-          .map((record) => ({
+        const filtered = data
+          .map((record: ConsumptionInfoByDate) => ({
             ...record,
             consumptionInfoList:
               selectCategory === "" // 선택된 카테고리가 없으면 필터링 없이 전체 유지
@@ -135,7 +129,11 @@ const PayList: React.FC<PayListProps> = ({
                     (item) => item.category === selectCategory,
                   ),
           }))
-          .filter((record) => record.consumptionInfoList.length > 0);
+          .filter(
+            (record: ConsumptionInfoByDate) =>
+              record.consumptionInfoList.length > 0,
+          );
+
         console.log("필터링된 데이터:", filtered);
         setFilteredRecords(filtered);
       } catch (err) {
@@ -154,7 +152,11 @@ const PayList: React.FC<PayListProps> = ({
           <div key={dayData.day} className="mb-5">
             <div className="flex flex-row justify-between py-5">
               <p className="text-sm text-second">
-                {formatDateWithWeekday(dayData.month, dayData.day)}
+                {formatDateWithWeekday(
+                  dayData.year,
+                  dayData.month,
+                  dayData.day,
+                )}
               </p>
               <p className="text-base font-medium text-second-dark">
                 {dayData.datePrice.toLocaleString()}원
