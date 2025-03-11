@@ -22,6 +22,16 @@ export const formatDate = (
   return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
 };
 
+// year-month-day 형식 (date 형)
+export const formatDateDate = (date: string) => {
+  if (!date) return ""; // date가 비어있으면 빈 문자열 반환
+  const [year, month, day] = date.split("-");
+  if (!month || !day) return date;
+  const formattedMonth = month.padStart(2, "0"); // 두 자릿수로 포맷팅
+  const formattedDay = day.padStart(2, "0"); // 두 자릿수로 포맷팅
+  return `${year}-${formattedMonth}-${formattedDay}`;
+};
+
 // 날짜 포맷팅 (Number 형)
 export const formatDateNum = (
   year: number,
@@ -55,4 +65,13 @@ export const formatDateWithWeekday = (
   const date = new Date(Number(year), Number(month) - 1, Number(day)); // 월은 0부터 시작
   const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
   return `${day}일 ${weekdays[date.getDay()]}요일`;
+};
+
+// 인수의 해당 달의 시작일과 끝날(한달 전체) 리턴
+export const activeMonth = (activeStartDate: Date) => {
+  const year = activeStartDate.getFullYear();
+  const month = activeStartDate.getMonth() + 1;
+  const startOfMonth = `${year}-${String(month).padStart(2, "0")}-01`;
+  const endOfMonth = `${year}-${String(month).padStart(2, "0")}-${new Date(year, month, 0).getDate()}`;
+  return { startOfMonth, endOfMonth };
 };

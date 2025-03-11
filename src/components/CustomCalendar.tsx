@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import useCalendarInfo from "../stores/CalendarInfo";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
+import { formatDateDate } from "../utils/formatFunc";
 
 interface CustomCalendarProps {
   onDateChange: (startDate: string, endDate: string) => void;
@@ -200,6 +201,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
       if (selectedMonth === 1) {
         setSelectedYear((prev) => prev - 1);
         setSelectedMonth(12);
+        console.log("해당 년도와 달", selectedYear, selectedMonth);
       } else {
         setSelectedMonth((prev) => prev - 1);
       }
@@ -222,24 +224,11 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
     setIsSingleSelect((prev) => !prev);
   };
 
-  const formatDate = (date: string) => {
-    if (!date) return ""; // date가 비어있으면 빈 문자열 반환
-
-    const [year, month, day] = date.split("-");
-
-    if (!month || !day) return date;
-
-    const formattedMonth = month.padStart(2, "0"); // 두 자릿수로 포맷팅
-    const formattedDay = day.padStart(2, "0"); // 두 자릿수로 포맷팅
-
-    return `${year}-${formattedMonth}-${formattedDay}`;
-  };
-
   const prevTripDateRef = useRef(tripDate);
 
   useEffect(() => {
-    const formattedStartDate = formatDate(tripDate.startDate);
-    const formattedEndDate = formatDate(tripDate.endDate);
+    const formattedStartDate = formatDateDate(tripDate.startDate);
+    const formattedEndDate = formatDateDate(tripDate.endDate);
 
     if (
       prevTripDateRef.current.startDate !== formattedStartDate ||

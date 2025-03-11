@@ -8,8 +8,8 @@ import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
 import { useCategoryInfo } from "../stores/categoryInfo";
 import { api } from "../utils/api";
-import { useLocation } from "react-router-dom";
-import { formatDateWithWeekday } from "../utils/formatFunc";
+import { useLocation, useNavigate } from "react-router-dom";
+import { activeMonth, formatDateWithWeekday } from "../utils/formatFunc";
 
 interface PayDayProps {
   data: any; // 필요한 타입으로 수정
@@ -67,6 +67,7 @@ const PayList: React.FC<PayListProps> = ({
   const { spendingRecords, setSpendingData } = useSpendingInfo();
   const { selectCategory, setSelectCategory } = useCategoryInfo();
   const location = useLocation();
+  const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
   const refresh = searchParams.get("refresh");
 
@@ -77,13 +78,15 @@ const PayList: React.FC<PayListProps> = ({
     moveToPage(`${PageUrls.PAY_DETAIL}?id=${id}`);
   };
 
-  const activeMonth = (activeStartDate: Date) => {
-    const year = activeStartDate.getFullYear();
-    const month = activeStartDate.getMonth() + 1;
-    const startOfMonth = `${year}-${String(month).padStart(2, "0")}-01`;
-    const endOfMonth = `${year}-${String(month).padStart(2, "0")}-${new Date(year, month, 0).getDate()}`;
-    return { startOfMonth, endOfMonth };
-  };
+  useEffect(() => {
+    // 새로고침시 파라미터 제거
+    if (refresh) {
+      searchParams.delete("refresh");
+      navigate(`${location.pathname}?${searchParams.toString()}`, {
+        replace: true,
+      });
+    }
+  }, [refresh, navigate, location]);
 
   useEffect(() => {
     const ReadConsumption = async () => {
@@ -141,7 +144,6 @@ const PayList: React.FC<PayListProps> = ({
         console.error(err);
       } finally {
         setLoading(false);
-        searchParams.delete("refresh");
       }
     };
     ReadConsumption();

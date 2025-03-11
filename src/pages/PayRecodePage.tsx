@@ -7,7 +7,6 @@ import { useCategoryInfo } from "../stores/categoryInfo";
 import { api } from "../utils/api";
 import useCalendarInfo, { calenderInfoDTOS } from "../stores/CalendarInfo";
 import { useMovePage } from "../hooks/useMovePage";
-import PageUrls from "../constants/PageUrls";
 import { formatDateToYMD } from "../utils/formatFunc";
 
 const PayRecodePage = () => {
@@ -18,22 +17,8 @@ const PayRecodePage = () => {
   const [endDate, setEndDate] = useState("");
   const { selectCategory, isOpen, setIsOpen } = useCategoryInfo();
   const { totalPrice, setDayData } = useCalendarInfo();
-  const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
 
-  const handleDateChange = (startDate: string, endDate: string) => {
-    if (startDate) {
-      setStartDate(startDate);
-    }
-    if (endDate) {
-      setEndDate(endDate);
-    }
-    // 범위 선택일경우
-    if (startDate && endDate) {
-      setActiveDate(new Date(endDate));
-    } else if (startDate) {
-      setActiveDate(new Date(startDate));
-    }
-  };
+  const handleDateChange = (startDate: string, endDate: string) => {};
 
   useEffect(() => {
     const fetchCalendar = async () => {
