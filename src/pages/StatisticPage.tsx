@@ -1,7 +1,6 @@
 import { LucideChevronRight } from "lucide-react";
 import React, { ReactNode, useEffect, useState } from "react";
 import { SaveButton } from "../components/common/Buttons";
-import { categoryList } from "../constants/category";
 import BarChart from "../components/charts/BarChart";
 import DoughnutChart from "../components/charts/DoughnutChart";
 import BarGraph from "../components/BarGraph";
@@ -10,6 +9,13 @@ import { formatPrice } from "../utils/formatFunc";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
 import { findCategory } from "../utils/findTypeOrCategory";
+
+export interface AnalyticsData {
+  category: string;
+  price: number;
+  percentage: number;
+  date: string;
+}
 
 const BoxWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
@@ -24,6 +30,7 @@ const MonthPayBox: React.FC<{ monthPay: number; restBudget: number }> = ({
   restBudget,
 }) => {
   const { moveToPage } = useMovePage();
+
   return (
     <BoxWrapper>
       <div>이번 달 지출</div>
@@ -35,19 +42,33 @@ const MonthPayBox: React.FC<{ monthPay: number; restBudget: number }> = ({
         <LucideChevronRight size={24} color="#333" />
       </div>
       <div className="py-2.5">
-        <BarGraph props={40} height="h-5" />
+        <BarGraph
+          props={Math.abs(Math.floor((monthPay / restBudget) * 100))}
+          height="h-5"
+        />
       </div>
 
       <div className="flex items-center justify-between">
-        <div>남은예산</div>
-        <div className="text-xl font-medium">{formatPrice(restBudget)}원</div>
+        {restBudget < 0 ? (
+          <div className="text-main">초과예산</div>
+        ) : (
+          <div>남은예산</div>
+        )}
+        <div className="text-xl font-medium">
+          {formatPrice(Math.abs(restBudget))}원
+        </div>
       </div>
     </BoxWrapper>
   );
 };
 
-const PrevMonthPayBox = () => {
+const PrevMonthPayBox: React.FC<{
+  monthPay: any;
+  prevPay: any;
+  twoMonthsAgoPay: any;
+}> = ({ monthPay, prevPay, twoMonthsAgoPay }) => {
   const { moveToPage } = useMovePage();
+
   return (
     <BoxWrapper>
       <div>지난 달보다</div>
@@ -56,7 +77,11 @@ const PrevMonthPayBox = () => {
         <div>더 쓰고 있어요</div>
       </div>
       <div className="py-5">
-        <BarChart />
+        <BarChart
+          monthPay={monthPay.analyicsInfoDTOS}
+          prevPay={prevPay.analyicsInfoDTOS}
+          twoMonthsAgoPay={twoMonthsAgoPay.analyicsInfoDTOS}
+        />
       </div>
       <SaveButton
         title="지출 내역 보러가기"
@@ -67,30 +92,27 @@ const PrevMonthPayBox = () => {
   );
 };
 
-export interface CategoryPay {
-  id: number;
-  category: string;
-  budgetPrice: number;
-  spendPrice: number;
-  percentage: number;
-}
-
-const PayOfCategory: React.FC<{ categoryPay: CategoryPay[] }> = ({
-  categoryPay,
-}) => {
+const PayOfCategory: React.FC<{ categoryPay: any }> = ({ categoryPay }) => {
   const { moveToPage } = useMovePage();
-  const sortedCategoryPay = categoryPay.sort(
-    (a: CategoryPay, b: CategoryPay) => b.spendPrice - a.spendPrice,
+  const sortedCategoryPay = categoryPay.analyicsInfoDTOS.sort(
+    (a: AnalyticsData, b: AnalyticsData) => b.price - a.price,
+  );
+
+  const totalPay = sortedCategoryPay.reduce(
+    (acc: number, cur: AnalyticsData) => {
+      return (acc += cur.price);
+    },
+    0,
   );
 
   return (
     <BoxWrapper>
       <div>카테고리 별 지출</div>
       <div className="py-5">
-        <DoughnutChart categoryPay={sortedCategoryPay} />
+        <DoughnutChart categoryPay={categoryPay} />
       </div>
       <div className="flex flex-col gap-6 rounded-lg bg-second-bg px-6 py-3">
-        {sortedCategoryPay.map((pay) => (
+        {sortedCategoryPay.map((pay: AnalyticsData) => (
           <div
             key={pay.category}
             className="flex items-center gap-3 text-sm font-medium"
@@ -99,10 +121,10 @@ const PayOfCategory: React.FC<{ categoryPay: CategoryPay[] }> = ({
               className="grid w-14 place-items-center rounded-lg py-1.5 text-white"
               style={{ backgroundColor: findCategory(pay.category)!.border }}
             >
-              {pay.percentage}%
+              {Math.floor((pay.price / totalPay) * 100)}%
             </div>
             <div className="font-normal">{pay.category}</div>
-            <div className="grow text-right text-base">{pay.spendPrice}원</div>
+            <div className="grow text-right text-base">{pay.price}원</div>
           </div>
         ))}
       </div>
@@ -116,6 +138,14 @@ const PayOfCategory: React.FC<{ categoryPay: CategoryPay[] }> = ({
     </BoxWrapper>
   );
 };
+
+interface CategoryPay {
+  id: number;
+  category: string;
+  budgetPrice: number;
+  spendPrice: number;
+  percentage: number;
+}
 
 interface BudgetData {
   totalId: number;
@@ -133,26 +163,59 @@ const StatisticPage = () => {
     totalPercentage: 0,
     budgetInfoList: [],
   });
+  const [analyticsData, setAnalyticsData] = useState();
+  const getAnalytics = async () => {
+    try {
+      const res = await api.get("/analytics");
+      return res.data.result;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
   const getBudget = async () => {
     try {
       const res = await api.get("/budget");
-      console.log(res.data.result);
-      setBudgetData(res.data.result);
+      return res.data.result;
     } catch (error) {
-      console.error(error);
+      return Promise.reject(error);
     }
   };
   useEffect(() => {
-    getBudget();
+    const getInfos = async () => {
+      const results = await Promise.allSettled([getAnalytics(), getBudget()]);
+
+      const analyticsResult = results[0];
+      const budgetResult = results[1];
+
+      if (analyticsResult.status === "fulfilled") {
+        setAnalyticsData(analyticsResult.value);
+      } else {
+        console.error(analyticsResult.reason);
+      }
+
+      if (budgetResult.status === "fulfilled") {
+        setBudgetData(budgetResult.value);
+      } else {
+        console.error(budgetResult.reason);
+      }
+    };
+    getInfos();
   }, []);
+
   return (
     <div className="flex w-full flex-col gap-5 py-6">
       <MonthPayBox
         monthPay={budgetData.totalSpend}
         restBudget={budgetData.totalBudget - budgetData.totalSpend}
       />
-      <PrevMonthPayBox />
-      <PayOfCategory categoryPay={[...budgetData.budgetInfoList]} />
+      {analyticsData && (
+        <PrevMonthPayBox
+          monthPay={analyticsData[0] || []}
+          prevPay={analyticsData[1] || []}
+          twoMonthsAgoPay={analyticsData[2] || []}
+        />
+      )}
+      {analyticsData && <PayOfCategory categoryPay={analyticsData[0] || []} />}
     </div>
   );
 };
