@@ -93,7 +93,11 @@ export default function SearchPlace() {
                 {place.road_address_name && (
                   <div className="flex items-center gap-1 text-sm text-second">
                     <AddressButton title="도로명" />
-                    <span>{place.road_address_name}</span>
+                    <span>
+                      {place.road_address_name.length > 20
+                        ? `${place.road_address_name.substring(0, 20)}...`
+                        : place.road_address_name}
+                    </span>
                   </div>
                 )}
                 {place.address_name && (

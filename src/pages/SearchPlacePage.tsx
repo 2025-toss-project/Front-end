@@ -27,7 +27,7 @@ const SearchHeader = () => {
   };
 
   return (
-    <div className="flex h-14 w-full flex-row items-center justify-between bg-second-lighter px-2.5 py-4">
+    <div className="flex h-14 w-full flex-row items-center justify-between bg-second-lighter px-2 py-4">
       <LucideSearch size={22} color="#333" />
       <form onSubmit={handleSearch} className="flex flex-1 pl-5">
         <input

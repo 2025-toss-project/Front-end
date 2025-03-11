@@ -65,7 +65,7 @@ const PayList: React.FC<PayListProps> = ({
   >([]);
   const { moveToPage } = useMovePage();
   const { spendingRecords, setSpendingData } = useSpendingInfo();
-  const { selectCategory } = useCategoryInfo();
+  const { selectCategory, setSelectCategory } = useCategoryInfo();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const refresh = searchParams.get("refresh");
@@ -101,10 +101,12 @@ const PayList: React.FC<PayListProps> = ({
         }
 
         // 단일 선택 날짜일 때, 기록이 없으면 API 호출 중단
-        if (effectiveStartDate === effectiveEndDate) {
-          if (!validDates.includes(effectiveStartDate)) {
-            console.warn("소비 기록이 없는 날짜 → API 호출 중단");
-            return;
+        if (!refresh) {
+          if (effectiveStartDate === effectiveEndDate) {
+            if (!validDates.includes(effectiveStartDate)) {
+              console.warn("소비 기록이 없는 날짜 → API 호출 중단");
+              return;
+            }
           }
         }
 
@@ -117,7 +119,6 @@ const PayList: React.FC<PayListProps> = ({
 
         setSpendingData(res.data.result);
         const data = res.data.result.consumptionInfoByDateDTOS;
-        console.log("dataaaa", spendingRecords);
 
         const filtered = data
           .map((record: ConsumptionInfoByDate) => ({
@@ -140,13 +141,14 @@ const PayList: React.FC<PayListProps> = ({
         console.error(err);
       } finally {
         setLoading(false);
+        searchParams.delete("refresh");
       }
     };
     ReadConsumption();
   }, [startDate, endDate, refresh, selectCategory]);
 
   return (
-    <div className="flex w-full flex-col px-6">
+    <div className="flex w-full flex-col">
       {filteredRecords.length > 0 ? (
         filteredRecords.map((dayData) => (
           <div key={dayData.day} className="mb-5">

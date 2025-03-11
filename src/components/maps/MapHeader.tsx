@@ -82,7 +82,7 @@ const DropDown: React.FC<DropDownProps> = ({ isOpen, setIsOpen }) => {
           <div
             key={type.type}
             onClick={() => setType(type)}
-            className="flex gap-1 py-2 border-b border-b-second last:border-none"
+            className="flex gap-1 border-b border-b-second py-2 last:border-none"
           >
             {type.icon({ size: 20 })}
             {type.type}
@@ -104,7 +104,7 @@ const MyProperty: React.FC<{ name: string; property: string }> = ({
     icon: () => <></>,
   };
   return (
-    <div className="flex items-center gap-1.5 rounded-full bg-white px-2 py-2 drop-shadow-10">
+    <div className="flex items-center gap-1.5 rounded-full bg-white px-2.5 py-2 drop-shadow-10">
       {typeInfo.icon({ size: 20 })}
       <div>
         {userInfo.nickname}님은
@@ -117,7 +117,7 @@ const MyProperty: React.FC<{ name: string; property: string }> = ({
 const MapHeader: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   return (
-    <div className="z-10 flex flex-col max-w-full">
+    <div className="z-10 flex max-w-full flex-col">
       <CategoryList />
       <div className="flex items-center justify-between py-1">
         <MyProperty name="희연" property="플렉스" />

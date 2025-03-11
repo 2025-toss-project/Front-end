@@ -62,7 +62,7 @@ export const DropButton: React.FC<DropButtonProps> = ({
 export const AddressButton: React.FC<AddressButtonProps> = ({ title }) => {
   return (
     <div className="m-1 inline-block rounded-md border border-second px-2 py-0.5">
-      <p className="text- font-light text-second"> {title}</p>
+      <p className="text-sm font-light text-second"> {title}</p>
     </div>
   );
 };

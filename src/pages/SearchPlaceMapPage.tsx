@@ -111,7 +111,11 @@ const Map = () => {
     });
   }, [selectPlace, loaded]); // selectPlace가 바뀔 때마다 실행
 
-  return <div id="map" style={{ width: "500px", height: "750px" }} />;
+  return (
+    <>
+      <div id="map" className="h-100 min-w-[calc(100vw)]" />
+    </>
+  );
 };
 
 const MapInfo = () => {
@@ -128,10 +132,10 @@ const MapInfo = () => {
       : PageUrls.ADD_PAY;
 
   return (
-    <div className="pointer-events-auto absolute bottom-10 left-1/2 z-10 w-80 -translate-x-1/2">
+    <div className="pointer-events-auto absolute bottom-20 left-1/2 z-10 w-80 -translate-x-1/2">
       <SaveButton
         title={buttonText}
-        style="px-6"
+        style="px-6 "
         onClick={() => moveToPage(targetUrl)}
       />
     </div>
@@ -140,10 +144,10 @@ const MapInfo = () => {
 
 const SearchPlaceMapPage = () => {
   return (
-    <div className="relative">
+    <>
       <Map />
       <MapInfo />
-    </div>
+    </>
   );
 };
 
