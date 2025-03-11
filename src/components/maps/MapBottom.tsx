@@ -43,7 +43,7 @@ const ShowDetailInfo: React.FC<{
 
   const handleClickShowDetail = () => {
     if (userSelect.type === "나의 소비") {
-      moveToPage(PageUrls.PAY_DETAIL, { id: selectedData.id });
+      moveToPage(`${PageUrls.PAY_DETAIL}?id=${selectedData.id}`);
     }
   };
 
