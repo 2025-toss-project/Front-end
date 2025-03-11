@@ -91,7 +91,6 @@ const KakaoMap: React.FC<{
           },
         });
       }
-      console.log(res.data);
       setMapDatas(res.data.result);
     } catch (error) {
       console.error(error);
