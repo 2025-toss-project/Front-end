@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import SelectCategory from "../components/SelectCategory";
 import { IconButton, SaveButton } from "../components/common/Buttons";
@@ -129,8 +129,7 @@ const PayDetailPage = () => {
           onClick={handleClickDelete}
           className="flex h-12 w-12 items-center justify-center rounded-md border border-gray-500"
         >
-          {" "}
-          <LucideTrash2 size={26} color="#777" />{" "}
+          <LucideTrash2 size={26} color="#777" />
         </div>
       </div>
     </div>

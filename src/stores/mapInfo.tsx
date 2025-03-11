@@ -9,6 +9,13 @@ interface MapStore {
   setLevel: (level: number) => void;
   mapRef: React.RefObject<kakao.maps.Map | null>;
   setMapRef: (ref: React.RefObject<kakao.maps.Map | null>) => void;
+  userSelect: {
+    category: string;
+    type: string;
+  };
+  setUserSelect: (update: Partial<{ category: string; type: string }>) => void;
+  mapDatas: any;
+  setMapDatas: (data: any) => void;
 }
 
 const useMapInfo = create<MapStore>((set) => ({
@@ -20,6 +27,16 @@ const useMapInfo = create<MapStore>((set) => ({
   setLevel: (level) => set({ level }),
   mapRef: { current: null },
   setMapRef: (mapRef) => set({ mapRef }),
+  userSelect: {
+    category: "",
+    type: "나의 소비",
+  },
+  setUserSelect: (update) =>
+    set((state) => ({
+      userSelect: { ...state.userSelect, ...update },
+    })),
+  mapDatas: {},
+  setMapDatas: (data) => set({ mapDatas: data }),
 }));
 
 export default useMapInfo;

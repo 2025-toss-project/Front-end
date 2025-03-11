@@ -12,7 +12,7 @@ import IconEmotionalType from "../assets/payTypeIcons/IconEmotionalType";
 
 export interface PayTypeProps {
   type: string;
-  discription: string;
+  discription?: string;
   icon: (props: { size?: number }) => ReactNode;
 }
 
