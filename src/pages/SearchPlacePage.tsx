@@ -8,7 +8,6 @@ const SearchHeader = () => {
   const { place, setPlace, setSelectPlace } = usePlaceInfo();
 
   useEffect(() => {
-    //setPlace("");
     console.log("Current place:", place);
   }, [place]);
 
@@ -18,10 +17,13 @@ const SearchHeader = () => {
   };
 
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Prevent default form submit
-    if (!place.trim()) return; // If place is empty, prevent search
-    setSelectPlace(place); // Directly set the selected place from the search input
-    console.log("검색한 장소:", place); // Or trigger search logic here
+    e.preventDefault(); // 기본 제출 동작 방지
+    if (!place.trim()) {
+      console.warn("검색어가 비어있음, 이동하지 않음");
+      return;
+    }
+    setSelectPlace(place);
+    console.log("검색한 장소:", place);
   };
 
   return (
