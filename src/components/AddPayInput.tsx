@@ -42,7 +42,7 @@ const AddPayInput: React.FC<AddPayInputProps> = ({
           label="날짜"
           type="date"
           placeholder="날짜를 입력하세요"
-          // value={defaultDatas?.date}
+          value={defaultDatas?.date}
         />
         <InputDefault
           label="카테고리"

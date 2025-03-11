@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useRef } from "react"; // useRef 추가
+import React, { useEffect, useState, useRef } from "react";
 import useMapInfo from "../../stores/mapInfo";
 import { Map } from "react-kakao-maps-sdk";
 import { api } from "../../utils/api";
 import useGetMyCurrentLocation from "../../hooks/useGetMyCurrentLocation";
-import { throttle } from "lodash";
+import { debounce } from "lodash";
 
 const KakaoMap: React.FC<{
   children: React.ReactNode;
@@ -17,21 +17,23 @@ const KakaoMap: React.FC<{
     setMapCenter,
     mapCenter,
     userSelect,
-    mapDatas,
     setMapDatas,
   } = useMapInfo();
 
-  useGetMyCurrentLocation(setMyLocation, setMapCenter);
+  const { locationInitialized } = useGetMyCurrentLocation(
+    setMyLocation,
+    setMapCenter,
+  );
 
-  const [radius, setRadius] = useState<number>(750); // 초기 반경 (m)
+  const [radius, setRadius] = useState<number>(750);
 
   const getRadiusByZoom = (zoom: number) => {
-    if (zoom <= 3) return 50 * 10; // 500m
-    if (zoom <= 5) return 250 * 5; // 1250m
-    if (zoom <= 7) return 1000 * 3; // 3km
-    if (zoom <= 9) return 4000 * 2; // 8km
-    if (zoom <= 11) return 16000 * 1.5; // 24km
-    return 128000 * 1; // 128km
+    if (zoom <= 3) return 50 * 10;
+    if (zoom <= 5) return 250 * 10;
+    if (zoom <= 7) return 1000 * 10;
+    if (zoom <= 9) return 4000 * 10;
+    if (zoom <= 11) return 16000 * 10;
+    return 128000 * 10;
   };
 
   const haversine = (
@@ -54,7 +56,7 @@ const KakaoMap: React.FC<{
         Math.sin(dLng / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // 거리 (미터)
+    return R * c;
   };
 
   const isOutOfBounds = (
@@ -114,15 +116,15 @@ const KakaoMap: React.FC<{
     }
   };
 
-  const throttledGetNewData = throttle(getNewData, 1000);
+  const debounceGetNewData = debounce(getNewData, 500);
   const handleZoomChanged = (map: any) => {
     const newLevel = map.getLevel();
+    setRadius(getRadiusByZoom(newLevel));
     setLevel(newLevel);
     const newCenter = {
       lat: map.getCenter().getLat(),
       lng: map.getCenter().getLng(),
     };
-    throttledGetNewData(newCenter);
   };
 
   const handleCenterChanged = (map: any) => {
@@ -130,13 +132,18 @@ const KakaoMap: React.FC<{
       lat: map.getCenter().getLat(),
       lng: map.getCenter().getLng(),
     };
-    throttledGetNewData(newCenter);
+    debounceGetNewData(newCenter);
   };
 
   useEffect(() => {
-    if (mapCenter.lat === 0 && mapCenter.lng === 0) return;
+    if (locationInitialized) {
+      getPayList();
+    }
+  }, [userSelect.type, locationInitialized]);
+
+  useEffect(() => {
     getPayList();
-  }, [mapCenter, userSelect.type]);
+  }, [radius]);
 
   return myLocation.lat === 0 && myLocation.lng === 0 ? (
     <div className="absolute inset-0 z-[100] grid h-screen w-screen place-items-center bg-black/20">

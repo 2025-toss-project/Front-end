@@ -40,11 +40,14 @@ const ShowDetailInfo: React.FC<{
 }> = ({ showBubbleRef, selectedData, categoryInfo }) => {
   const { moveToPage } = useMovePage();
   const { userSelect } = useMapInfo();
+
   const handleClickShowDetail = () => {
     if (userSelect.type === "나의 소비") {
       moveToPage(PageUrls.PAY_DETAIL, { id: selectedData.id });
     }
   };
+
+  // TODO : 다른 사람 소비일 때, 바꿔줘야함
   return (
     <div
       ref={showBubbleRef}

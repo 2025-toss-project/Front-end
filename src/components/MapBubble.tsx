@@ -6,7 +6,7 @@ import IconMapMarker from "../assets/IconMapMarker";
 import "../assets/css/bubble.css";
 
 interface MapMarkerProps {
-  type: "icon" | "bubble"; // 마커 종류 지정
+  type: "icon" | "bubble";
   position: { lat: number; lng: number };
   category: string;
   price?: number;
@@ -58,9 +58,9 @@ const MapMarker: React.FC<MapMarkerProps> = ({
           {categoryData?.icon && categoryData.icon({})}
           <div>
             ₩{formatPrice(price || 0)}
-            {count && count > 1 && (
+            {/* {count && count > 1 && (
               <span className="text-[10px]">({count})</span>
-            )}
+            )} */}
           </div>
         </div>
       )}

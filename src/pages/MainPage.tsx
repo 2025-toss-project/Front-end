@@ -30,7 +30,7 @@ export interface DataProps {
   lat: number;
   lng: number;
   price: number;
-  count?: number;
+  date: string;
 }
 
 const MainPage: React.FC = () => {
@@ -70,11 +70,6 @@ const MainPage: React.FC = () => {
     setCategoryInfo(findCategory(selectedData!.category));
   }, [selectedData]);
 
-  useEffect(() => {
-    if (mapCenter.lat === 0 && mapCenter.lng === 0) return;
-    // getPayList();
-  }, [mapCenter, userSelect.type]);
-
   return (
     <>
       <KakaoMap>
@@ -93,7 +88,6 @@ const MainPage: React.FC = () => {
             }}
             category={data.category}
             price={data.price}
-            count={data.count}
           />
         ))}
       </KakaoMap>

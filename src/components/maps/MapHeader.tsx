@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { categoryList, CategoryProps } from "../../constants/category";
 import { ChevronDown } from "lucide-react";
 import useClickOutside from "../../hooks/useClickOutside";
@@ -7,6 +7,7 @@ import useUserInfo from "../../stores/userInfo";
 import { findType } from "../../utils/findTypeOrCategory";
 import IconMyPay from "../../assets/payTypeIcons/IconMyPay";
 import useMapInfo from "../../stores/mapInfo";
+import { api } from "../../utils/api";
 
 const Category: React.FC<CategoryProps> = ({ text, icon }) => {
   const { setUserSelect, userSelect } = useMapInfo();
@@ -84,11 +85,30 @@ const DropDown: React.FC<DropDownProps> = ({ isOpen, setIsOpen }) => {
   );
 };
 
-const MyProperty: React.FC<{ name: string; property: string }> = ({
-  name,
-  property,
-}) => {
-  const { userInfo } = useUserInfo();
+const MyProperty = () => {
+  const [userInfo, setUserInfo] = useState({
+    nickname: "",
+    email: "",
+    type: "",
+    ageGroup: "",
+    home: {
+      lng: 0,
+      lat: 0,
+    },
+  });
+
+  useEffect(() => {
+    const getMyInfo = async () => {
+      try {
+        const res = await api.get("/members/info");
+        setUserInfo(res.data.result);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getMyInfo();
+  }, []);
+
   const typeInfo: PayTypeProps = findType(userInfo.type) || {
     type: "",
     discription: "",
@@ -111,7 +131,7 @@ const MapHeader: React.FC = () => {
     <div className="z-10 flex max-w-full flex-col">
       <CategoryList />
       <div className="flex items-center justify-between py-1">
-        <MyProperty name="희연" property="플렉스" />
+        <MyProperty />
         <DropDown isOpen={isDropdownOpen} setIsOpen={setIsDropdownOpen} />
       </div>
     </div>
