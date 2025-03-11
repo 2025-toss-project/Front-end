@@ -5,10 +5,6 @@ import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
 import { formatDateDate } from "../utils/formatFunc";
 
-interface CustomCalendarProps {
-  onDateChange: (startDate: string, endDate: string) => void;
-}
-
 interface CalendarBodyProps {
   tripDate: {
     startDate: string;
@@ -183,12 +179,21 @@ const DaysOfWeek: React.FC = () => {
   );
 };
 
+interface CustomCalendarProps {
+  onDateChange: (startDate: string, endDate: string) => void;
+}
+
 const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [selectedDate, _] = useState(new Date().getDate());
+  const [selectedDate, setSelectedDate] = useState(new Date().getDate());
   const [isSingleSelect, setIsSingleSelect] = useState(true);
-  const { totalPrice, calenderInfoDTOS = [] } = useCalendarInfo();
+  const {
+    activeDate,
+    setActiveDate,
+    totalPrice,
+    calenderInfoDTOS = [],
+  } = useCalendarInfo();
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
 
   const [tripDate, setTripDate] = useState({
@@ -201,7 +206,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
       if (selectedMonth === 1) {
         setSelectedYear((prev) => prev - 1);
         setSelectedMonth(12);
-        console.log("해당 년도와 달", selectedYear, selectedMonth);
       } else {
         setSelectedMonth((prev) => prev - 1);
       }
@@ -215,6 +219,10 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
       }
     }
   };
+
+  useEffect(() => {
+    setActiveDate(selectedYear, selectedMonth, selectedDate);
+  }, [selectedYear, selectedMonth, selectedDate]);
 
   const handleClickSelectBtn = () => {
     setTripDate({

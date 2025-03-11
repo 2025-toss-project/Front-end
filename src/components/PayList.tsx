@@ -1,26 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { categoryList } from "../constants/category";
-import useSpendingInfo, {
-  ConsumptionInfo,
-  ConsumptionInfoByDate,
-} from "../stores/spendingInfo";
+import useSpendingInfo, { ConsumptionInfoByDate } from "../stores/spendingInfo";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
 import { useCategoryInfo } from "../stores/categoryInfo";
 import { api } from "../utils/api";
 import { useLocation, useNavigate } from "react-router-dom";
 import { activeMonth, formatDateWithWeekday } from "../utils/formatFunc";
+import useCalendarInfo from "../stores/CalendarInfo";
 
 interface PayDayProps {
   data: any; // 필요한 타입으로 수정
   onClick: () => void; // onClick 핸들러
-}
-
-interface PayListProps {
-  startDate: string;
-  endDate: string;
-  validDates: string[];
-  activeStartDate: Date;
 }
 
 // 아이콘 가져오기 ( {<IconFood/>} 이런식으로 반환됨)
@@ -52,20 +43,26 @@ const PayDay: React.FC<PayDayProps> = ({ data, onClick }) => {
   );
 };
 
+interface PayListProps {
+  startDate: string;
+  endDate: string;
+  validDates: string[];
+}
+
 // 전체 소비리스트
 const PayList: React.FC<PayListProps> = ({
   startDate,
   endDate,
   validDates,
-  activeStartDate,
 }) => {
   const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 관리
   const [filteredRecords, setFilteredRecords] = useState<
     ConsumptionInfoByDate[]
   >([]);
   const { moveToPage } = useMovePage();
-  const { spendingRecords, setSpendingData } = useSpendingInfo();
+  const { setSpendingData } = useSpendingInfo();
   const { selectCategory, setSelectCategory } = useCategoryInfo();
+  const { activeDate } = useCalendarInfo();
   const location = useLocation();
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
@@ -98,7 +95,9 @@ const PayList: React.FC<PayListProps> = ({
 
         if (!effectiveStartDate || !effectiveEndDate) {
           console.warn("start, end, refresh 모두 없음 → 해당 월 전체 조회");
-          const { startOfMonth, endOfMonth } = activeMonth(activeStartDate);
+          const { startOfMonth, endOfMonth } = activeMonth(
+            new Date(activeDate),
+          );
           effectiveStartDate = startOfMonth;
           effectiveEndDate = endOfMonth;
         }
@@ -138,7 +137,6 @@ const PayList: React.FC<PayListProps> = ({
               record.consumptionInfoList.length > 0,
           );
 
-        console.log("필터링된 데이터:", filtered);
         setFilteredRecords(filtered);
       } catch (err) {
         console.error(err);
@@ -147,7 +145,7 @@ const PayList: React.FC<PayListProps> = ({
       }
     };
     ReadConsumption();
-  }, [startDate, endDate, refresh, selectCategory]);
+  }, [startDate, endDate, refresh, selectCategory, activeDate]);
 
   return (
     <div className="flex w-full flex-col">

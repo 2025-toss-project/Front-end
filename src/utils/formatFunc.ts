@@ -12,7 +12,7 @@ export const InputformatPrice = (value: string): number => {
   return isNaN(numericValue) ? 0 : numericValue;
 };
 
-// year-month-day 형식 (string 형)
+// 날짜포맷 (string 형/ 인자 3개)
 export const formatDate = (
   year: string,
   month: string,
@@ -22,7 +22,16 @@ export const formatDate = (
   return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
 };
 
-// year-month-day 형식 (date 형)
+// 날짜 포맷 (Number 형/ 인자 3개)
+export const formatDateNum = (
+  year: number,
+  month: number,
+  day: number,
+): string => {
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+};
+
+// 날짜 포맷 (string/ 인자 한개)
 export const formatDateDate = (date: string) => {
   if (!date) return ""; // date가 비어있으면 빈 문자열 반환
   const [year, month, day] = date.split("-");
@@ -32,16 +41,7 @@ export const formatDateDate = (date: string) => {
   return `${year}-${formattedMonth}-${formattedDay}`;
 };
 
-// 날짜 포맷팅 (Number 형)
-export const formatDateNum = (
-  year: number,
-  month: number,
-  day: number,
-): string => {
-  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-};
-
-// Date -> YYYY-MM-D
+// 날짜 포맷 (Date/ 인자 한개)
 export const formatDateToYMD = (date: Date) => {
   const year = date.getFullYear();
   const month = `0${date.getMonth() + 1}`.slice(-2);
