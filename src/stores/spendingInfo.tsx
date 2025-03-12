@@ -8,7 +8,7 @@ export interface ConsumptionInfo {
   details: string;
   lat: number;
   lng: number;
-  point_name: string;
+  locationName: string;
 }
 
 export interface ConsumptionInfoByDate {

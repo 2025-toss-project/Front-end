@@ -65,7 +65,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
 
       if (!selectCategory) setSelectCategory(itemData.category);
       if (!selectPlace) {
-        setSelectPlace(itemData.point_name);
+        setSelectPlace(itemData.locationName);
         setPlaceInfo(itemData.lat, itemData.lng);
       }
     }
@@ -109,7 +109,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
         <InputDefault
           label="장소"
           placeholder="장소를 입력하세요"
-          value={isEditMode ? itemData?.point_name || "" : selectPlace || ""}
+          value={isEditMode ? itemData?.locationName || "" : selectPlace || ""}
           isReadOnly={true}
           onClick={() =>
             moveToPage(
