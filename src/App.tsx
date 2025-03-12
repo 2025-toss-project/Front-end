@@ -1,4 +1,4 @@
-import { Outlet, Route, Routes } from "react-router-dom";
+import { Outlet, Route, Routes, useNavigate } from "react-router-dom";
 import MainPage from "./pages/MainPage";
 import BudgetManage from "./pages/BudgetManage";
 import MainLayout from "./layouts/MainLayout";
@@ -17,6 +17,8 @@ import MapPinPage from "./pages/MapPinPage";
 import { SearchPlaceProvider } from "./contexts/SearchPlaceContext";
 import PageUrls from "./constants/PageUrls";
 import NavBarLayout from "./layouts/NavBarLayout";
+import { useEffect, useState } from "react";
+import { apiWithoutAuth } from "./utils/api";
 
 const App: React.FC = () => {
   return (

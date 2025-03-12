@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  updateProfileInfo,
-  userInfo,
-} from "../apis/userInfo";
+import { updateProfileInfo, userInfo } from "../apis/userInfo";
 import InputDefault from "../components/common/InputDefault";
 import SelectAgeGroup from "../components/SelectAgeGroup";
 import { SaveButton } from "../components/common/Buttons";
@@ -11,6 +8,7 @@ import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
 import userStore from "../stores/user";
 import Loading from "../components/loading";
+import { api, apiWithoutAuth } from "../utils/api"; // 기존 axios 인스턴스 활용
 
 
 const ProfileUpdate: React.FC<{ userData: userInfo }> = ({ userData }) => {
@@ -19,7 +17,6 @@ const ProfileUpdate: React.FC<{ userData: userInfo }> = ({ userData }) => {
   const [loading, setLoading] = useState<boolean>(false); // 컴포넌트 최상단에 선언
   const { setUserInfo } = userStore();
   const [originUserInfo, setOriginUserInfo] = useState(userData);
-
 
   const handlenicknameChange = (val: string) => {
     setOriginUserInfo((prev) => ({
@@ -69,6 +66,42 @@ const ProfileUpdate: React.FC<{ userData: userInfo }> = ({ userData }) => {
   useEffect(() => {
     setOriginUserInfo(userData);
   }, [userData]);
+
+  // 로그 아웃 작업중
+  
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+  
+      if (!token) {
+        throw new Error("로그아웃 실패: 토큰이 없습니다.");
+      }
+  
+      //🔹 강제로 accessToken을 포함해서 로그아웃 요청 보내기
+      await fetch("http://3.37.61.199:8080/auth/logout", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // 쿠키 포함 (필요할 경우)
+      });
+  
+      // 🔹 로컬 스토리지에서 토큰 삭제
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+  
+      // 🔹 로그인 페이지로 이동
+      window.location.href = PageUrls.LOGIN;
+    } catch (error) {
+      console.error("로그아웃 실패:", error);
+      alert("로그아웃 처리 중 오류가 발생했습니다.");
+    }
+  };
+  
+  
+  // -----------------------------------------------------------
+
   return (
     <>
       <div className="flex flex-col py-5">
@@ -99,7 +132,7 @@ const ProfileUpdate: React.FC<{ userData: userInfo }> = ({ userData }) => {
           setSelectedAge={handleAgeGroupChange}
           style="mb-5"
         />
-  
+
         <InputDefault
           label="집 정보"
           placeholder={renderHomePlaceholder()}
@@ -112,7 +145,10 @@ const ProfileUpdate: React.FC<{ userData: userInfo }> = ({ userData }) => {
 
       {message && <div className="mt-2 text-sm">{message}</div>}
 
-      <div className="flex items-center justify-center gap-5 mt-4 text-xs font-bold">
+      <div
+        className="flex items-center justify-center gap-5 mt-4 text-xs font-bold cursor-pointer"
+        onClick={handleLogout} // ✅ 로그아웃 함수 연결
+      >
         로그아웃
         <LucideLogOut size={16} />
       </div>
