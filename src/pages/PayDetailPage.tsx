@@ -9,9 +9,10 @@ import { usePlaceInfo } from "../stores/placeInfo";
 import { useLocation } from "react-router-dom";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
-import { LucideTrash, LucideTrash2, LucideX } from "lucide-react";
+import { LucideTrash2, LucideX } from "lucide-react";
 import useSpendingInfo, { ConsumptionInfo } from "../stores/spendingInfo";
 import PayInput from "../components/PayInput";
+import { formatDateToYMD } from "../utils/formatFunc";
 
 const PayDetailPage = () => {
   const { isOpen, setIsOpen } = useCategoryInfo();
@@ -24,14 +25,6 @@ const PayDetailPage = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");
-
-  const formatDateToYMD = (date: Date) => {
-    const year = date.getFullYear();
-    const month = `0${date.getMonth() + 1}`.slice(-2);
-    const day = `0${date.getDate()}`.slice(-2); // 1일, 2일 같은 단일 숫자를 두 자리로 포맷
-
-    return `${year}-${month}-${day}`;
-  };
 
   const isAddpayInfoComplete = Object.values(addpayInfo).every((value) => {
     if (typeof value === "object" && value !== null) {
@@ -66,7 +59,7 @@ const PayDetailPage = () => {
       const formattedDate = formatDateToYMD(new Date(addpayInfo.date));
       moveToPage(`${PageUrls.PAY_RECODE}?refresh=${formattedDate}`);
       resetAddPayInfo();
-      console.log("add", addpayInfo.date);
+      console.log("addpay data remove", addpayInfo.date);
     }
   };
 
@@ -83,7 +76,7 @@ const PayDetailPage = () => {
       dayData.consumptionInfoList.some(
         (item: ConsumptionInfo) => item.id === Number(id),
       ),
-    ); // dayData.consumptionInfoList에서 id를 찾은 항목
+    );
 
     try {
       const res = await api.delete(`consumption/delete?consumptionId=${id}`);

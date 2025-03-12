@@ -3,10 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import useCalendarInfo from "../stores/CalendarInfo";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
-
-interface CustomCalendarProps {
-  onDateChange: (startDate: string, endDate: string) => void;
-}
+import { formatDateDate } from "../utils/formatFunc";
 
 interface CalendarBodyProps {
   tripDate: {
@@ -122,7 +119,7 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
       return (
         <div
           onClick={() => handleClickDate(currentDate)}
-          className={`relative my-1 grid aspect-square w-full place-items-center text-center text-xs font-medium ${
+          className={`relative my-1 grid aspect-square h-9 w-9 place-items-center text-center text-xs font-medium ${
             isInRange
               ? "bg-main text-white"
               : isStartDate || isEndDate
@@ -160,7 +157,11 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
   };
 
   return (
-    <div className={"grid h-fit w-full grid-cols-7 gap-y-3 pt-2"}>
+    <div
+      className={
+        "flex grid h-fit w-full grid-cols-7 items-center justify-items-center gap-y-4 pt-2"
+      }
+    >
       {renderDays()}
     </div>
   );
@@ -182,12 +183,21 @@ const DaysOfWeek: React.FC = () => {
   );
 };
 
+interface CustomCalendarProps {
+  onDateChange: (startDate: string, endDate: string) => void;
+}
+
 const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [selectedDate, _] = useState(new Date().getDate());
+  const [selectedDate, setSelectedDate] = useState(new Date().getDate());
   const [isSingleSelect, setIsSingleSelect] = useState(true);
-  const { totalPrice, calenderInfoDTOS = [] } = useCalendarInfo();
+  const {
+    activeDate,
+    setActiveDate,
+    totalPrice,
+    calenderInfoDTOS = [],
+  } = useCalendarInfo();
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
 
   const [tripDate, setTripDate] = useState({
@@ -214,6 +224,10 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
     }
   };
 
+  useEffect(() => {
+    setActiveDate(selectedYear, selectedMonth, selectedDate);
+  }, [selectedYear, selectedMonth, selectedDate]);
+
   const handleClickSelectBtn = () => {
     setTripDate({
       startDate: "",
@@ -222,24 +236,11 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
     setIsSingleSelect((prev) => !prev);
   };
 
-  const formatDate = (date: string) => {
-    if (!date) return ""; // date가 비어있으면 빈 문자열 반환
-
-    const [year, month, day] = date.split("-");
-
-    if (!month || !day) return date;
-
-    const formattedMonth = month.padStart(2, "0"); // 두 자릿수로 포맷팅
-    const formattedDay = day.padStart(2, "0"); // 두 자릿수로 포맷팅
-
-    return `${year}-${formattedMonth}-${formattedDay}`;
-  };
-
   const prevTripDateRef = useRef(tripDate);
 
   useEffect(() => {
-    const formattedStartDate = formatDate(tripDate.startDate);
-    const formattedEndDate = formatDate(tripDate.endDate);
+    const formattedStartDate = formatDateDate(tripDate.startDate);
+    const formattedEndDate = formatDateDate(tripDate.endDate);
 
     if (
       prevTripDateRef.current.startDate !== formattedStartDate ||
