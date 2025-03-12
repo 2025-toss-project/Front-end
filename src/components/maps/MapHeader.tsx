@@ -3,7 +3,6 @@ import { categoryList, CategoryProps } from "../../constants/category";
 import { ChevronDown } from "lucide-react";
 import useClickOutside from "../../hooks/useClickOutside";
 import { payTypeList, PayTypeProps } from "../../constants/payType";
-import useUserInfo from "../../stores/userInfo";
 import { findType } from "../../utils/findTypeOrCategory";
 import IconMyPay from "../../assets/payTypeIcons/IconMyPay";
 import useMapInfo from "../../stores/mapInfo";
