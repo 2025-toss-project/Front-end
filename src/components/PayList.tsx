@@ -32,7 +32,7 @@ const PayDay: React.FC<PayDayProps> = ({ data, onClick }) => {
         {/* 지출 내용 */}
         <div className="flex max-w-44 flex-grow flex-col gap-1 p-3">
           <p className="text-sm"> {data.details} </p>
-          <p className="text-xs text-second"> {data.point_name} </p>
+          <p className="text-xs text-second"> {data.locationName} </p>
         </div>
         {/* 지출 금액 */}
         <p className="ml-auto text-right text-base font-medium text-main">
