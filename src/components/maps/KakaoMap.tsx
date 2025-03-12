@@ -91,7 +91,8 @@ const KakaoMap: React.FC<{
           },
         });
       }
-      setMapDatas(res.data.result);
+      setMapDatas(res.data.result?.mapInfoListDTOList || []);
+      console.log(res.data.result);
     } catch (error) {
       console.error(error);
     }
@@ -135,12 +136,13 @@ const KakaoMap: React.FC<{
   };
 
   useEffect(() => {
-    if (locationInitialized) {
+    if (mapCenter.lat !== 0 && mapCenter.lng !== 0) {
       getPayList();
     }
   }, [userSelect.type, locationInitialized]);
 
   useEffect(() => {
+    if (myLocation.lat === 0 && myLocation.lng === 0) return;
     getPayList();
   }, [radius]);
 
@@ -156,6 +158,7 @@ const KakaoMap: React.FC<{
         height: "100%",
         position: "absolute",
       }}
+      // onCreate={() => getPayList()}
       isPanto={true}
       level={level}
       ref={mapRef}

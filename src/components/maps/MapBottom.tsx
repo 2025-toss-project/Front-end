@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import IconMyLocation from "../../assets/IconMyLocation";
 import { LucidePlus } from "lucide-react";
 import { useMovePage } from "../../hooks/useMovePage";
@@ -35,27 +35,28 @@ const IconFastInputPay: React.FC = () => {
 
 const ShowDetailInfo: React.FC<{
   showBubbleRef: React.RefObject<HTMLDivElement>;
-  selectedData: DataProps;
-  categoryInfo: CategoryProps;
+  selectedData?: any;
+  categoryInfo?: CategoryProps;
 }> = ({ showBubbleRef, selectedData, categoryInfo }) => {
   const { moveToPage } = useMovePage();
   const { userSelect } = useMapInfo();
 
   const handleClickShowDetail = () => {
     if (userSelect.type === "나의 소비") {
-      moveToPage(`${PageUrls.PAY_DETAIL}?id=${selectedData.id}`);
+      // moveToPage(`${PageUrls.PAY_DETAIL}?id=${selectedData.id}`);
     }
   };
 
-  // TODO : 다른 사람 소비일 때, 바꿔줘야함
   return (
     <div
       ref={showBubbleRef}
-      onClick={handleClickShowDetail}
+      // onClick={handleClickShowDetail}
       className="flex flex-col gap-2 rounded-lg bg-white p-3 drop-shadow-10"
     >
       <div className="flex items-center justify-between">
-        {selectedData!.locationName}
+        {userSelect.type === "나의 소비"
+          ? selectedData?.details[0]?.locationName
+          : selectedData.locationName}
         <div
           className={`flex items-center gap-1 rounded-lg border px-1.5 py-1 ${categoryInfo?.bgColor} ${categoryInfo?.borderColor}`}
         >
@@ -63,8 +64,27 @@ const ShowDetailInfo: React.FC<{
           <div className="text-sm">{selectedData!.category}</div>
         </div>
       </div>
-      <div className="text-xs font-light">{selectedData!.details}</div>
-      <div className="text-right">{formatPrice(selectedData!.price)}원</div>
+      {userSelect.type === "나의 소비" && (
+        <div className="text-xs font-light">
+          {selectedData?.details[0]?.details}
+        </div>
+      )}
+      {userSelect.type === "나의 소비" ? (
+        <div className="text-right">
+          {formatPrice(selectedData?.details[0]?.price)}원
+        </div>
+      ) : (
+        <div className="text-xs">
+          <span className="font-medium text-main">
+            {selectedData?.ageGroup} {selectedData?.type}
+          </span>
+          은 여기서{" "}
+          <span className="font-medium text-main">
+            {formatPrice(selectedData.price)}원
+          </span>
+          을 썼어요!
+        </div>
+      )}
     </div>
   );
 };

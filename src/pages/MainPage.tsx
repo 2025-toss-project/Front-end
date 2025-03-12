@@ -40,27 +40,37 @@ const MainPage: React.FC = () => {
   const [selectedData, setSelectedBubble] = useState<DataProps>();
   const [categoryInfo, setCategoryInfo] = useState<CategoryProps>();
 
-  const showBubbleInfo = (idx: number) => {
+  const showBubbleInfo = (data: any) => {
     setShowBubble(true);
-    setSelectedBubble(
-      mapDatas?.mapInfoListDTOList
-        .flatMap((info: any) => info.mapInfoDTOList)
-        .find((data: any) => data.id === idx),
-    );
+    console.log("data: ", data);
+    setSelectedBubble(data);
+    // setSelectedBubble(
+    //   mapDatas?.mapInfoListDTOList
+    //     .flatMap((info: any) => info.mapInfoDTOList)
+    //     .find((data: any) => data.id === idx),
+    // );
   };
 
   const showDatas = () => {
     if (userSelect.category === "") {
-      return (
-        mapDatas?.mapInfoListDTOList?.flatMap(
-          (info: any) => info.mapInfoDTOList,
-        ) || []
-      );
+      return Array.from(mapDatas).flatMap((item: any) => {
+        return item.mapInfoDTOList.map((mapInfo: any) => {
+          return {
+            ...mapInfo,
+            category: item.category,
+          };
+        });
+      });
     } else {
       return (
-        mapDatas?.mapInfoListDTOList.find(
-          (info: any) => info.category === userSelect.category,
-        )?.mapInfoDTOList || []
+        mapDatas
+          .find((info: any) => info.category === userSelect.category)
+          ?.mapInfoDTOList?.map((mapInfo: any) => {
+            return {
+              ...mapInfo,
+              category: userSelect.category,
+            };
+          }) || []
       );
     }
   };
@@ -70,24 +80,27 @@ const MainPage: React.FC = () => {
     setCategoryInfo(findCategory(selectedData!.category));
   }, [selectedData]);
 
+  useEffect(() => {
+    console.log(showDatas());
+  }, [mapDatas, userSelect.category]);
   return (
     <>
       <KakaoMap>
         <MyCurrentLocation
           location={{ lat: myLocation.lat, lng: myLocation.lng }}
         />
-
-        {showDatas()?.map((data: any) => (
+        {showDatas()?.map((data: any, idx: number) => (
           <MapBubble
-            onClick={() => showBubbleInfo(data.id)}
-            key={data.id}
+            onClick={() => showBubbleInfo(data)}
+            key={idx}
             type={level >= 5 ? "icon" : "bubble"}
             position={{
               lat: data.lat,
               lng: data.lng,
             }}
             category={data.category}
-            price={data.price}
+            price={data.totalPrice || data.price}
+            count={data?.details?.length}
           />
         ))}
       </KakaoMap>
