@@ -2,22 +2,44 @@ import React, { useEffect, useState } from "react";
 import { CustomOverlayMap } from "react-kakao-maps-sdk";
 import MapHeader from "../components/maps/MapHeader";
 import MapBubble from "../components/MapBubble";
-import { findCategory } from "../utils/findTypeOrCategory";
+import { findCategory, findType } from "../utils/findTypeOrCategory";
 import { CategoryProps } from "../constants/category";
 import useMapInfo from "../stores/mapInfo";
 import KakaoMap from "../components/maps/KakaoMap";
 import MapBottom from "../components/maps/MapBottom";
+import userStore from "../stores/user";
+import { LucideHome } from "lucide-react";
+import IconMapMarker from "../assets/IconMapMarker";
 
 const MyCurrentLocation: React.FC<{
   location: { lat: number; lng: number };
 }> = ({ location }) => {
   return (
-    <CustomOverlayMap
-      position={{ lat: location.lat, lng: location.lng }}
-      zIndex={1}
-    >
+    <CustomOverlayMap position={{ lat: location.lat, lng: location.lng }}>
       <div className="grid aspect-square w-8 animate-pulse place-items-center rounded-full bg-main bg-opacity-30"></div>
       <div className="absolute left-1/2 top-1/2 aspect-square w-4 -translate-x-1/2 -translate-y-1/2 transform rounded-full border-2 border-white bg-main"></div>
+    </CustomOverlayMap>
+  );
+};
+
+const IconHomeMakrer = () => {
+  const { userInfo } = userStore();
+  return (
+    <CustomOverlayMap
+      position={
+        typeof userInfo.home !== "string"
+          ? { lat: userInfo.home.lat, lng: userInfo.home.lng }
+          : { lat: 0, lng: 0 }
+      }
+      zIndex={-10}
+    >
+      <div className="relative">
+        <IconMapMarker color="#C80150" />
+        <LucideHome
+          color="#FFFFFF"
+          style={{ position: "absolute", left: "5px", top: "5px" }}
+        />
+      </div>
     </CustomOverlayMap>
   );
 };
@@ -42,13 +64,7 @@ const MainPage: React.FC = () => {
 
   const showBubbleInfo = (data: any) => {
     setShowBubble(true);
-    console.log("data: ", data);
     setSelectedBubble(data);
-    // setSelectedBubble(
-    //   mapDatas?.mapInfoListDTOList
-    //     .flatMap((info: any) => info.mapInfoDTOList)
-    //     .find((data: any) => data.id === idx),
-    // );
   };
 
   const showDatas = () => {
@@ -74,6 +90,12 @@ const MainPage: React.FC = () => {
       );
     }
   };
+
+  const { userInfo } = userStore();
+  const typeData = findType(userInfo.type);
+  useEffect(() => {
+    console.log(userInfo);
+  }, [userInfo]);
 
   useEffect(() => {
     if (!selectedData?.category) return;
@@ -103,6 +125,7 @@ const MainPage: React.FC = () => {
             count={data?.details?.length}
           />
         ))}
+        <IconHomeMakrer />
       </KakaoMap>
       <div className="flex h-full w-full flex-col justify-between px-6 pb-5 pt-10">
         <MapHeader />
