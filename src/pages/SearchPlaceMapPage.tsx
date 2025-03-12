@@ -4,8 +4,8 @@ import { SaveButton } from "../components/common/Buttons";
 import { LucideMapPin } from "lucide-react";
 import { createRoot } from "react-dom/client";
 import PageUrls from "../constants/PageUrls";
-import { usePlaceInfo } from "../stores/placeInfo";
 import { useLocation } from "react-router-dom";
+import useAddPayInfo from "../stores/addpayInfo";
 
 declare global {
   interface Window {
@@ -18,7 +18,12 @@ const Map = () => {
   const markerRef = useRef<any>(null);
   const [loaded, setLoaded] = useState(false);
   const { moveToBack } = useMovePage();
-  const { selectPlace, setPlaceInfo } = usePlaceInfo();
+  const { setAddPayInfo } = useAddPayInfo();
+
+  // 장소 정보 상태 관리
+  const [locationName, setLocationName] = useState<string>("");
+  const [lat, setLat] = useState<number | null>(null);
+  const [lng, setLng] = useState<number | null>(null);
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -54,21 +59,29 @@ const Map = () => {
   }, [loaded]);
 
   useEffect(() => {
-    if (!selectPlace) {
-      console.log("선택이 없으므로 뒤로감");
+    if (!locationName) {
+      console.log("선택된 장소가 없으므로 뒤로 이동");
       moveToBack();
+      return;
     }
 
     const ps = new window.kakao.maps.services.Places();
-    ps.keywordSearch(selectPlace, (data: any[], status: string) => {
+    ps.keywordSearch(locationName, (data: any[], status: string) => {
       if (status === window.kakao.maps.services.Status.OK) {
         const place = data[0]; // 첫 번째 검색 결과
         const position = new window.kakao.maps.LatLng(place.y, place.x);
 
-        console.log("선택된 장소:", selectPlace);
+        console.log("선택된 장소:", locationName);
         console.log("좌표:", place.y, place.x);
 
-        setPlaceInfo(place.y, place.x);
+        // 상태 업데이트
+        setLat(place.y);
+        setLng(place.x);
+
+        // addPayInfo에 장소 정보 저장
+        setAddPayInfo("locationName", locationName); // 장소 이름 저장
+        setAddPayInfo("lat", place.y); // 위도 저장
+        setAddPayInfo("lng", place.x); // 경도 저장
 
         // 기존 마커 제거
         if (markerRef.current) {
@@ -84,7 +97,7 @@ const Map = () => {
 
         // React 컴포넌트 렌더링
         createRoot(container).render(
-          <div className="flex h-10 w-10 items-center justify-center">
+          <div className="flex items-center justify-center w-10 h-10">
             <LucideMapPin
               fill="#C80150"
               color="#fff"
@@ -103,13 +116,13 @@ const Map = () => {
         overlay.setMap(mapRef.current);
         markerRef.current = overlay;
 
-        //  지도 객체가 존재할 때만 setCenter 실행
+        // 지도 객체가 존재할 때만 setCenter 실행
         if (mapRef.current) {
           mapRef.current.setCenter(position);
         }
       }
     });
-  }, [selectPlace, loaded]); // selectPlace가 바뀔 때마다 실행
+  }, [locationName, loaded]); // locationName이 바뀔 때마다 실행
 
   return (
     <>
@@ -119,12 +132,13 @@ const Map = () => {
 };
 
 const MapInfo = () => {
-  const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
+  const { moveToPage } = useMovePage();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const mode = searchParams.get("mode") || "add"; // 기본값 "add"
   const id = searchParams.get("id");
 
+  // 저장/수정 버튼 텍스트
   const buttonText = mode === "edit" ? "수정하기" : "저장하기";
   const targetUrl =
     mode === "edit" && id
@@ -132,10 +146,10 @@ const MapInfo = () => {
       : PageUrls.ADD_PAY;
 
   return (
-    <div className="pointer-events-auto absolute bottom-20 left-1/2 z-10 w-80 -translate-x-1/2">
+    <div className="absolute z-10 -translate-x-1/2 pointer-events-auto bottom-20 left-1/2 w-80">
       <SaveButton
         title={buttonText}
-        style="px-6 "
+        style="px-6"
         onClick={() => moveToPage(targetUrl)}
       />
     </div>

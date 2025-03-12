@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { AddressButton } from "./common/Buttons";
-import { usePlaceInfo } from "../stores/placeInfo";
 import { useMovePage } from "../hooks/useMovePage";
 import { useLocation } from "react-router-dom";
 import PageUrls from "../constants/PageUrls";
+import useAddPayInfo from "../stores/addpayInfo";
 
 declare global {
   interface Window {
@@ -16,43 +16,36 @@ interface Place {
   road_address_name?: string;
   address_name: string;
   phone?: string;
+  lat: number;
+  lng: number;
 }
 
-export default function SearchPlace() {
+interface SearchPlaceProps {
+  place: string; // 부모로부터 받은 place
+  setPlace: React.Dispatch<React.SetStateAction<string>>; // 부모로 상태를 업데이트하는 함수
+}
+
+export default function SearchPlace({ place, setPlace }: SearchPlaceProps) {
   const [isSearched, setIsSearched] = useState(false);
   const [places, setPlaces] = useState<Place[]>([]);
   const [pagination, setPagination] = useState<any>(null);
-  const { place, selectPlace, setSelectPlace } = usePlaceInfo();
-  const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
-
+  
+  const { moveToPage } = useMovePage(); 
+  const { setAddPayInfo } = useAddPayInfo(); 
+  
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const mode = searchParams.get("mode") || "add";
   const id = searchParams.get("id");
 
   useEffect(() => {
-    setSelectPlace("");
     setPlaces([]);
   }, []);
-
-  useEffect(() => {
-    console.log("현재 모드:", mode);
-  }, [mode]);
-
-  useEffect(() => {
-    if (selectPlace) {
-      setTimeout(
-        () => moveToPage(`${PageUrls.SEARCH_PLACE_MAP}?mode=${mode}&id=${id}`),
-        0,
-      );
-    }
-  }, [selectPlace]);
 
   useEffect(() => {
     if (!place.trim()) {
       setIsSearched(false);
       setPlaces([]);
-      setSelectPlace(""); // Reset selectPlace on search input change
       return;
     }
 
@@ -70,7 +63,17 @@ export default function SearchPlace() {
         }
       },
     );
-  }, [place, selectPlace]);
+  }, [place]);
+
+    // 클릭한 장소로 이동하는 함수
+    const handlePlaceClick = (place: Place) => {
+      // 장소 선택 시 데이터 저장
+      setAddPayInfo("locationName", place.place_name);
+      // 페이지 이동
+      moveToPage(`${PageUrls.SEARCH_PLACE_MAP}?mode=${mode}&id=${id}`);
+    };
+  
+ 
 
   return (
     <div className="flex flex-col">
@@ -80,10 +83,8 @@ export default function SearchPlace() {
           {places.map((place, index) => (
             <li
               key={index}
-              className="item flex flex-col gap-2 border-b py-2"
-              onClick={() => {
-                setSelectPlace(place.place_name);
-              }}
+              className="flex flex-col gap-2 py-2 border-b item"
+              onClick={() => handlePlaceClick(place)} // 클릭 시 데이터 저장하고 이동
             >
               <span className={`markerbg marker_${index + 1}`} />
               <div className="info flex flex-col gap-1.5">
@@ -110,7 +111,7 @@ export default function SearchPlace() {
             </li>
           ))}
         </ul>
-        <div id="pagination" className="mt-5 flex justify-center gap-2 pb-6">
+        <div id="pagination" className="flex justify-center gap-2 pb-6 mt-5">
           {pagination &&
             Array.from({ length: pagination.last }, (_, i) => i + 1).map(
               (page) => (

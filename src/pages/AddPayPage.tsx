@@ -5,22 +5,24 @@ import { SaveButton } from "../components/common/Buttons";
 import { api } from "../utils/api";
 import useAddPayInfo from "../stores/addpayInfo";
 import { useCategoryInfo } from "../stores/categoryInfo";
-import { usePlaceInfo } from "../stores/placeInfo";
 import PageUrls from "../constants/PageUrls";
 import { useMovePage } from "../hooks/useMovePage";
 import PayInput from "../components/PayInput";
+import { add } from "lodash";
 
 export interface addpayInfo {
   price: number;
   detail: string;
   date: string;
+  locationName: string;
+  lat: number;
+  lng: number;
 }
 
 const AddPayPage = () => {
   const { addpayInfo, setAddPayInfo, resetAddPayInfo } = useAddPayInfo();
   const { selectCategory, setSelectCategory, isOpen, setIsOpen } =
     useCategoryInfo();
-  const { placeInfo, selectPlace } = usePlaceInfo();
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
 
   const isAddpayInfoComplete = Object.values(addpayInfo).every((value) => {
@@ -42,9 +44,9 @@ const AddPayPage = () => {
         price: Number(addpayInfo.price),
         detail: addpayInfo.detail,
         category: selectCategory,
-        lat: Number(placeInfo.lat),
-        lng: Number(placeInfo.lng),
-        locationName: selectPlace,
+        lat: Number(addpayInfo.lat),
+        lng: Number(addpayInfo.lng),
+        locationName: addpayInfo.locationName,
         date: addpayInfo.date,
       });
       console.log(res.data);
@@ -57,7 +59,7 @@ const AddPayPage = () => {
   };
 
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex flex-col w-full">
       <PayInput toggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
       <SelectCategory classname={isOpen ? "block" : "hidden"} />
       <SaveButton title="저장하기" onClick={handleClickSubmit} />

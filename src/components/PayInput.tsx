@@ -1,17 +1,18 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useDeferredValue, useEffect, useState } from "react";
 import InputDefault from "./common/InputDefault";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
-import { usePlaceInfo } from "../stores/placeInfo";
 import { useCategoryInfo } from "../stores/categoryInfo";
 import { useLocation } from "react-router-dom";
-import useSpendingInfo from "../stores/spendingInfo";
+import useSpendingInfo, { ConsumptionInfo } from "../stores/spendingInfo";
 import useAddPayInfo from "../stores/addpayInfo";
 import {
   formatDateNum,
+  formatDateToYMD,
   InputformatPrice,
   inputFormatPriceCheck,
 } from "../utils/formatFunc";
+import { api } from "../utils/api";
 
 interface PayInputProps {
   toggle?: () => void;
@@ -19,75 +20,74 @@ interface PayInputProps {
 }
 
 const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
+  const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 관리
   const { moveToPage } = useMovePage();
-  const { addpayInfo, setAddPayInfo } = useAddPayInfo();
-  const { spendingRecords } = useSpendingInfo();
+  const { addpayInfo, setAddPayInfo, resetAddPayInfo } = useAddPayInfo();
+  const { spendingRecords, resetSpendingData } = useSpendingInfo();
   const { selectCategory, setSelectCategory } = useCategoryInfo();
-  const { selectPlace, setSelectPlace, setPlace, setPlaceInfo } =
-    usePlaceInfo();
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");
   const isEditMode = Boolean(id); // 수정 모드 여부 판단
 
-  // 해당 ID에 대한 소비 기록 가져오기
-  const getConsumptionInfoById = (id: number) => {
-    for (const dayData of spendingRecords) {
-      const item = dayData.consumptionInfoList.find((info) => info.id === id);
-      if (item) {
-        return {
-          ...item,
-          day: dayData.day,
-          month: dayData.month,
-          year: dayData.year,
-        };
-      }
-    }
-    return null;
-  };
+  const [itemData, setItemData] = useState<payInfo | null>(null);
+  const deferredItemData = useDeferredValue(itemData); // 지연된 값 사용
 
-  // useMemo를 사용하여 itemData 저장 (id 또는 spendingRecords 변경 시 재계산)
-  const itemData = useMemo(
-    () => (isEditMode ? getConsumptionInfoById(Number(id)) : null),
-    [id, spendingRecords],
-  );
+  interface payInfo {
+    id: number;
+    category: string;
+    details: string;
+    locationName: string;
+    lat: number;
+    lng: number;
+    date: string; // YYYY-MM-DD 형식
+    price: number;
+  }
 
-  // itemData가 변경될 때 초기 값 설정 (읽기 모드)
   useEffect(() => {
-    if (itemData) {
-      setAddPayInfo("price", String(itemData.price));
-      setAddPayInfo("detail", itemData.details);
-      setAddPayInfo(
-        "date",
-        formatDateNum(itemData.year, itemData.month, itemData.day),
-      );
-
-      if (!selectCategory) setSelectCategory(itemData.category);
-      if (!selectPlace) {
-        setSelectPlace(itemData.locationName);
-        setPlaceInfo(itemData.lat, itemData.lng);
-      }
+    // id가 있을 때만 API 호출
+    if (id) {
+      const PayDetail = async () => {
+        try {
+          setLoading(true);
+          const res = await api.get("/map/detail", {
+            params: {
+              id: id,
+            },
+          });
+          console.log("detail Res", res.data);
+          setItemData(res.data.result);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setLoading(false);
+          resetAddPayInfo(); // reset 지출 데이터
+        }
+      };
+      PayDetail();
+    } else {
+      resetAddPayInfo();
+      setSelectCategory("");
+      setLoading(false); // id가 없으면 로딩 상태를 종료
     }
-    const handleBeforeUnload = () => {
-      // 장소 검색 후 돌아온 경우 유지, 다른 페이지로 나가면 초기화
-      if (!window.location.pathname.includes(PageUrls.SEARCH_PLACE)) {
-        setAddPayInfo("price", "");
-        setAddPayInfo("detail", "");
-        setAddPayInfo("date", "");
-        setSelectCategory("");
-        setSelectPlace("");
-        setPlaceInfo(0, 0);
-        setPlace(""); // 검색 기록 삭제
-      }
-    };
+  }, [id]);
 
-    window.addEventListener("popstate", handleBeforeUnload);
+  useEffect(() => {
+    if (id && deferredItemData) {
+      // deferredItemData가 있을 때만 정보 설정
+      setAddPayInfo("price", String(deferredItemData.price));
+      setAddPayInfo("detail", deferredItemData.details);
+      setAddPayInfo("date", deferredItemData.date);
+      setAddPayInfo("locationName", deferredItemData.locationName);
+      setAddPayInfo("lat", String(deferredItemData.lat));
+      setAddPayInfo("lng", String(deferredItemData.lng));
+      setSelectCategory(deferredItemData.category);
+    }
+    console.log("de", deferredItemData);
+  }, [deferredItemData, id]);
 
-    return () => {
-      window.removeEventListener("popstate", handleBeforeUnload);
-    };
-  }, [itemData]);
+  if (loading) return <div>로딩 중...</div>;
 
   return (
     <div>
@@ -96,7 +96,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
           label="금액"
           type="price"
           value={
-            isEditMode
+            itemData
               ? inputFormatPriceCheck(itemData?.price || "")
               : inputFormatPriceCheck(addpayInfo.price) || ""
           }
@@ -109,7 +109,11 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
         <InputDefault
           label="장소"
           placeholder="장소를 입력하세요"
-          value={isEditMode ? itemData?.locationName || "" : selectPlace || ""}
+          value={
+            isEditMode
+              ? itemData?.locationName || ""
+              : addpayInfo.locationName || ""
+          }
           isReadOnly={true}
           onClick={() =>
             moveToPage(
@@ -129,11 +133,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
           label="날짜"
           type="date"
           placeholder="날짜를 입력하세요"
-          value={
-            isEditMode
-              ? formatDateNum(itemData?.year!, itemData?.month!, itemData?.day!)
-              : addpayInfo.date || ""
-          }
+          value={itemData ? itemData.date || "" : addpayInfo.date || ""}
           onChange={(value) => setAddPayInfo("date", value)}
         />
 

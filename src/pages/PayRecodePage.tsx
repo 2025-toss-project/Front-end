@@ -48,7 +48,6 @@ const PayRecodePage = () => {
       prevActiveDate.current = activeDate; // 현재 activeDate를 저장
       const params = { currentDate: activeDate || "" };
       const res = await api.get("consumption/calender", { params });
-      console.log(res.data);
 
       setDayData({
         totalPrice: res.data.result.totalPrice,
@@ -64,7 +63,6 @@ const PayRecodePage = () => {
         );
 
       setValidDates(validDays);
-      console.log("Valid Dates:", validDays);
     } catch (err) {
       console.error(err);
     } finally {

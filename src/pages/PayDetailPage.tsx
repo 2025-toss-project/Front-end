@@ -5,7 +5,6 @@ import { IconButton, SaveButton } from "../components/common/Buttons";
 import { useCategoryInfo } from "../stores/categoryInfo";
 import useAddPayInfo from "../stores/addpayInfo";
 import { api } from "../utils/api";
-import { usePlaceInfo } from "../stores/placeInfo";
 import { useLocation } from "react-router-dom";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
@@ -18,7 +17,6 @@ const PayDetailPage = () => {
   const { isOpen, setIsOpen } = useCategoryInfo();
   const { addpayInfo, resetAddPayInfo } = useAddPayInfo();
   const { selectCategory } = useCategoryInfo();
-  const { selectPlace, placeInfo } = usePlaceInfo();
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
   const { spendingRecords } = useSpendingInfo();
 
@@ -47,9 +45,9 @@ const PayDetailPage = () => {
         price: Number(addpayInfo.price),
         detail: addpayInfo.detail,
         category: selectCategory,
-        lat: Number(placeInfo.lat),
-        lng: Number(placeInfo.lng),
-        locationName: selectPlace,
+        lat: Number(addpayInfo.lat),
+        lng: Number(addpayInfo.lng),
+        locationName: addpayInfo.locationName,
         date: addpayInfo.date,
       });
       console.log(res.data);
@@ -101,7 +99,7 @@ const PayDetailPage = () => {
   };
 
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex flex-col w-full">
       <div className="flex flex-col px-2">
         <div
           onClick={() => moveToPage(PageUrls.PAY_RECODE)}
@@ -120,7 +118,7 @@ const PayDetailPage = () => {
         />
         <div
           onClick={handleClickDelete}
-          className="flex h-12 w-12 items-center justify-center rounded-md border border-gray-500"
+          className="flex items-center justify-center w-12 h-12 border border-gray-500 rounded-md"
         >
           <LucideTrash2 size={26} color="#777" />
         </div>
