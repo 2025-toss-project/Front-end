@@ -127,7 +127,7 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
                 : ""
           } ${isInRange && isStartDate ? "rounded-l-full" : ""} ${
             isInRange && isEndDate ? "rounded-r-full" : ""
-          }`}
+          } ${isInRange && !isSingleSelect ? "w-full" : "w-8"}`}
           key={index}
         >
           <span
