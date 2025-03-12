@@ -3,9 +3,11 @@ import IconMyLocation from "../../assets/IconMyLocation";
 import { LucidePlus } from "lucide-react";
 import { useMovePage } from "../../hooks/useMovePage";
 import { CategoryProps } from "../../constants/category";
-import { formatPrice } from "../../utils/formatPrice";
+import { formatPrice } from "../../utils/formatFunc";
 import useMapInfo from "../../stores/mapInfo";
 import useClickOutside from "../../hooks/useClickOutside";
+import { DataProps } from "../../pages/MainPage";
+import PageUrls from "../../constants/PageUrls";
 
 const IconMoveMyLocation: React.FC<{ moveToCurrentLocation: () => void }> = ({
   moveToCurrentLocation,
@@ -13,7 +15,7 @@ const IconMoveMyLocation: React.FC<{ moveToCurrentLocation: () => void }> = ({
   return (
     <div
       onClick={moveToCurrentLocation}
-      className="z-10 grid w-10 bg-white rounded-full aspect-square place-items-center drop-shadow-50"
+      className="z-10 grid aspect-square w-10 place-items-center rounded-full bg-white drop-shadow-50"
     >
       <IconMyLocation />
     </div>
@@ -24,33 +26,36 @@ const IconFastInputPay: React.FC = () => {
   return (
     <div
       onClick={() => moveToPage("/addpay")}
-      className="z-10 grid rounded-full aspect-square w-11 place-items-center bg-main drop-shadow-50"
+      className="z-10 grid aspect-square w-11 place-items-center rounded-full bg-main drop-shadow-50"
     >
       <LucidePlus size={24} color="#FFF" />
     </div>
   );
 };
 
-interface DataProps {
-  category: string;
-  price: number;
-  count: number;
-  detail: string;
-  place: string;
-}
-
 const ShowDetailInfo: React.FC<{
   showBubbleRef: React.RefObject<HTMLDivElement>;
   selectedData: DataProps;
   categoryInfo: CategoryProps;
 }> = ({ showBubbleRef, selectedData, categoryInfo }) => {
+  const { moveToPage } = useMovePage();
+  const { userSelect } = useMapInfo();
+
+  const handleClickShowDetail = () => {
+    if (userSelect.type === "나의 소비") {
+      moveToPage(`${PageUrls.PAY_DETAIL}?id=${selectedData.id}`);
+    }
+  };
+
+  // TODO : 다른 사람 소비일 때, 바꿔줘야함
   return (
     <div
       ref={showBubbleRef}
-      className="flex flex-col gap-2 p-3 bg-white rounded-lg drop-shadow-10"
+      onClick={handleClickShowDetail}
+      className="flex flex-col gap-2 rounded-lg bg-white p-3 drop-shadow-10"
     >
       <div className="flex items-center justify-between">
-        {selectedData!.place}
+        {selectedData!.locationName}
         <div
           className={`flex items-center gap-1 rounded-lg border px-1.5 py-1 ${categoryInfo?.bgColor} ${categoryInfo?.borderColor}`}
         >
@@ -58,7 +63,7 @@ const ShowDetailInfo: React.FC<{
           <div className="text-sm">{selectedData!.category}</div>
         </div>
       </div>
-      <div className="text-xs font-light">{selectedData!.detail}</div>
+      <div className="text-xs font-light">{selectedData!.details}</div>
       <div className="text-right">{formatPrice(selectedData!.price)}원</div>
     </div>
   );

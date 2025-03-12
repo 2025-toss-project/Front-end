@@ -1,47 +1,43 @@
 import { LucideCircleX, LucideSearch } from "lucide-react";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import SearchPlace from "../components/SearchPlace";
-import { useSearchPlace } from "../contexts/SearchPlaceContext";
+import { usePlaceInfo } from "../stores/placeInfo";
+import { useLocation } from "react-router-dom";
 
 const SearchHeader = () => {
-  const { place, onSearch } = useSearchPlace(); // context
-  const [inputValue, setInputValue] = useState(place); // place값이 바뀌면 같이 바뀜
-  const { setPlace, selectPlace, setSelectPlace } = useSearchPlace();
+  const { place, setPlace, setSelectPlace } = usePlaceInfo();
 
-  // place 값이 변경될 때 inputValue도 업데이트
   useEffect(() => {
-    setInputValue(place);
+    console.log("Current place:", place);
   }, [place]);
-
-  useEffect(() => {
-    setPlace(""); // 검색어 초기화
-    setSelectPlace(""); // 선택한 장소 초기화
-  }, []);
 
   // 검색한 값 place에 저장
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
+    setPlace(e.target.value);
   };
 
-  //검색 실행
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // 기본 제출 이벤트 방지
-    if (!inputValue.trim()) return; // 빈 검색어 방지
-    onSearch(inputValue); // 입력된 장소 검색
+  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // 기본 제출 동작 방지
+    if (!place.trim()) {
+      console.warn("검색어가 비어있음, 이동하지 않음");
+      return;
+    }
+    setSelectPlace(place);
+    console.log("검색한 장소:", place);
   };
 
   return (
-    <div className="flex h-14 w-full flex-row items-center justify-between bg-second-lighter px-2.5 py-4">
+    <div className="flex h-14 w-full flex-row items-center justify-between bg-second-lighter px-2 py-4">
       <LucideSearch size={22} color="#333" />
       <form onSubmit={handleSearch} className="flex flex-1 pl-5">
         <input
           type="text"
           className="flex flex-1 bg-second-lighter focus:outline-none"
-          value={inputValue}
+          value={place}
           onChange={handleInputChange}
         />
       </form>
-      <LucideCircleX size={24} color="#aaa" onClick={() => setInputValue("")} />
+      <LucideCircleX size={24} color="#aaa" onClick={() => setPlace("")} />
     </div>
   );
 };

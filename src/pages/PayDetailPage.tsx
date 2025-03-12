@@ -1,20 +1,130 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import AddPayInput from "../components/AddPayInput";
 import SelectCategory from "../components/SelectCategory";
-import { SaveButton } from "../components/common/Buttons";
+import { IconButton, SaveButton } from "../components/common/Buttons";
+import { useCategoryInfo } from "../stores/categoryInfo";
+import useAddPayInfo from "../stores/addpayInfo";
+import { api } from "../utils/api";
+import { usePlaceInfo } from "../stores/placeInfo";
+import { useLocation } from "react-router-dom";
+import { useMovePage } from "../hooks/useMovePage";
+import PageUrls from "../constants/PageUrls";
+import { LucideTrash2, LucideX } from "lucide-react";
+import useSpendingInfo, { ConsumptionInfo } from "../stores/spendingInfo";
+import PayInput from "../components/PayInput";
+import { formatDateToYMD } from "../utils/formatFunc";
 
 const PayDetailPage = () => {
-  const [selectName, setSelectName] = useState(""); // 선택한 값 저장
+  const { isOpen, setIsOpen } = useCategoryInfo();
+  const { addpayInfo, resetAddPayInfo } = useAddPayInfo();
+  const { selectCategory } = useCategoryInfo();
+  const { selectPlace, placeInfo } = usePlaceInfo();
+  const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
+  const { spendingRecords } = useSpendingInfo();
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const id = searchParams.get("id");
+
+  const isAddpayInfoComplete = Object.values(addpayInfo).every((value) => {
+    if (typeof value === "object" && value !== null) {
+      // 내부 객체가 있을 경우, 그 값들에 대해서 다시 검사
+      return Object.values(value).every(
+        (nestedValue) => nestedValue !== 0 && nestedValue !== "",
+      );
+    }
+    // 빈 문자열도 유효하지 않게 체크
+    return value !== "" && value !== 0;
+  });
+
+  const handleClickUpdate = async () => {
+    console.log(addpayInfo);
+    if (!isAddpayInfoComplete) return alert("모든 정보를 입력해주세요.");
+
+    try {
+      const res = await api.post("/consumption/update", {
+        id: id,
+        price: Number(addpayInfo.price),
+        detail: addpayInfo.detail,
+        category: selectCategory,
+        lat: Number(placeInfo.lat),
+        lng: Number(placeInfo.lng),
+        locationName: selectPlace,
+        date: addpayInfo.date,
+      });
+      console.log(res.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      const formattedDate = formatDateToYMD(new Date(addpayInfo.date));
+      moveToPage(`${PageUrls.PAY_RECODE}?refresh=${formattedDate}`);
+      resetAddPayInfo();
+      console.log("addpay data remove", addpayInfo.date);
+    }
+  };
+
+  const handleClickDelete = async () => {
+    if (!id) {
+      alert("삭제할 항목이 없습니다.");
+      return;
+    }
+    const confirmDelete = window.confirm("정말 삭제하시겠습니까?");
+    if (!confirmDelete) return;
+
+    // spendingRecords에서 id에 해당하는 항목을 찾는 부분
+    const deletedItem = spendingRecords.find((dayData) =>
+      dayData.consumptionInfoList.some(
+        (item: ConsumptionInfo) => item.id === Number(id),
+      ),
+    );
+
+    try {
+      const res = await api.delete(`consumption/delete?consumptionId=${id}`);
+      console.log("삭제 성공:", res.data);
+    } catch (error) {
+      console.error("삭제 실패:", error);
+    } finally {
+      if (deletedItem) {
+        // deletedItem은 ConsumptionInfoByDate 타입
+        const { year, month, day } = deletedItem; // 삭제된 항목의 날짜 정보
+        const deleteDate = new Date(year, month - 1, day);
+
+        const formattedDate = formatDateToYMD(deleteDate);
+        moveToPage(`${PageUrls.PAY_RECODE}?refresh=${formattedDate}`);
+      } else {
+        // 날짜 정보를 알 수 없는 경우 현재 날짜로 설정
+        moveToPage(
+          `${PageUrls.PAY_RECODE}?refresh=${formatDateToYMD(new Date())}`,
+        );
+      }
+    }
+  };
 
   return (
     <div className="flex w-full flex-col">
-      <AddPayInput />
-      <SelectCategory
-        selectName={selectName}
-        setSelectName={() => setSelectName(selectName)}
-      />
-      <SaveButton title="수정하기" />
+      <div className="flex flex-col px-2">
+        <div
+          onClick={() => moveToPage(PageUrls.PAY_RECODE)}
+          className="flex justify-end"
+        >
+          <LucideX />
+        </div>
+        <PayInput toggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
+        <SelectCategory classname={isOpen ? "block" : "hidden"} />
+      </div>
+      <div className="flex flex-row items-center gap-3">
+        <SaveButton
+          style={"flex-grow"}
+          title="수정하기"
+          onClick={handleClickUpdate}
+        />
+        <div
+          onClick={handleClickDelete}
+          className="flex h-12 w-12 items-center justify-center rounded-md border border-gray-500"
+        >
+          <LucideTrash2 size={26} color="#777" />
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,29 +1,44 @@
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
 import { findCategory } from "../../utils/findTypeOrCategory";
+import { useEffect, useMemo } from "react";
+import { AnalyticsData } from "../../pages/StatisticPage";
 
-const BarChart = () => {
-  const labels = ["1월", "2월", "3월"];
+const BarChart: React.FC<{
+  monthPay?: AnalyticsData[];
+  prevPay?: AnalyticsData[];
+  twoMonthsAgoPay?: AnalyticsData[];
+}> = ({ monthPay = [], prevPay = [], twoMonthsAgoPay = [] }) => {
+  const categories = useMemo(() => {
+    const allCategories = [
+      ...monthPay.map((d) => d.category),
+      ...prevPay.map((d) => d.category),
+      ...twoMonthsAgoPay.map((d) => d.category),
+    ];
+    return [...new Set(allCategories)];
+  }, [monthPay, prevPay, twoMonthsAgoPay]);
+
+  const getCategoryData = (category: string, data: AnalyticsData[]) => {
+    return data.find((d) => d.category === category)?.price || 0;
+  };
+
+  const labels = [
+    monthPay[0]?.date,
+    prevPay[0]?.date,
+    twoMonthsAgoPay[0]?.date,
+  ].filter(Boolean);
 
   const data = {
     labels,
-    datasets: [
-      {
-        label: "식비",
-        data: [65, 59, 100],
-        backgroundColor: findCategory("식비")?.border,
-      },
-      {
-        label: "교통",
-        data: [45, 69, 60],
-        backgroundColor: findCategory("교통")?.border,
-      },
-      {
-        label: "쇼핑",
-        data: [25, 39, 50],
-        backgroundColor: findCategory("쇼핑")?.border,
-      },
-    ],
+    datasets: categories.map((category) => ({
+      label: category,
+      data: [
+        getCategoryData(category, monthPay),
+        getCategoryData(category, prevPay),
+        getCategoryData(category, twoMonthsAgoPay),
+      ],
+      backgroundColor: findCategory(category)?.border || "#ccc",
+    })),
   };
 
   const options = {
@@ -33,6 +48,7 @@ const BarChart = () => {
         labels: {
           boxWidth: 20,
           padding: 20,
+          boxHeight: 10,
         },
       },
     },
@@ -45,6 +61,7 @@ const BarChart = () => {
       },
     },
   };
+
   return <Bar data={data} options={options} />;
 };
 

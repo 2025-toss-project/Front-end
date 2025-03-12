@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSearchPlace } from "../contexts/SearchPlaceContext";
 import { useMovePage } from "../hooks/useMovePage";
 import { SaveButton } from "../components/common/Buttons";
 import { LucideMapPin } from "lucide-react";
 import { createRoot } from "react-dom/client";
+import PageUrls from "../constants/PageUrls";
+import { usePlaceInfo } from "../stores/placeInfo";
+import { useLocation } from "react-router-dom";
 
 declare global {
   interface Window {
@@ -15,8 +17,12 @@ const Map = () => {
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
   const [loaded, setLoaded] = useState(false);
-  const { selectPlace } = useSearchPlace();
   const { moveToBack } = useMovePage();
+  const { selectPlace, setPlaceInfo } = usePlaceInfo();
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const mode = searchParams.get("mode") || "add";
 
   useEffect(() => {
     // Kakao API 로드 확인
@@ -62,6 +68,8 @@ const Map = () => {
         console.log("선택된 장소:", selectPlace);
         console.log("좌표:", place.y, place.x);
 
+        setPlaceInfo(place.y, place.x);
+
         // 기존 마커 제거
         if (markerRef.current) {
           markerRef.current.setMap(null);
@@ -103,31 +111,44 @@ const Map = () => {
     });
   }, [selectPlace, loaded]); // selectPlace가 바뀔 때마다 실행
 
-  return <div id="map" style={{ width: "500px", height: "750px" }} />;
+  return (
+    <>
+      <div id="map" className="h-100 min-w-[calc(100vw)]" />
+    </>
+  );
 };
 
 const MapInfo = () => {
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
-  const { selectPlace } = useSearchPlace();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const mode = searchParams.get("mode") || "add"; // 기본값 "add"
+  const id = searchParams.get("id");
+
+  const buttonText = mode === "edit" ? "수정하기" : "저장하기";
+  const targetUrl =
+    mode === "edit" && id
+      ? `${PageUrls.PAY_DETAIL}?id=${id}`
+      : PageUrls.ADD_PAY;
 
   return (
-    <div className="pointer-events-auto absolute bottom-10 left-1/2 z-10 w-80 -translate-x-1/2">
+    <div className="pointer-events-auto absolute bottom-20 left-1/2 z-10 w-80 -translate-x-1/2">
       <SaveButton
-        title="저장하기"
-        style="px-6"
-        onClick={() => moveToPage("/addpay")}
+        title={buttonText}
+        style="px-6 "
+        onClick={() => moveToPage(targetUrl)}
       />
     </div>
   );
 };
 
-const MapPinPage = () => {
+const SearchPlaceMapPage = () => {
   return (
-    <div className="relative">
+    <>
       <Map />
       <MapInfo />
-    </div>
+    </>
   );
 };
 
-export default MapPinPage;
+export default SearchPlaceMapPage;

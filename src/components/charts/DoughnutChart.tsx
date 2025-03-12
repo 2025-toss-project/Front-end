@@ -1,25 +1,30 @@
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
 import { findCategory } from "../../utils/findTypeOrCategory";
+import { AnalyticsData } from "../../pages/StatisticPage";
 
-const DoughnutChart = () => {
-  const labels = ["1월", "2월", "3월"];
-  const data = {
-    labels,
+const DoughnutChart: React.FC<{ categoryPay?: any }> = ({ categoryPay }) => {
+  const categories = categoryPay?.analyicsInfoDTOS || [];
+  const labels = categories.map((category: AnalyticsData) => category.category);
+
+  const datas = {
+    labels: labels,
     datasets: [
       {
-        data: [65, 59, 100],
-        backgroundColor: [
-          findCategory("식비")?.border,
-          findCategory("교통")?.border,
-          findCategory("쇼핑")?.border,
-        ],
+        label: "지출 내역",
+        data: categories.map((category: AnalyticsData) => category.price), // 가격 배열
+        backgroundColor: categories.map(
+          (category: AnalyticsData) =>
+            findCategory(category.category)?.border || "#ccc",
+        ),
+        borderWidth: labels.length < 2 ? 0 : 2,
       },
     ],
   };
 
   const options = {
     responsive: true,
+
     plugins: {
       legend: {
         labels: {
@@ -29,7 +34,8 @@ const DoughnutChart = () => {
       },
     },
   };
-  return <Doughnut data={data} options={options}></Doughnut>;
+
+  return <Doughnut data={datas} options={options} />;
 };
 
 export default DoughnutChart;

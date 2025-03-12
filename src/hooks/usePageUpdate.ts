@@ -28,9 +28,11 @@ const usePageUpdate = () => {
         setTitle("목표 예산 설정");
         break;
       case PageUrls.ADD_PAY:
-      case PageUrls.ADD_PAY_SEARCH_PLACE:
-      case PageUrls.ADD_PAY_SEARCH_PLACE_MAP:
         setTitle("지출 내역 추가");
+        break;
+      case PageUrls.SEARCH_PLACE:
+      case PageUrls.SEARCH_PLACE_MAP:
+        setTitle("지출 장소 검색");
         break;
       case PageUrls.PAY_RECODE:
         setTitle("지출 내역 리스트");
