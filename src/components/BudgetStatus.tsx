@@ -1,5 +1,6 @@
 import React from "react";
 import HalfCircleGauge from "./HalfCircleGauge";
+import HalfDoughnutChart from "./charts/HalfDoughnutChart";
 
 interface BudgetStatusProps {
   totalBudget: number;
@@ -23,7 +24,8 @@ const BudgetStatus: React.FC<BudgetStatusProps> = ({
   // ✅ 예산 계산
   const remainBudget = totalBudget - totalSpend;
   const budgetPerDay = daysLeft > 0 ? remainBudget / daysLeft : remainBudget;
-  const monthPercent = totalSpend / totalBudget * 100;
+  const monthPercent = totalBudget > 0 ? (totalSpend / totalBudget) * 100 : 0;
+
   return (
     <div className="p-4 mb-4 bg-white rounded-2xl drop-shadow-10">
       <p className="mb-1 text-lg font-bold">
@@ -39,7 +41,8 @@ const BudgetStatus: React.FC<BudgetStatusProps> = ({
         을 사용할 수 있어요.
       </div>
       <div className="flex justify-center my-4">
-        <HalfCircleGauge totalPercentage={monthPercent} size={220} />
+         <HalfCircleGauge totalPercentage={monthPercent} size={220} />
+         {/* <HalfDoughnutChart /> */}
       </div>
       <div className="flex justify-between mt-2">
         <div className="flex flex-col">

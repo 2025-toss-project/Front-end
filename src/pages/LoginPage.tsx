@@ -63,6 +63,9 @@ const LoginAndSignUp: React.FC<{
 
       console.log(res.data);
       localStorage.setItem("accessToken", res.data.accessToken);
+      localStorage.setItem("refreshToken", res.data.refreshToken);
+
+    
       moveToPage(PageUrls.HOME);
     } catch (error) {
       console.error(error);

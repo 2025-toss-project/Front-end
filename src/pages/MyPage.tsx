@@ -1,101 +1,71 @@
-import React, { useState } from "react";
-import useUserInfo from "../stores/userInfo";
+import React, { useEffect, useState } from "react";
+import { userInfo as UserInfoType, fetchUserInfo } from "../apis/userInfo";
 import { findType } from "../utils/findTypeOrCategory";
-import InputDefault from "../components/common/InputDefault";
-import SelectAgeGroup from "../components/SelectAgeGroup";
-import { SaveButton } from "../components/common/Buttons";
-import { LucideLogOut } from "lucide-react";
-import PayTypeSection from "../components/sections/PayTypeSection";
-import { useMovePage } from "../hooks/useMovePage";
-import PageUrls from "../constants/PageUrls";
+import ProfileUpdate from "../apis/ProfileUpdate";
+import TypeTab from "../components/TypeTab";
+import userStore from "../stores/user";
 
-const ProfileTab = () => {
-  const [selectedAge, setSelectedAge] = useState<string>("");
-  const { moveToPage } = useMovePage();
-  return (
-    <>
-      <div className="flex flex-col py-5">
-        <div className="text-lg font-bold">프로필 정보</div>
-        <div className="text-sm">개인정보를 확인하고 수정할 수 있습니다.</div>
-      </div>
-      <div className="flex flex-col gap-2">
-        <InputDefault placeholder="hong@mail.com" label="이메일" />
-        <InputDefault placeholder="홍길동" label="닉네임" />
-        <SelectAgeGroup
-          selectedAge={selectedAge}
-          setSelectedAge={setSelectedAge}
-          style="mb-5"
-        />
-        <InputDefault
-          placeholder="집 정보"
-          label="집 정보"
-          type="location"
-          onClick={() => moveToPage(PageUrls.SEARCH_LOCATION)}
-        />
-      </div>
-      <SaveButton title="프로필 저장" />
-      <div className="flex items-center justify-center gap-5 text-xs font-bold">
-        로그아웃
-        <LucideLogOut size={16} />
-      </div>
-    </>
-  );
-};
+interface TypeTabProps {
+  userData: UserInfoType | null;
+}
 
-const TypeTab = () => {
-  const [selectedPayType, setSelectedPayType] = useState<string>("");
-  return (
-    <>
-      <div className="flex flex-col gap-5 px-3 border rounded-lg border-second-light py-7">
-        <div className="flex flex-col">
-          <div className="text-lg font-bold">소비성향 설정</div>
-          <div className="text-sm">
-            자신의 소비패턴과 가장 잘 맞는 유형을 선택하세요.
-          </div>
-        </div>
-        <PayTypeSection
-          selectedPayType={selectedPayType}
-          setSelectedPayType={setSelectedPayType}
-        />
-      </div>
-      <SaveButton title="저장하기" />
-    </>
-  );
-};
-
-const MyPage = () => {
-  const { userInfo } = useUserInfo();
-  const userType = findType(userInfo.type);
-  const [selectedTap, setSelectedTap] = useState<number>(0);
+const MyPage: React.FC = () => {
+  const { userInfo, setUserInfo } = userStore();
+  const [selectedTab, setSelectedTab] = useState<number>(0);
   const tabs = ["프로필", "성향"];
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const { result } = await fetchUserInfo();
+        setUserInfo(result);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getUserData();
+  }, []);
+
+  const userType = findType(userInfo?.type ?? "");
 
   return (
     <div className="flex flex-col w-full gap-2">
       <div className="flex items-center gap-2 py-4">
-        <div>{userType?.icon({ size: 48 })}</div>
+        {userType?.icon && <div>{userType.icon({ size: 48 })}</div>}
         <div>
           <div className="text-sm">
             {userType?.discription}
             {!(userType?.type === "무소비형") && "하는"}
           </div>
           <div className="text-lg font-bold text-main">
-            {userInfo.nickname}
+            {userInfo?.nickname}
             {" 님"}
           </div>
         </div>
       </div>
+
+      {/* 탭 영역 */}
       <div className="flex justify-between gap-2 py-2 text-sm">
-        {tabs.map((tab, tabIdx) => (
+        {tabs.map((tab, idx) => (
           <div
             key={tab}
-            onClick={() => setSelectedTap(tabIdx)}
-            className={`grid w-full place-items-center rounded-lg border py-2 ${tabIdx === selectedTap ? "border-white bg-main text-white" : "border border-main bg-white"}`}
+            onClick={() => setSelectedTab(idx)}
+            className={`grid w-full place-items-center rounded-lg border py-2 ${
+              idx === selectedTab
+                ? "border-white bg-main text-white"
+                : "border border-main bg-white"
+            }`}
           >
             {tab}
           </div>
         ))}
       </div>
-      {selectedTap === 0 ? <ProfileTab /> : <TypeTab />}
+
+      {selectedTab === 0 ? (
+        <ProfileUpdate userData={userInfo} />
+      ) : (
+        <TypeTab userData={userInfo} />
+      )}
     </div>
   );
 };

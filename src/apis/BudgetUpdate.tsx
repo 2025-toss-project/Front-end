@@ -13,7 +13,9 @@ export interface UpdateBudgetPayroad {
   budgetUpdateDTOList: BudgetUpdateDTO[];
 }
 
-export const updateBudgetInfo = async (payroad: UpdateBudgetPayroad): Promise<any> => {
+export const updateBudgetInfo = async (
+  payroad: UpdateBudgetPayroad,
+): Promise<any> => {
   try {
     const response = await api.post("/budget/update", payroad);
     return response.data;
@@ -33,12 +35,16 @@ interface CategoryBudget {
 
 // 컴포넌트 Props 타입 정의 (totalId 추가)
 interface BudgetUpdateProps {
-  totalId: number;          // 전체 예산의 ID (GET 응답의 totalId)
-  totalBudget: number;      // 한달 전체 예산
+  totalId: number; // 전체 예산의 ID (GET 응답의 totalId)
+  totalBudget: number; // 한달 전체 예산
   categoryBudgets: CategoryBudget[];
 }
 
-const BudgetUpdate: React.FC<BudgetUpdateProps> = ({ totalId, totalBudget, categoryBudgets }) => {
+const BudgetUpdate: React.FC<BudgetUpdateProps> = ({
+  totalId,
+  totalBudget,
+  categoryBudgets,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -71,7 +77,10 @@ const BudgetUpdate: React.FC<BudgetUpdateProps> = ({ totalId, totalBudget, categ
 
   return (
     <div>
-      <SaveButton title={isLoading ? "저장 중..." : "저장하기"} onClick={handlePost} />
+      <SaveButton
+        title={isLoading ? "저장 중..." : "저장하기"}
+        onClick={handlePost}
+      />
       {message && <div className="mt-2 text-sm">{message}</div>}
     </div>
   );
