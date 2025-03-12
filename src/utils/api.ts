@@ -11,7 +11,6 @@ export const apiWithoutAuth = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
-    console.log("request i/c");
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -27,7 +26,6 @@ api.interceptors.request.use(
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
-    console.log("request interceptor 실행");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -39,7 +37,6 @@ api.interceptors.request.use(
 // 응답 인터셉터: 400 에러(예: "Request failed with status code 400") 발생 시 refresh token 요청 후 재시도
 api.interceptors.response.use(
   (response) => {
-    console.log("response interceptor 실행");
     return response;
   },
   async (error) => {
