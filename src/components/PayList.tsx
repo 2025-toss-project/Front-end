@@ -60,7 +60,7 @@ const PayList: React.FC<PayListProps> = ({
     ConsumptionInfoByDate[]
   >([]);
   const { moveToPage } = useMovePage();
-  const { setSpendingData } = useSpendingInfo();
+  const { setSpendingData, resetSpendingData } = useSpendingInfo();
   const { selectCategory, setSelectCategory } = useCategoryInfo();
   const { activeDate } = useCalendarInfo();
   const location = useLocation();
@@ -93,6 +93,11 @@ const PayList: React.FC<PayListProps> = ({
         let effectiveStartDate = startDate || refresh;
         let effectiveEndDate = endDate || refresh;
 
+        if (!activeDate) {
+          console.warn("activeDate가 없어서 API 호출을 중단합니다.");
+          return;
+        }
+
         if (!effectiveStartDate || !effectiveEndDate) {
           console.warn("start, end, refresh 모두 없음 → 해당 월 전체 조회");
           const { startOfMonth, endOfMonth } = activeMonth(
@@ -110,6 +115,15 @@ const PayList: React.FC<PayListProps> = ({
               return;
             }
           }
+        }
+
+        if (
+          !refresh &&
+          effectiveStartDate === effectiveEndDate &&
+          !validDates.includes(effectiveStartDate)
+        ) {
+          console.warn("소비 기록이 없는 날짜 → API 호출 중단");
+          return;
         }
 
         const params = {

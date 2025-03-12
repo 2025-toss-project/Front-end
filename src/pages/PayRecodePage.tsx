@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import CustomCalendar from "../components/CustomCalendar";
 import { DropButton } from "../components/common/Buttons";
 import PayList from "../components/PayList";
@@ -16,6 +16,7 @@ const PayRecodePage = () => {
   const { selectCategory, isOpen, setIsOpen } = useCategoryInfo();
   const { activeDate, setDayData } = useCalendarInfo();
 
+  // 캘린더 변경(구간 변경)
   const handleDateChange = (startDate: string, endDate: string) => {
     if (startDate) {
       setStartDate(startDate);
@@ -30,41 +31,51 @@ const PayRecodePage = () => {
     }
   };
 
+  // 이전 activeDate 값을 저장하여 중복 요청 방지
+  const prevActiveDate = useRef<string | null>(null);
+
+  // API 호출 함수 최적화
+  const fetchCalendar = useCallback(async () => {
+    if (prevActiveDate.current === activeDate) return; // 동일한 값이면 API 호출 안함
+
+    try {
+      setLoading(true);
+      if (!activeDate) {
+        console.warn("activeDate 없으므로 호출 중단");
+        return;
+      } // activeDate 없으면 호출 중단
+
+      prevActiveDate.current = activeDate; // 현재 activeDate를 저장
+      const params = { currentDate: activeDate || "" };
+      const res = await api.get("consumption/calender", { params });
+      console.log(res.data);
+
+      setDayData({
+        totalPrice: res.data.result.totalPrice,
+        calenderInfoDTOS: res.data.result.calenderInfoDTOS,
+      });
+
+      // 소비 있는 날짜 저장
+      const validDays = res.data.result.calenderInfoDTOS
+        .filter((item: calenderInfoDTOS) => item.datePrice > 0)
+        .map(
+          (item: calenderInfoDTOS) =>
+            `${item.year}-${String(item.month).padStart(2, "0")}-${String(item.day).padStart(2, "0")}`,
+        );
+
+      setValidDates(validDays);
+      console.log("Valid Dates:", validDays);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [activeDate, setDayData]); // useCallback으로 불필요한 재생성 방지
+
+  // `activeDate` 변경될 때 API 호출
   useEffect(() => {
-    const fetchCalendar = async () => {
-      try {
-        setLoading(true);
-        const formatActive = activeDate || "";
-        const params = {
-          currentDate: formatActive,
-        };
-        const res = await api.get("consumption/calender", { params });
-        console.log(res.data);
-
-        setDayData({
-          totalPrice: res.data.result.totalPrice,
-          calenderInfoDTOS: res.data.result.calenderInfoDTOS,
-        });
-
-        // 소비 있는 날짜 저장
-        const validDays = res.data.result.calenderInfoDTOS
-          .filter((item: calenderInfoDTOS) => item.datePrice > 0)
-          .map(
-            (item: calenderInfoDTOS) =>
-              `${item.year}-${String(item.month).padStart(2, "0")}-${String(item.day).padStart(2, "0")}`,
-          );
-
-        setValidDates(validDays); // 상태 저장
-        console.log("Valid Dates:", validDays);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchCalendar();
-  }, [activeDate]);
+  }, [fetchCalendar]);
 
   return (
     <div className="flex w-full flex-col gap-2">
