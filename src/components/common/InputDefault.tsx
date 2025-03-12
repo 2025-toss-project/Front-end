@@ -74,7 +74,7 @@ const InputDefault: React.FC<PayInputProps> = ({
         <div className="flex gap-5">
           {label && <label className="w-20">{label}</label>}
           <input
-            type={type === "date" ? "date" : "text"} // date 타입 처리
+            type={type === "date" ? "date" : type} // date 타입 처리
             placeholder={placeholder}
             readOnly={isReadOnly}
             value={inputValue}

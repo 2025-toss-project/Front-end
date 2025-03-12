@@ -1,5 +1,5 @@
 import { LucideChevronRight } from "lucide-react";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, use, useEffect, useState } from "react";
 import { SaveButton } from "../components/common/Buttons";
 import BarChart from "../components/charts/BarChart";
 import DoughnutChart from "../components/charts/DoughnutChart";
@@ -69,6 +69,10 @@ const PrevMonthPayBox: React.FC<{
 }> = ({ monthPay, prevPay, twoMonthsAgoPay }) => {
   const { moveToPage } = useMovePage();
 
+  useEffect(() => {
+    console.log("monthPay : ", monthPay);
+    console.log("prevPay : ", prevPay);
+  }, [monthPay, prevPay]);
   return (
     <BoxWrapper>
       <div>지난 달보다</div>
