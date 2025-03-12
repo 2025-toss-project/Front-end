@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { CustomOverlayMap } from "react-kakao-maps-sdk";
 import MapHeader from "../components/maps/MapHeader";
 import MapBubble from "../components/MapBubble";
-import useGetMyCurrentLocation from "../hooks/useGetMyCurrentLocation";
 import { findCategory } from "../utils/findTypeOrCategory";
 import { CategoryProps } from "../constants/category";
 import useMapInfo from "../stores/mapInfo";
@@ -17,78 +16,82 @@ const MyCurrentLocation: React.FC<{
       position={{ lat: location.lat, lng: location.lng }}
       zIndex={1}
     >
-      <div className="grid w-8 rounded-full aspect-square animate-pulse place-items-center bg-main bg-opacity-30"></div>
-      <div className="absolute w-4 transform -translate-x-1/2 -translate-y-1/2 border-2 border-white rounded-full left-1/2 top-1/2 aspect-square bg-main"></div>
+      <div className="grid aspect-square w-8 animate-pulse place-items-center rounded-full bg-main bg-opacity-30"></div>
+      <div className="absolute left-1/2 top-1/2 aspect-square w-4 -translate-x-1/2 -translate-y-1/2 transform rounded-full border-2 border-white bg-main"></div>
     </CustomOverlayMap>
   );
 };
 
-interface DataProps {
+export interface DataProps {
+  id: number;
   category: string;
+  details: string;
+  locationName: string;
+  lat: number;
+  lng: number;
   price: number;
-  count: number;
-  detail: string;
-  place: string;
+  date: string;
 }
 
 const MainPage: React.FC = () => {
-  const [location, setLocation] = useState({ lat: 0, lng: 0 });
-  const { level, setMapCenter, setMyLocation, myLocation } = useMapInfo();
+  const { level, myLocation, mapCenter, userSelect, mapDatas, setMapDatas } =
+    useMapInfo();
   const [showBubble, setShowBubble] = useState<boolean>(false);
   const [selectedData, setSelectedBubble] = useState<DataProps>();
   const [categoryInfo, setCategoryInfo] = useState<CategoryProps>();
 
-  // TODO : remove dummy datas
-  const dummyDatas = [
-    {
-      category: "식비",
-      price: 2000,
-      count: 3,
-      detail: "한국경제신문에서 밥머금",
-      place: "맥도날드",
-    },
-    {
-      category: "교통",
-      price: 50000,
-      count: 2,
-      detail: "한국경제신문에서 버스탐",
-      place: "버스",
-    },
-  ];
-
   const showBubbleInfo = (idx: number) => {
     setShowBubble(true);
-    setSelectedBubble(dummyDatas[idx]);
+    setSelectedBubble(
+      mapDatas?.mapInfoListDTOList
+        .flatMap((info: any) => info.mapInfoDTOList)
+        .find((data: any) => data.id === idx),
+    );
   };
 
-  useGetMyCurrentLocation(setMyLocation, setMapCenter);
+  const showDatas = () => {
+    if (userSelect.category === "") {
+      return (
+        mapDatas?.mapInfoListDTOList?.flatMap(
+          (info: any) => info.mapInfoDTOList,
+        ) || []
+      );
+    } else {
+      return (
+        mapDatas?.mapInfoListDTOList.find(
+          (info: any) => info.category === userSelect.category,
+        )?.mapInfoDTOList || []
+      );
+    }
+  };
 
   useEffect(() => {
     if (!selectedData?.category) return;
     setCategoryInfo(findCategory(selectedData!.category));
   }, [selectedData]);
+
   return (
     <>
       <KakaoMap>
         <MyCurrentLocation
           location={{ lat: myLocation.lat, lng: myLocation.lng }}
         />
-        {dummyDatas.map((data, index) => (
+
+        {showDatas()?.map((data: any) => (
           <MapBubble
-            onClick={() => showBubbleInfo(index)}
-            key={index}
+            onClick={() => showBubbleInfo(data.id)}
+            key={data.id}
             type={level >= 5 ? "icon" : "bubble"}
             position={{
-              lat: myLocation.lat + (index + 1) * 0.001,
-              lng: myLocation.lng + (index + 1) * 0.001,
+              lat: data.lat,
+              lng: data.lng,
             }}
             category={data.category}
             price={data.price}
-            count={data.count}
           />
         ))}
       </KakaoMap>
-      <div className="flex flex-col justify-between w-full h-full px-6 pt-10 pb-5">
+      <div className="flex h-full w-full flex-col justify-between px-6 pb-5 pt-10">
         <MapHeader />
         <MapBottom
           selectedData={selectedData}

@@ -6,6 +6,8 @@ import { CategoryProps } from "../../constants/category";
 import { formatPrice } from "../../utils/formatFunc";
 import useMapInfo from "../../stores/mapInfo";
 import useClickOutside from "../../hooks/useClickOutside";
+import { DataProps } from "../../pages/MainPage";
+import PageUrls from "../../constants/PageUrls";
 
 const IconMoveMyLocation: React.FC<{ moveToCurrentLocation: () => void }> = ({
   moveToCurrentLocation,
@@ -31,26 +33,29 @@ const IconFastInputPay: React.FC = () => {
   );
 };
 
-interface DataProps {
-  category: string;
-  price: number;
-  count: number;
-  detail: string;
-  place: string;
-}
-
 const ShowDetailInfo: React.FC<{
   showBubbleRef: React.RefObject<HTMLDivElement>;
   selectedData: DataProps;
   categoryInfo: CategoryProps;
 }> = ({ showBubbleRef, selectedData, categoryInfo }) => {
+  const { moveToPage } = useMovePage();
+  const { userSelect } = useMapInfo();
+
+  const handleClickShowDetail = () => {
+    if (userSelect.type === "나의 소비") {
+      moveToPage(`${PageUrls.PAY_DETAIL}?id=${selectedData.id}`);
+    }
+  };
+
+  // TODO : 다른 사람 소비일 때, 바꿔줘야함
   return (
     <div
       ref={showBubbleRef}
+      onClick={handleClickShowDetail}
       className="flex flex-col gap-2 rounded-lg bg-white p-3 drop-shadow-10"
     >
       <div className="flex items-center justify-between">
-        {selectedData!.place}
+        {selectedData!.locationName}
         <div
           className={`flex items-center gap-1 rounded-lg border px-1.5 py-1 ${categoryInfo?.bgColor} ${categoryInfo?.borderColor}`}
         >
@@ -58,7 +63,7 @@ const ShowDetailInfo: React.FC<{
           <div className="text-sm">{selectedData!.category}</div>
         </div>
       </div>
-      <div className="text-xs font-light">{selectedData!.detail}</div>
+      <div className="text-xs font-light">{selectedData!.details}</div>
       <div className="text-right">{formatPrice(selectedData!.price)}원</div>
     </div>
   );

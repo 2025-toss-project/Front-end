@@ -22,6 +22,7 @@ const SearchLocation = () => {
         const { x, y } = data.documents[0];
         setSignupInfo("location", address);
         setSignupInfo("home", { lat: parseFloat(y), lng: parseFloat(x) });
+        console.log("lat : ", y, "lng : ", x);
       } else {
         console.error("주소를 찾을 수 없습니다.");
       }
@@ -36,7 +37,7 @@ const SearchLocation = () => {
   };
 
   return (
-    <div className="flex flex-col w-full h-full">
+    <div className="flex h-full w-full flex-col">
       <Header />
       <DaumPostcodeEmbed style={{ height: "100%" }} onComplete={onComplete} />
     </div>
