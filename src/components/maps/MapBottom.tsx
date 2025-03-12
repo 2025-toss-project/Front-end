@@ -43,14 +43,14 @@ const ShowDetailInfo: React.FC<{
 
   const handleClickShowDetail = () => {
     if (userSelect.type === "나의 소비") {
-      // moveToPage(`${PageUrls.PAY_DETAIL}?id=${selectedData.id}`);
+      moveToPage(`${PageUrls.PAY_DETAIL}?id=${selectedData?.details[0].id}`);
     }
   };
 
   return (
     <div
       ref={showBubbleRef}
-      // onClick={handleClickShowDetail}
+      onClick={handleClickShowDetail}
       className="flex flex-col gap-2 rounded-lg bg-white p-3 drop-shadow-10"
     >
       <div className="flex items-center justify-between">
