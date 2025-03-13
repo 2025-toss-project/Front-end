@@ -6,6 +6,7 @@ import { useState } from "react";
 export interface userInfoAd {
   lng: number;
   lat: number;
+  address: string;
 }
 
 // 유저 정보(서버 GET)
@@ -14,7 +15,7 @@ export interface userInfo {
   email: string;
   type: string;
   ageGroup: string;
-  home: userInfoAd | string;
+  home: userInfoAd;
 }
 
 // GET
@@ -31,16 +32,6 @@ export const fetchUserInfo = async (): Promise<{ result: userInfo }> => {
     throw error;
   }
 };
-
-// export interface ProfileUpdateDTO {
-//   nickname: string;
-//   ageGroup: string;
-//   home: userInfoAd;
-// }
-
-// export interface UpdateProfilePayroad {
-//   profileUpdateDTOList: ProfileUpdateDTO[];
-// }
 
 // POST
 export const updateProfileInfo = async (

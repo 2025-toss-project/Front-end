@@ -14,6 +14,7 @@ const userStore = create<userStore>((set) => ({
     home: {
       lat: 0,
       lng: 0,
+      address : ""
     },
   },
   setUserInfo: (updated) => {

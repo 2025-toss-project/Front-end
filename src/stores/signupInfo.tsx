@@ -13,7 +13,7 @@ const useSignupInfo = create<SignupInfoStore>((set) => ({
     code: "",
     password: "",
     checkPassword: "",
-    nickName: "",
+    nickname: "",
     location: "",
     home: {
       lat: 0,
@@ -38,7 +38,7 @@ const useSignupInfo = create<SignupInfoStore>((set) => ({
         code: "",
         password: "",
         checkPassword: "",
-        nickName: "",
+        nickname: "",
         location: "",
         home: {
           lat: 0,
