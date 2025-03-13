@@ -162,13 +162,7 @@ const MapBottom: React.FC<{
       );
     }
   };
-  useEffect(() => {
-    console.log(selectedData?.details);
-  }, [selectedData]);
 
-  useEffect(() => {
-    console.log(showBubble);
-  }, [showBubble]);
   return (
     <>
       <div className="z-10 flex flex-col gap-3">
