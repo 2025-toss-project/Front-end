@@ -7,9 +7,13 @@ export const useMovePage = () => {
     navigate(path, info ? { state: info } : undefined);
   };
 
+  const moveToMyPage = (path: string, info?: any) => {
+    navigate(path, info ? { state: info } : undefined);
+  };
+
   const moveToBack = () => {
     navigate(-1);
   };
 
-  return { moveToPage, moveToBack };
+  return { moveToPage, moveToBack, moveToMyPage };
 };

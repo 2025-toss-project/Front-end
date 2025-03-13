@@ -11,9 +11,9 @@ const BarChart: React.FC<{
 }> = ({ monthPay = [], prevPay = [], twoMonthsAgoPay = [] }) => {
   const categories = useMemo(() => {
     const allCategories = [
-      ...monthPay.map((d) => d.category),
-      ...prevPay.map((d) => d.category),
       ...twoMonthsAgoPay.map((d) => d.category),
+      ...prevPay.map((d) => d.category),
+      ...monthPay.map((d) => d.category),
     ];
     return [...new Set(allCategories)];
   }, [monthPay, prevPay, twoMonthsAgoPay]);
@@ -23,9 +23,9 @@ const BarChart: React.FC<{
   };
 
   const labels = [
-    monthPay[0]?.date,
-    prevPay[0]?.date,
     twoMonthsAgoPay[0]?.date,
+    prevPay[0]?.date,
+    monthPay[0]?.date,
   ].filter(Boolean);
 
   const data = {
@@ -33,9 +33,9 @@ const BarChart: React.FC<{
     datasets: categories.map((category) => ({
       label: category,
       data: [
-        getCategoryData(category, monthPay),
-        getCategoryData(category, prevPay),
         getCategoryData(category, twoMonthsAgoPay),
+        getCategoryData(category, prevPay),
+        getCategoryData(category, monthPay),
       ],
       backgroundColor: findCategory(category)?.border || "#ccc",
     })),
@@ -46,8 +46,8 @@ const BarChart: React.FC<{
     plugins: {
       legend: {
         labels: {
-          boxWidth: 20,
-          padding: 20,
+          boxWidth: 10,
+          padding: 10,
           boxHeight: 10,
         },
       },

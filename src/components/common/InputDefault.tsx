@@ -46,7 +46,6 @@ const InputDefault: React.FC<PayInputProps> = ({
         newValue = newValue.replace(/[^0-9]/g, "");
         break;
       case "category":
-        // 카테고리 관련 로직은 Readonly라 사용하지 않음.
         break;
       default:
         break;
@@ -61,11 +60,14 @@ const InputDefault: React.FC<PayInputProps> = ({
       setInputValue(selectCategory);
     } else if (type === "date" && !inputValue) {
       // date 타입일 경우, 값이 비어 있으면 오늘 날짜로 기본값 설정
-      const today = new Date().toISOString().split("T")[0]; // 'YYYY-MM-DD' 형식
-      setInputValue(today);
+      const today = new Date().toISOString().split("T")[0];
       setAddPayInfo("date", today);
     }
   }, [selectCategory, type, inputValue]);
+
+  useEffect(() => {
+    setInputValue(value);
+  }, [value]);
 
   return (
     <div onClick={onClick} className={`h-15 ${style}`}>
@@ -73,13 +75,13 @@ const InputDefault: React.FC<PayInputProps> = ({
         <div className="flex gap-5">
           {label && <label className="w-20">{label}</label>}
           <input
-            type={type === "date" ? "date" : "text"} // date 타입 처리
+            type={type === "date" ? "date" : type} // date 타입 처리
             placeholder={placeholder}
             readOnly={isReadOnly}
             value={inputValue}
             onChange={handleChange}
             onClick={(e) => isReadOnly && e.preventDefault()}
-            className="w-full outline-none text-default focus:outline-none focus:ring-0"
+            className={`text-default w-full outline-none focus:outline-none focus:ring-0 ${style}`}
           />
         </div>
       </div>
