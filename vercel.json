@@ -4,5 +4,12 @@
       "source": "/api/:path*",
       "destination": "http://3.37.61.199:8080/api/:path*"
     }
+  ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "destination": "/",
+      "statusCode": 200
+    }
   ]
 }
