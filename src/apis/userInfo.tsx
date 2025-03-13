@@ -33,16 +33,6 @@ export const fetchUserInfo = async (): Promise<{ result: userInfo }> => {
   }
 };
 
-// export interface ProfileUpdateDTO {
-//   nickname: string;
-//   ageGroup: string;
-//   home: userInfoAd;
-// }
-
-// export interface UpdateProfilePayroad {
-//   profileUpdateDTOList: ProfileUpdateDTO[];
-// }
-
 // POST
 export const updateProfileInfo = async (
   updateProfileData: userInfo,

@@ -16,29 +16,6 @@ const SearchLocation = () => {
     const API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY;
     const url = `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURIComponent(address)}`;
 
-    //   try {
-    //     const response = await fetch(url, {
-    //       headers: { Authorization: `KakaoAK ${API_KEY}` },
-    //     });
-    //     const data = await response.json();
-
-    //     if (data.documents.length > 0) {
-    //       const { x, y } = data.documents[0];
-    //       // 회원가입 일 때
-    //       if(location.state.prevPage === "mypage"){
-    //         setUserInfo
-    //       } else{
-    //       setSignupInfo("location", address);
-    //       setSignupInfo("home", { lat: parseFloat(y), lng: parseFloat(x) });
-    //       }
-    //       console.log("lat : ", y, "lng : ", x);
-    //     } else {
-    //       console.error("주소를 찾을 수 없습니다.");
-    //     }
-    //   } catch (error) {
-    //     console.error("좌표 변환 오류:", error);
-    //   }
-    // };
 
     try {
       const response = await fetch(url, {
@@ -59,7 +36,6 @@ const SearchLocation = () => {
           setSignupInfo("location", address);
           setSignupInfo("home", { lat: parseFloat(y), lng: parseFloat(x) });
         }
-        console.log("lat:", y, "lng:", x, "address:", address);
       } else {
         console.error("주소를 찾을 수 없습니다.");
       }
@@ -69,7 +45,6 @@ const SearchLocation = () => {
   };
 
   const onComplete = async (data: any) => {
-    console.log("선택된 주소:", data.address);
     await getCoordinates(data.address);
     if (location.state && location.state.prevPage === "mypage") {
       moveToMyPage(PageUrls.MY_PAGE);

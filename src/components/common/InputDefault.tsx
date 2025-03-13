@@ -11,6 +11,7 @@ interface PayInputProps {
   onClick?: () => void;
   value?: string;
   onChange?: (value: string) => void;
+ 
 }
 
 const   InputDefault: React.FC<PayInputProps> = ({
@@ -46,14 +47,12 @@ const   InputDefault: React.FC<PayInputProps> = ({
         newValue = newValue.replace(/[^0-9]/g, "");
         break;
       case "category":
-        // 카테고리 관련 로직은 Readonly라 사용하지 않음.
         break;
       default:
         break;
     }
 
     setInputValue(newValue);
-    console.log(`입력된 값 (${label}):`, newValue);
     onChange?.(newValue);
   };
 
@@ -62,8 +61,7 @@ const   InputDefault: React.FC<PayInputProps> = ({
       setInputValue(selectCategory);
     } else if (type === "date" && !inputValue) {
       // date 타입일 경우, 값이 비어 있으면 오늘 날짜로 기본값 설정
-      const today = new Date().toISOString().split("T")[0]; // 'YYYY-MM-DD' 형식
-      setInputValue(today);
+      const today = new Date().toISOString().split("T")[0]; 
       setAddPayInfo("date", today);
     }
   }, [selectCategory, type, inputValue]);
@@ -80,7 +78,7 @@ const   InputDefault: React.FC<PayInputProps> = ({
             value={inputValue}
             onChange={handleChange}
             onClick={(e) => isReadOnly && e.preventDefault()}
-            className={`${style} text-default w-full outline-none focus:outline-none focus:ring-0`}
+            className={` text-default w-full outline-none focus:outline-none focus:ring-0 ${style}`}
           />
         </div>
       </div>

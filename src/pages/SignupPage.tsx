@@ -88,7 +88,7 @@ const SignupInputs: React.FC<{
       const res = await apiWithoutAuth.post("/mail/send", {
         email: signupInfo.email,
       });
-      console.log(res.data);
+
       alert("인증 메일이 발송되었습니다.");
       setCountdown(180);
       setEmailSent(true);
@@ -110,7 +110,6 @@ const SignupInputs: React.FC<{
         email: signupInfo.email,
         code: signupInfo.code,
       });
-      console.log(res.data);
       if (res.data.result.check) {
         setIsMailCertified(true);
         alert("인증되었습니다.");
@@ -128,7 +127,7 @@ const SignupInputs: React.FC<{
       <div className="relative gap-y-0">
         <div className="flex items-end w-full gap-3">
           <InputDefault
-            style="w-full"
+            style={`w-full ${isMailCertified ? "pointer-events-none" : ""}`}
             placeholder="이메일"
             type="email"
             value={signupInfo.email}
@@ -161,7 +160,7 @@ const SignupInputs: React.FC<{
         <div className="flex items-end w-full gap-3">
           <InputDefault
             placeholder="이메일 인증번호"
-            style="w-full"
+            style={`w-full ${isMailCertified ? "pointer-events-none" : ""}`}
             type="number"
             value={signupInfo.code}
             onChange={(value) => {
@@ -279,7 +278,6 @@ const SignupPage = () => {
   });
 
   const handleClickSignup = async () => {
-    console.log(signupInfo);
     if (!isMailCertified) return alert("메일 인증을 해주세요.");
     if (!isSignupInfoComplete) return alert("모든 정보를 입력해주세요.");
 
@@ -295,7 +293,6 @@ const SignupPage = () => {
         },
         ageGroup: signupInfo.ageGroup,
       });
-      console.log(res.data);
       moveToPage(PageUrls.LOGIN);
     } catch (error) {
       console.error(error);

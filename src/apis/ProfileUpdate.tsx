@@ -7,9 +7,7 @@ import { LucideLogOut } from "lucide-react";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
 import userStore from "../stores/user";
-import Loading from "../components/loading";
-import { api, apiWithoutAuth } from "../utils/api"; // 기존 axios 인스턴스 활용
-import SearchLocation from "../pages/SearchLocation";
+
 
 const ProfileUpdate: React.FC<{ userData: userInfo }> = ({ userData }) => {
   const { moveToPage } = useMovePage();
@@ -50,19 +48,6 @@ const ProfileUpdate: React.FC<{ userData: userInfo }> = ({ userData }) => {
   if (!userData) {
     return <div className="flex items-center justify-center">실패</div>;
   }
-
-  // home 표시 로직
-  // const renderHomePlaceholder = () => {
-  //   if (typeof userData.home === "object") {
-  //     const { address, lat, lng } = userData.home;
-  //     if (lat !== 0 || lng !== 0) {
-  //       // return `(${lat}, ${lng})`;
-  //       return address;
-  //     }
-  //     return "집 정보";
-  //   }
-  //   return userInfo.home || "집 정보";
-  // };
 
   const initialHomeAddress = (() => {
     if (typeof userData.home === "object" && userData.home !== null) {
@@ -108,7 +93,7 @@ const ProfileUpdate: React.FC<{ userData: userInfo }> = ({ userData }) => {
         throw new Error("로그아웃 실패: 토큰이 없습니다.");
       }
 
-      //🔹 강제로 accessToken을 포함해서 로그아웃 요청 보내기
+      // 강제로 accessToken을 포함해서 로그아웃 요청 보내기
       await fetch("http://3.37.61.199:8080/auth/logout", {
         method: "POST",
         headers: {
@@ -118,14 +103,13 @@ const ProfileUpdate: React.FC<{ userData: userInfo }> = ({ userData }) => {
         credentials: "include", // 쿠키 포함 (필요할 경우)
       });
 
-      // 🔹 로컬 스토리지에서 토큰 삭제
+      // 로컬 스토리지에서 토큰 삭제
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
 
-      // 🔹 로그인 페이지로 이동
+      // 로그인 페이지로 이동
       window.location.href = PageUrls.LOGIN;
     } catch (error) {
-      console.error("로그아웃 실패:", error);
       alert("로그아웃 처리 중 오류가 발생했습니다.");
     }
   };
@@ -140,14 +124,7 @@ const ProfileUpdate: React.FC<{ userData: userInfo }> = ({ userData }) => {
       </div>
 
       <div className="flex flex-col gap-2">
-        {/* <InputDefault
-          placeholder={originUserInfo.email || "이메일"}
-          label="이메일"
-          value={originUserInfo.email}
-          onChange={() => {}} // readOnly라 onChange는 빈 함수
-          isReadOnly
-        /> */}
-        <div className="mb-5 flex flex-row gap-9 border-b py-3">
+        <div className="flex flex-row py-3 mb-5 border-b gap-9">
           <div>이메일</div>{" "}
           <span className="text-second">{originUserInfo.email} </span>
         </div>
@@ -158,7 +135,7 @@ const ProfileUpdate: React.FC<{ userData: userInfo }> = ({ userData }) => {
           label="닉네임"
           value={originUserInfo.nickname}
           onChange={handlenicknameChange}
-          style="text-black"
+          style="text-black placeholder-black"
         />
 
         {/* 연령대 선택 */}
@@ -175,20 +152,21 @@ const ProfileUpdate: React.FC<{ userData: userInfo }> = ({ userData }) => {
           onClick={() =>
             moveToPage(PageUrls.SEARCH_LOCATION, { prevPage: "mypage" })
           }
+          style="text-black placeholder-black"
         />
       </div>
 
       <SaveButton title="프로필 저장" onClick={handleSave} />
 
       {message && (
-        <div className="relative bottom-5 flex justify-center text-sm">
+        <div className="relative flex justify-center text-sm bottom-5">
           {message}
         </div>
       )}
 
       <div
-        className="mb-5 mt-0 flex cursor-pointer items-center justify-center gap-5 text-xs font-bold"
-        onClick={handleLogout} // ✅ 로그아웃 함수 연결
+        className="flex items-center justify-center gap-5 mt-0 mb-5 text-xs font-bold cursor-pointer"
+        onClick={handleLogout} // 로그아웃 함수 연결
       >
         로그아웃
         <LucideLogOut size={16} />

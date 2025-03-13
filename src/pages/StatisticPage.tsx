@@ -82,8 +82,6 @@ const PrevMonthPayBox: React.FC<{
   const diff = monthTotal - prevTotal; // 양수이면 지난 달보다 더 쓴 경우
   
   useEffect(() => {
-    console.log("monthPay : ", monthPay);
-    console.log("prevPay : ", prevPay);
   }, [monthPay, prevPay]);
   return (
     <BoxWrapper>
