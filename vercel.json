@@ -1,15 +1,13 @@
 {
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/:path*",
-      "destination": "http://3.37.61.199:8080/api/:path*"
-    }
-  ],
-  "redirects": [
+      "src": "/api/(.*)",
+      "dest": "http://3.37.61.199:8080/$1"
+    },
     {
-      "source": "/:path*",
-      "destination": "/",
-      "statusCode": 200
+      "src": "/[^api/].*",
+      "dest": "/",
+      "status": 200
     }
   ]
 }
