@@ -82,10 +82,10 @@ const Map = () => {
       console.log("선택된 장소:", locationName);
       console.log("좌표:", lng, lat);
 
-      // // addPayInfo에 장소 정보 저장
-      // setAddPayInfo("locationName", locationName); // 장소 이름 저장
-      // setAddPayInfo("lat", String(lat)); // 위도 저장
-      // setAddPayInfo("lng", String(lng)); // 경도 저장
+      // addPayInfo에 장소 정보 저장
+      setAddPayInfo("locationName", locationName); // 장소 이름 저장
+      setAddPayInfo("lat", String(lat)); // 위도 저장
+      setAddPayInfo("lng", String(lng)); // 경도 저장
 
       // 기존 마커 제거
       if (markerRef.current) {
@@ -135,8 +135,6 @@ const MapInfo = () => {
   const searchParams = new URLSearchParams(location.search);
   const mode = searchParams.get("mode") || "add"; // 기본값 "add"
   const id = searchParams.get("id");
-  const { setAddPayInfo } = useAddPayInfo();
-  const { locationName, lat, lng, resetLocationInfo } = useLocationInfo();
 
   // 저장/수정 버튼 텍스트
   const buttonText = mode === "edit" ? "수정하기" : "저장하기";
@@ -145,19 +143,13 @@ const MapInfo = () => {
       ? `${PageUrls.PAY_DETAIL}?id=${id}`
       : PageUrls.ADD_PAY;
 
-  // 저장 버튼 클릭 시 처리
-  const handleSave = () => {
-    // 저장할 때만 addpayInfo에 값 저장
-    setAddPayInfo("locationName", locationName);
-    setAddPayInfo("lat", String(lat));
-    setAddPayInfo("lng", String(lng));
-    resetLocationInfo(); // 저장하고 위치 정보는 삭제
-    moveToPage(targetUrl); // 페이지 이동
-  };
-
   return (
     <div className="pointer-events-auto absolute bottom-20 left-1/2 z-10 w-80 -translate-x-1/2">
-      <SaveButton title={buttonText} style="px-6" onClick={handleSave} />
+      <SaveButton
+        title={buttonText}
+        style="px-6"
+        onClick={() => moveToPage(targetUrl)}
+      />
     </div>
   );
 };

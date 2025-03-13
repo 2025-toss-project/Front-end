@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import PageUrls from "../constants/PageUrls";
 import useAddPayInfo from "../stores/addpayInfo";
 import useLocationInfo from "../stores/locationInfo";
+import useMapInfo from "../stores/mapInfo";
 
 declare global {
   interface Window {
@@ -39,6 +40,7 @@ export default function SearchPlace({ place, setPlace }: SearchPlaceProps) {
   const searchParams = new URLSearchParams(location.search);
   const mode = searchParams.get("mode") || "add";
   const id = searchParams.get("id");
+  const { myLocation } = useMapInfo();
 
   useEffect(() => {
     setPlaces([]);
@@ -63,6 +65,12 @@ export default function SearchPlace({ place, setPlace }: SearchPlaceProps) {
           setIsSearched(false);
           setPlaces([]);
         }
+      },
+      {
+        location: new window.kakao.maps.LatLng({
+          lat: myLocation.lat,
+          lng: myLocation.lng,
+        }),
       },
     );
   }, [place]);
