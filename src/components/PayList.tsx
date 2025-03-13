@@ -8,6 +8,7 @@ import { api } from "../utils/api";
 import { useLocation, useNavigate } from "react-router-dom";
 import { activeMonth, formatDateWithWeekday } from "../utils/formatFunc";
 import useCalendarInfo from "../stores/CalendarInfo";
+import useAddPayInfo from "../stores/addpayInfo";
 
 interface PayDayProps {
   data: any; // 필요한 타입으로 수정
@@ -62,6 +63,7 @@ const PayList: React.FC<PayListProps> = ({
   const { moveToPage } = useMovePage();
   const { setSpendingData, resetSpendingData } = useSpendingInfo();
   const { selectCategory, setSelectCategory } = useCategoryInfo();
+  const { addpayInfo } = useAddPayInfo();
   const { activeDate } = useCalendarInfo();
   const location = useLocation();
   const navigate = useNavigate();
@@ -152,15 +154,15 @@ const PayList: React.FC<PayListProps> = ({
           );
 
         setFilteredRecords(filtered);
+        console.log("data", data);
       } catch (err) {
         console.error(err);
       } finally {
         setLoading(false);
-        setSelectCategory("");
       }
     };
     ReadConsumption();
-  }, [startDate, endDate, refresh, selectCategory, activeDate]);
+  }, [startDate, endDate, refresh, selectCategory, activeDate, addpayInfo]);
 
   return (
     <div className="flex flex-col w-full">

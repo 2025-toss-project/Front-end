@@ -17,6 +17,7 @@ export interface addpayInfo {
   locationName: string;
   lat: number;
   lng: number;
+  category?: string;
 }
 
 const AddPayPage = () => {
@@ -37,7 +38,10 @@ const AddPayPage = () => {
   });
 
   const handleClickSubmit = async () => {
-    if (!isAddpayInfoComplete) return alert("모든 정보를 입력해주세요.");
+    if (!isAddpayInfoComplete) {
+      console.log("입력 값", addpayInfo);
+      return alert("모든 정보를 입력해주세요.");
+    }
 
     try {
       const res = await api.post("/consumption/create", {
@@ -59,7 +63,7 @@ const AddPayPage = () => {
   };
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex w-full flex-col">
       <PayInput toggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
       <SelectCategory classname={isOpen ? "block" : "hidden"} />
       <SaveButton title="저장하기" onClick={handleClickSubmit} />

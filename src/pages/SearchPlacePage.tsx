@@ -19,7 +19,7 @@ const SearchHeader = ({ place, setPlace, onSearch }: any) => {
   };
 
   return (
-    <div className="flex flex-row items-center justify-between w-full px-2 py-4 h-14 bg-second-lighter">
+    <div className="flex h-14 w-full flex-row items-center justify-between bg-second-lighter px-2 py-4">
       <LucideSearch size={22} color="#333" />
       <form onSubmit={handleSearch} className="flex flex-1 pl-5">
         <input
@@ -37,13 +37,9 @@ const SearchHeader = ({ place, setPlace, onSearch }: any) => {
 const SearchPlacePage = () => {
   const [place, setPlace] = useState<string>("");
 
-  const handleSearch = (place: string) => {
-    console.log("검색한 장소:", place);
-  };
-
   return (
-    <div className="flex flex-col w-full gap-5">
-      <SearchHeader place={place} setPlace={setPlace} onSearch={handleSearch} />
+    <div className="flex w-full flex-col gap-5">
+      <SearchHeader place={place} setPlace={setPlace} />
       <SearchPlace place={place} setPlace={setPlace} />
     </div>
   );

@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { AddressButton } from "./common/Buttons";
 import { useMovePage } from "../hooks/useMovePage";
 import { useLocation } from "react-router-dom";
 import PageUrls from "../constants/PageUrls";
 import useAddPayInfo from "../stores/addpayInfo";
+import useLocationInfo from "../stores/locationInfo";
 
 declare global {
   interface Window {
@@ -11,13 +12,13 @@ declare global {
   }
 }
 
-interface Place {
+interface KakaoPlace {
   place_name: string;
   road_address_name?: string;
   address_name: string;
   phone?: string;
-  lat: number;
-  lng: number;
+  x: number;
+  y: number;
 }
 
 interface SearchPlaceProps {
@@ -27,12 +28,13 @@ interface SearchPlaceProps {
 
 export default function SearchPlace({ place, setPlace }: SearchPlaceProps) {
   const [isSearched, setIsSearched] = useState(false);
-  const [places, setPlaces] = useState<Place[]>([]);
+  const [places, setPlaces] = useState<KakaoPlace[]>([]);
   const [pagination, setPagination] = useState<any>(null);
-  
-  const { moveToPage } = useMovePage(); 
-  const { setAddPayInfo } = useAddPayInfo(); 
-  
+
+  const { moveToPage } = useMovePage();
+  const { setAddPayInfo } = useAddPayInfo();
+  const { setLocationInfo } = useLocationInfo();
+
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const mode = searchParams.get("mode") || "add";
@@ -52,7 +54,7 @@ export default function SearchPlace({ place, setPlace }: SearchPlaceProps) {
     const ps = new window.kakao.maps.services.Places();
     ps.keywordSearch(
       place,
-      (data: Place[], status: string, pagination: any) => {
+      (data: KakaoPlace[], status: string, pagination: any) => {
         if (status === window.kakao.maps.services.Status.OK) {
           setPlaces(data);
           setPagination(pagination);
@@ -65,15 +67,12 @@ export default function SearchPlace({ place, setPlace }: SearchPlaceProps) {
     );
   }, [place]);
 
-    // 클릭한 장소로 이동하는 함수
-    const handlePlaceClick = (place: Place) => {
-      // 장소 선택 시 데이터 저장
-      setAddPayInfo("locationName", place.place_name);
-      // 페이지 이동
-      moveToPage(`${PageUrls.SEARCH_PLACE_MAP}?mode=${mode}&id=${id}`);
-    };
-  
- 
+  // 클릭한 장소로 이동하는 함수
+  const handlePlaceClick = (place: KakaoPlace) => {
+    setLocationInfo(place.place_name, place.y, place.x); // 장소, 위도, 경도 순 저장
+    // 페이지 이동
+    moveToPage(`${PageUrls.SEARCH_PLACE_MAP}?mode=${mode}&id=${id}`);
+  };
 
   return (
     <div className="flex flex-col">
@@ -83,8 +82,8 @@ export default function SearchPlace({ place, setPlace }: SearchPlaceProps) {
           {places.map((place, index) => (
             <li
               key={index}
-              className="flex flex-col gap-2 py-2 border-b item"
-              onClick={() => handlePlaceClick(place)} // 클릭 시 데이터 저장하고 이동
+              className="item flex flex-col gap-2 border-b py-2"
+              onClick={() => handlePlaceClick(place)} // 클릭 시 데이터 전달
             >
               <span className={`markerbg marker_${index + 1}`} />
               <div className="info flex flex-col gap-1.5">
@@ -111,7 +110,7 @@ export default function SearchPlace({ place, setPlace }: SearchPlaceProps) {
             </li>
           ))}
         </ul>
-        <div id="pagination" className="flex justify-center gap-2 pb-6 mt-5">
+        <div id="pagination" className="mt-5 flex justify-center gap-2 pb-6">
           {pagination &&
             Array.from({ length: pagination.last }, (_, i) => i + 1).map(
               (page) => (

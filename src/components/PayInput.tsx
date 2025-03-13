@@ -4,90 +4,53 @@ import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
 import { useCategoryInfo } from "../stores/categoryInfo";
 import { useLocation } from "react-router-dom";
-import useSpendingInfo, { ConsumptionInfo } from "../stores/spendingInfo";
 import useAddPayInfo from "../stores/addpayInfo";
-import {
-  formatDateNum,
-  formatDateToYMD,
-  InputformatPrice,
-  inputFormatPriceCheck,
-} from "../utils/formatFunc";
-import { api } from "../utils/api";
+import { InputformatPrice, inputFormatPriceCheck } from "../utils/formatFunc";
+import useLocationInfo from "../stores/locationInfo";
+
+interface payInfo {
+  id: number;
+  category: string;
+  details: string;
+  locationName: string;
+  lat: number;
+  lng: number;
+  date: string;
+  price: number;
+}
 
 interface PayInputProps {
   toggle?: () => void;
   isOpen?: boolean;
+  itemData?: payInfo;
 }
 
-const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
-  const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 관리
+const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
   const { moveToPage } = useMovePage();
   const { addpayInfo, setAddPayInfo, resetAddPayInfo } = useAddPayInfo();
-  const { spendingRecords, resetSpendingData } = useSpendingInfo();
   const { selectCategory, setSelectCategory } = useCategoryInfo();
+  const { locationName, lat, lng } = useLocationInfo();
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");
   const isEditMode = Boolean(id); // 수정 모드 여부 판단
 
-  const [itemData, setItemData] = useState<payInfo | null>(null);
-  const deferredItemData = useDeferredValue(itemData); // 지연된 값 사용
-
-  interface payInfo {
-    id: number;
-    category: string;
-    details: string;
-    locationName: string;
-    lat: number;
-    lng: number;
-    date: string; // YYYY-MM-DD 형식
-    price: number;
-  }
-
   useEffect(() => {
-    // id가 있을 때만 API 호출
-    if (id) {
-      const PayDetail = async () => {
-        try {
-          setLoading(true);
-          const res = await api.get("/map/detail", {
-            params: {
-              id: id,
-            },
-          });
-          console.log("detail Res", res.data);
-          setItemData(res.data.result);
-        } catch (error) {
-          console.error(error);
-        } finally {
-          setLoading(false);
-          resetAddPayInfo(); // reset 지출 데이터
-        }
-      };
-      PayDetail();
-    } else {
-      resetAddPayInfo();
-      setSelectCategory("");
-      setLoading(false); // id가 없으면 로딩 상태를 종료
+    if (itemData) {
+      console.log("addpay", addpayInfo);
+      console.log("itemData", itemData);
+      console.log("locationName", locationName);
+      // 부모에서 전달받은 데이터로 상태 초기화
+      setAddPayInfo("price", String(itemData.price));
+      setAddPayInfo("detail", itemData.details);
+      setAddPayInfo("date", itemData.date);
+      setAddPayInfo("lat", String(lat) || String(itemData.lat));
+      setAddPayInfo("lng", String(lng) || String(itemData.lng));
+      setAddPayInfo("locationName", locationName || itemData.locationName);
+      setSelectCategory(itemData.category || "");
     }
-  }, [id]);
-
-  useEffect(() => {
-    if (id && deferredItemData) {
-      // deferredItemData가 있을 때만 정보 설정
-      setAddPayInfo("price", String(deferredItemData.price));
-      setAddPayInfo("detail", deferredItemData.details);
-      setAddPayInfo("date", deferredItemData.date);
-      setAddPayInfo("locationName", deferredItemData.locationName);
-      setAddPayInfo("lat", String(deferredItemData.lat));
-      setAddPayInfo("lng", String(deferredItemData.lng));
-      setSelectCategory(deferredItemData.category);
-    }
-    console.log("de", deferredItemData);
-  }, [deferredItemData, id]);
-
-  if (loading) return <div>로딩 중...</div>;
+  }, [itemData, locationName, lat, lng]);
 
   return (
     <div>
@@ -140,7 +103,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle }) => {
         <InputDefault
           label="카테고리"
           type="category"
-          value={isEditMode ? itemData?.category || "" : selectCategory || ""}
+          value={itemData?.category || selectCategory || ""}
           placeholder="미선택"
           isReadOnly={true}
           onClick={toggle}

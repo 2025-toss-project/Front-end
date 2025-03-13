@@ -13,7 +13,8 @@ const PayRecodePage = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  const { selectCategory, isOpen, setIsOpen } = useCategoryInfo();
+  const { selectCategory, setSelectCategory, isOpen, setIsOpen } =
+    useCategoryInfo();
   const { activeDate, setDayData } = useCalendarInfo();
 
   // 캘린더 변경(구간 변경)
@@ -67,6 +68,7 @@ const PayRecodePage = () => {
       console.error(err);
     } finally {
       setLoading(false);
+      setSelectCategory("");
     }
   }, [activeDate, setDayData]); // useCallback으로 불필요한 재생성 방지
 
@@ -76,9 +78,9 @@ const PayRecodePage = () => {
   }, [fetchCalendar]);
 
   return (
-    <div className="flex w-full flex-col gap-2">
+    <div className="flex flex-col w-full gap-2">
       <CustomCalendar onDateChange={handleDateChange} />
-      <div className="mt-5 flex w-full flex-col rounded-lg bg-white">
+      <div className="flex flex-col w-full mt-5 bg-white rounded-lg">
         <DropButton
           title={selectCategory || "전체 항목"}
           toggle={() => setIsOpen(!isOpen)}

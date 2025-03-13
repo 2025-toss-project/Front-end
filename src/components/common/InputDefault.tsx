@@ -53,7 +53,6 @@ const InputDefault: React.FC<PayInputProps> = ({
     }
 
     setInputValue(newValue);
-    console.log(`입력된 값 (${label}):`, newValue);
     onChange?.(newValue);
   };
 
@@ -70,7 +69,7 @@ const InputDefault: React.FC<PayInputProps> = ({
 
   return (
     <div onClick={onClick} className={`h-15 ${style}`}>
-      <div className="mb-5 flex flex-col border-b py-3 focus-within:border-pink-500">
+      <div className="flex flex-col py-3 mb-5 border-b focus-within:border-pink-500">
         <div className="flex gap-5">
           {label && <label className="w-20">{label}</label>}
           <input
@@ -80,7 +79,7 @@ const InputDefault: React.FC<PayInputProps> = ({
             value={inputValue}
             onChange={handleChange}
             onClick={(e) => isReadOnly && e.preventDefault()}
-            className="text-default w-full outline-none focus:outline-none focus:ring-0"
+            className="w-full outline-none text-default focus:outline-none focus:ring-0"
           />
         </div>
       </div>

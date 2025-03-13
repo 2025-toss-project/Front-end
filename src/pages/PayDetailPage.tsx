@@ -14,15 +14,45 @@ import PayInput from "../components/PayInput";
 import { formatDateToYMD } from "../utils/formatFunc";
 
 const PayDetailPage = () => {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [itemData, setItemData] = useState<any | null>(null);
   const { isOpen, setIsOpen } = useCategoryInfo();
   const { addpayInfo, resetAddPayInfo } = useAddPayInfo();
   const { selectCategory } = useCategoryInfo();
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
-  const { spendingRecords } = useSpendingInfo();
+  const { spendingRecords, setSpendingData } = useSpendingInfo();
+  const { setSelectCategory } = useCategoryInfo();
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");
+
+  useEffect(() => {
+    if (id) {
+      const fetchPayDetail = async () => {
+        try {
+          setLoading(true);
+          const res = await api.get("/map/detail", {
+            params: { id: id },
+          });
+
+          // 기존 itemData 값과 addpayInfo 값 병합
+          setItemData((prevItemData: any) => ({
+            ...res.data.result,
+            locationName:
+              addpayInfo.locationName || res.data.result.locationName, // addpayInfo.locationName이 있으면 우선 적용
+          }));
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchPayDetail();
+    }
+  }, [id]);
+
+  if (loading) return <div>로딩 중...</div>;
 
   const isAddpayInfoComplete = Object.values(addpayInfo).every((value) => {
     if (typeof value === "object" && value !== null) {
@@ -36,8 +66,9 @@ const PayDetailPage = () => {
   });
 
   const handleClickUpdate = async () => {
-    console.log(addpayInfo);
-    if (!isAddpayInfoComplete) return alert("모든 정보를 입력해주세요.");
+    console.log("update 이전 정보", spendingRecords);
+    console.log("update 할 정보", addpayInfo);
+    //if (!isAddpayInfoComplete) return alert("모든 정보를 입력해주세요.");
 
     try {
       const res = await api.post("/consumption/update", {
@@ -50,14 +81,15 @@ const PayDetailPage = () => {
         locationName: addpayInfo.locationName,
         date: addpayInfo.date,
       });
-      console.log(res.data);
+      console.log("update", res.data.result);
+      setSpendingData(res.data.result);
     } catch (error) {
       console.error(error);
     } finally {
       const formattedDate = formatDateToYMD(new Date(addpayInfo.date));
       moveToPage(`${PageUrls.PAY_RECODE}?refresh=${formattedDate}`);
       resetAddPayInfo();
-      console.log("addpay data remove", addpayInfo.date);
+      setSelectCategory("");
     }
   };
 
@@ -99,7 +131,7 @@ const PayDetailPage = () => {
   };
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex w-full flex-col">
       <div className="flex flex-col px-2">
         <div
           onClick={() => moveToPage(PageUrls.PAY_RECODE)}
@@ -107,7 +139,11 @@ const PayDetailPage = () => {
         >
           <LucideX />
         </div>
-        <PayInput toggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
+        <PayInput
+          toggle={() => setIsOpen(!isOpen)}
+          isOpen={isOpen}
+          itemData={itemData}
+        />
         <SelectCategory classname={isOpen ? "block" : "hidden"} />
       </div>
       <div className="flex flex-row items-center gap-3">
@@ -118,7 +154,7 @@ const PayDetailPage = () => {
         />
         <div
           onClick={handleClickDelete}
-          className="flex items-center justify-center w-12 h-12 border border-gray-500 rounded-md"
+          className="flex h-12 w-12 items-center justify-center rounded-md border border-gray-500"
         >
           <LucideTrash2 size={26} color="#777" />
         </div>
