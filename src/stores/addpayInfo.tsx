@@ -14,8 +14,7 @@ const useAddPayInfo = create<AddPayInfoStore>((set) => ({
     date: "",
     locationName: "",
     lat: 0,
-    lng: 0, 
-    category: "", 
+    lng: 0,
   },
 
   setAddPayInfo: (key, value) => {
@@ -36,7 +35,6 @@ const useAddPayInfo = create<AddPayInfoStore>((set) => ({
         locationName: "",
         lat: 0,
         lng: 0,
-        category: "", 
       },
     });
   },

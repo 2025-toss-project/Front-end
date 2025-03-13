@@ -51,7 +51,7 @@ const PayDetailPage = () => {
     }
     return () => {
       resetAddPayInfo();
-      setSelectCategory("");
+      //setSelectCategory("");
     };
   }, [id]);
 
