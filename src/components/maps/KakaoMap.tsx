@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import useMapInfo from "../../stores/mapInfo";
 import { Map } from "react-kakao-maps-sdk";
 import { api } from "../../utils/api";
-import useGetMyCurrentLocation from "../../hooks/useGetMyCurrentLocation";
+
 import { debounce } from "lodash";
 
 const KakaoMap: React.FC<{
@@ -19,11 +19,6 @@ const KakaoMap: React.FC<{
     userSelect,
     setMapDatas,
   } = useMapInfo();
-
-  const { locationInitialized } = useGetMyCurrentLocation(
-    setMyLocation,
-    setMapCenter,
-  );
 
   const [radius, setRadius] = useState<number>(750);
 
@@ -70,14 +65,14 @@ const KakaoMap: React.FC<{
     return distance > radius;
   };
 
-  const getPayList = async () => {
+  const getPayList = async (lat: number, lng: number) => {
     try {
       let res;
       if (userSelect.type === "나의 소비") {
         res = await api.get("/map/all", {
           params: {
-            lat: mapCenter.lat,
-            lng: mapCenter.lng,
+            lat,
+            lng,
             radius: getRadiusByZoom(level) / 1000,
           },
         });
@@ -85,13 +80,13 @@ const KakaoMap: React.FC<{
         res = await api.get("/map/other", {
           params: {
             type: userSelect.type,
-            lat: mapCenter.lat,
-            lng: mapCenter.lng,
+            lat,
+            lng,
             radius: getRadiusByZoom(level) / 1000,
           },
         });
       }
-      setMapDatas(res.data.result);
+      setMapDatas(res.data.result?.mapInfoListDTOList || []);
     } catch (error) {
       console.error(error);
     }
@@ -111,7 +106,7 @@ const KakaoMap: React.FC<{
       const newRadius = getRadiusByZoom(level);
       setRadius(newRadius);
       setMapCenter(newCenter);
-      getPayList();
+      getPayList(newCenter.lat, newCenter.lng);
     }
   };
 
@@ -134,15 +129,37 @@ const KakaoMap: React.FC<{
     debounceGetNewData(newCenter);
   };
 
-  useEffect(() => {
-    if (locationInitialized) {
-      getPayList();
+  const initializeLocation = () => {
+    const handleSuccess = (pos: GeolocationPosition) => {
+      const { latitude, longitude } = pos.coords;
+      setMyLocation({ lat: latitude, lng: longitude });
+      setMapCenter({ lat: latitude, lng: longitude });
+      console.log(latitude, longitude);
+      getPayList(latitude, longitude);
+    };
+
+    const handleError = (error: GeolocationPositionError) => {
+      console.error("위치 정보 가져오기 실패", error);
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(handleSuccess, handleError);
+    } else {
+      console.error("위치 정보 가져오기 실패");
     }
-  }, [userSelect.type, locationInitialized]);
+  };
 
   useEffect(() => {
-    getPayList();
-  }, [radius]);
+    if (mapCenter.lat !== 0 && mapCenter.lng !== 0) {
+      getPayList(mapCenter.lat, mapCenter.lng);
+    }
+  }, [userSelect.type]);
+
+  useEffect(() => {
+    if (mapCenter.lat === 0 && mapCenter.lng === 0) {
+      initializeLocation();
+    }
+  }, []);
 
   return myLocation.lat === 0 && myLocation.lng === 0 ? (
     <div className="absolute inset-0 z-[100] grid h-screen w-screen place-items-center bg-black/20">
@@ -150,12 +167,13 @@ const KakaoMap: React.FC<{
     </div>
   ) : (
     <Map
-      center={{ lat: myLocation.lat, lng: myLocation.lng }}
+      center={{ lat: mapCenter.lat, lng: mapCenter.lng }}
       style={{
         width: "100%",
         height: "100%",
         position: "absolute",
       }}
+      // onCreate={() => getPayList()}
       isPanto={true}
       level={level}
       ref={mapRef}
