@@ -1,0 +1,9 @@
+.slick-slide {
+  display: inline-block;
+  margin: 0 8px; /* 양옆 여백 추가 */
+}
+
+.slick-track {
+  display: flex;
+  padding-bottom: 10px;
+}

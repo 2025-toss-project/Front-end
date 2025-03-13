@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { CustomOverlayMap } from "react-kakao-maps-sdk";
 import MapHeader from "../components/maps/MapHeader";
 import MapBubble from "../components/MapBubble";
-import { findCategory, findType } from "../utils/findTypeOrCategory";
+import { findCategory } from "../utils/findTypeOrCategory";
 import { CategoryProps } from "../constants/category";
 import useMapInfo from "../stores/mapInfo";
 import KakaoMap from "../components/maps/KakaoMap";
@@ -91,20 +91,11 @@ const MainPage: React.FC = () => {
     }
   };
 
-  const { userInfo } = userStore();
-  const typeData = findType(userInfo.type);
-  useEffect(() => {
-    console.log(userInfo);
-  }, [userInfo]);
-
   useEffect(() => {
     if (!selectedData?.category) return;
     setCategoryInfo(findCategory(selectedData!.category));
   }, [selectedData]);
 
-  useEffect(() => {
-    console.log(showDatas());
-  }, [mapDatas, userSelect.category]);
   return (
     <>
       <KakaoMap>

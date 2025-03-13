@@ -8,6 +8,11 @@ import useMapInfo from "../../stores/mapInfo";
 import useClickOutside from "../../hooks/useClickOutside";
 import { DataProps } from "../../pages/MainPage";
 import PageUrls from "../../constants/PageUrls";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import "../../assets/css/carousel.css";
+import { findCategory } from "../../utils/findTypeOrCategory";
 
 const IconMoveMyLocation: React.FC<{ moveToCurrentLocation: () => void }> = ({
   moveToCurrentLocation,
@@ -37,7 +42,8 @@ const ShowDetailInfo: React.FC<{
   showBubbleRef: React.RefObject<HTMLDivElement>;
   selectedData?: any;
   categoryInfo?: CategoryProps;
-}> = ({ showBubbleRef, selectedData, categoryInfo }) => {
+  showBubble: boolean;
+}> = ({ showBubbleRef, selectedData, categoryInfo, showBubble }) => {
   const { moveToPage } = useMovePage();
   const { userSelect } = useMapInfo();
 
@@ -46,12 +52,13 @@ const ShowDetailInfo: React.FC<{
       moveToPage(`${PageUrls.PAY_DETAIL}?id=${selectedData?.details[0].id}`);
     }
   };
+  if (!selectedData || !showBubble) return null;
 
   return (
     <div
       ref={showBubbleRef}
       onClick={handleClickShowDetail}
-      className="flex flex-col gap-2 rounded-lg bg-white p-3 drop-shadow-10"
+      className="mb-2.5 flex flex-col gap-2 rounded-lg bg-white p-3 drop-shadow-10"
     >
       <div className="flex items-center justify-between">
         {userSelect.type === "나의 소비"
@@ -89,6 +96,55 @@ const ShowDetailInfo: React.FC<{
   );
 };
 
+const Carousel: React.FC<{
+  showBubbleRef: React.RefObject<HTMLDivElement>;
+  selectedData?: any;
+  showBubble: boolean;
+}> = ({ showBubbleRef, selectedData, showBubble }) => {
+  const settings = {
+    infinite: false,
+    arrows: false,
+    slidesToShow: 1,
+    swipeToSlide: true,
+    centerMode: true,
+    centerPadding: "7%",
+  };
+  const { moveToPage } = useMovePage();
+
+  const handleClickShowDetail = (id: number) => {
+    moveToPage(`${PageUrls.PAY_DETAIL}?id=${id}`);
+  };
+
+  return (
+    <div ref={showBubbleRef}>
+      <Slider {...settings} className="w-screen max-w-[500px] -translate-x-6">
+        {selectedData.details.map((data: any) => {
+          const categoryInfo = findCategory(data.category);
+          return (
+            <div
+              key={data.id}
+              className="rounded-lg bg-white p-3 drop-shadow-10"
+              onClick={() => handleClickShowDetail(data.id)}
+            >
+              <div className="mb-2 flex items-center justify-between">
+                <div className="">{data.locationName}</div>
+                <div
+                  className={`flex items-center gap-1 rounded-lg border px-1.5 py-1 ${categoryInfo?.bgColor} ${categoryInfo?.borderColor}`}
+                >
+                  <div>{categoryInfo?.icon({ size: 16 })}</div>
+                  <div className="text-sm">{data.category}</div>
+                </div>
+              </div>
+              <div className="mb-2 text-xs font-light">{data.details}</div>
+              <div className="text-right">{formatPrice(data.price)}원</div>
+            </div>
+          );
+        })}
+      </Slider>
+    </div>
+  );
+};
+
 const MapBottom: React.FC<{
   selectedData?: DataProps;
   categoryInfo?: CategoryProps;
@@ -106,6 +162,7 @@ const MapBottom: React.FC<{
       );
     }
   };
+
   return (
     <>
       <div className="z-10 flex flex-col gap-3">
@@ -113,11 +170,21 @@ const MapBottom: React.FC<{
           <IconMoveMyLocation moveToCurrentLocation={moveToCurrentLocation} />
           <IconFastInputPay />
         </div>
-        {showBubble && (
+
+        {showBubble &&
+        selectedData?.details &&
+        selectedData.details.length > 1 ? (
+          <Carousel
+            showBubbleRef={showBubbleRef}
+            selectedData={selectedData}
+            showBubble={showBubble}
+          />
+        ) : (
           <ShowDetailInfo
             showBubbleRef={showBubbleRef}
-            selectedData={selectedData!}
-            categoryInfo={categoryInfo!}
+            selectedData={selectedData}
+            categoryInfo={categoryInfo}
+            showBubble={showBubble}
           />
         )}
       </div>
