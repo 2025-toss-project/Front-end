@@ -11,10 +11,9 @@ interface PayInputProps {
   onClick?: () => void;
   value?: string;
   onChange?: (value: string) => void;
- 
 }
 
-const   InputDefault: React.FC<PayInputProps> = ({
+const InputDefault: React.FC<PayInputProps> = ({
   label = "",
   type = "text",
   placeholder,
@@ -61,14 +60,18 @@ const   InputDefault: React.FC<PayInputProps> = ({
       setInputValue(selectCategory);
     } else if (type === "date" && !inputValue) {
       // date 타입일 경우, 값이 비어 있으면 오늘 날짜로 기본값 설정
-      const today = new Date().toISOString().split("T")[0]; 
+      const today = new Date().toISOString().split("T")[0];
       setAddPayInfo("date", today);
     }
   }, [selectCategory, type, inputValue]);
 
+  useEffect(() => {
+    setInputValue(value);
+  }, [value]);
+
   return (
     <div onClick={onClick} className={`h-15 ${style}`}>
-      <div className="flex flex-col py-3 mb-5 border-b focus-within:border-pink-500">
+      <div className="mb-5 flex flex-col border-b py-3 focus-within:border-pink-500">
         <div className="flex gap-5">
           {label && <label className="w-20">{label}</label>}
           <input
@@ -78,7 +81,7 @@ const   InputDefault: React.FC<PayInputProps> = ({
             value={inputValue}
             onChange={handleChange}
             onClick={(e) => isReadOnly && e.preventDefault()}
-            className={` text-default w-full outline-none focus:outline-none focus:ring-0 ${style}`}
+            className={`text-default w-full outline-none focus:outline-none focus:ring-0 ${style}`}
           />
         </div>
       </div>
