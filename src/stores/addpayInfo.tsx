@@ -12,6 +12,10 @@ const useAddPayInfo = create<AddPayInfoStore>((set) => ({
     price: 0,
     detail: "",
     date: "",
+    locationName: "",
+    lat: 0,
+    lng: 0, 
+    category: "", 
   },
 
   setAddPayInfo: (key, value) => {
@@ -29,6 +33,10 @@ const useAddPayInfo = create<AddPayInfoStore>((set) => ({
         price: 0,
         detail: "",
         date: "",
+        locationName: "",
+        lat: 0,
+        lng: 0,
+        category: "", 
       },
     });
   },

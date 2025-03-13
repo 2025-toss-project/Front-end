@@ -1,16 +1,9 @@
 import { LucideCircleX, LucideSearch } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import SearchPlace from "../components/SearchPlace";
-import { usePlaceInfo } from "../stores/placeInfo";
 import { useLocation } from "react-router-dom";
 
-const SearchHeader = () => {
-  const { place, setPlace, setSelectPlace } = usePlaceInfo();
-
-  useEffect(() => {
-    console.log("Current place:", place);
-  }, [place]);
-
+const SearchHeader = ({ place, setPlace, onSearch }: any) => {
   // 검색한 값 place에 저장
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPlace(e.target.value);
@@ -22,8 +15,7 @@ const SearchHeader = () => {
       console.warn("검색어가 비어있음, 이동하지 않음");
       return;
     }
-    setSelectPlace(place);
-    console.log("검색한 장소:", place);
+    onSearch(place); // 부모 컴포넌트에서 전달된 onSearch 호출
   };
 
   return (
@@ -43,10 +35,12 @@ const SearchHeader = () => {
 };
 
 const SearchPlacePage = () => {
+  const [place, setPlace] = useState<string>("");
+
   return (
     <div className="flex w-full flex-col gap-5">
-      <SearchHeader />
-      <SearchPlace />
+      <SearchHeader place={place} setPlace={setPlace} />
+      <SearchPlace place={place} setPlace={setPlace} />
     </div>
   );
 };
