@@ -122,21 +122,21 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
           onClick={() => handleClickDate(currentDate)}
           className={`relative my-1 grid aspect-square h-9 w-9 place-items-center text-center text-xs font-medium ${
             isInRange
-              ? "bg-[#c80151a6] text-white"
+              ? "bg-main text-white"
               : isStartDate || isEndDate
                 ? "bg-white text-second-dark"
                 : ""
-          } ${isInRange && isStartDate ? "rounded-l-full bg-[#c80151a6]" : "text-black"} ${
-            isInRange && isEndDate ? "rounded-r-full bg-[#c80151a6]" : ""
-          } ${isInRange && !isSingleSelect ? "w-full bg-[#c80151a6]" : "w-8 text-black"} `}
+          } ${isInRange && isStartDate ? "rounded-l-full" : "text-black"} ${
+            isInRange && isEndDate ? "rounded-r-full" : ""
+          } ${isInRange && !isSingleSelect ? "w-full" : "w-8"} `}
           key={index}
         >
           <span
-            className={`relative z-20 h-5 w-5 text-center leading-5 ${isInRange && isStartDate ? "text-white" : ""}`}
+            className={`relative z-20 h-5 w-5 text-center leading-5 ${isStartDate || isEndDate ? "text-white" : ""}`}
           >
             {day}
             {isSingleSelect && isStartDate && (
-              <span className="absolute inset-0 -z-10 aspect-square h-full rounded-full"></span>
+              <span className="absolute inset-0 -z-10 aspect-square h-full rounded-full bg-main"></span>
             )}
           </span>
           {/* 지출금액 표시할 곳 */}
@@ -148,7 +148,7 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
           {!isSingleSelect && (isStartDate || isEndDate) && (
             <div
               className={
-                "absolute z-10 aspect-square h-full rounded-full bg-transparent"
+                "absolute z-10 aspect-square h-full rounded-full bg-main"
               }
             />
           )}
