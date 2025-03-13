@@ -7,6 +7,7 @@ import { useLocation } from "react-router-dom";
 import useAddPayInfo from "../stores/addpayInfo";
 import { InputformatPrice, inputFormatPriceCheck } from "../utils/formatFunc";
 import useLocationInfo from "../stores/locationInfo";
+import { isElement } from "lodash";
 
 interface payInfo {
   id: number;
@@ -59,7 +60,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
           label="금액"
           type="price"
           value={
-            itemData
+            isEditMode
               ? inputFormatPriceCheck(itemData?.price || "")
               : inputFormatPriceCheck(addpayInfo.price) || ""
           }
@@ -96,7 +97,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
           label="날짜"
           type="date"
           placeholder="날짜를 입력하세요"
-          value={itemData ? itemData.date || "" : addpayInfo.date || ""}
+          value={isEditMode ? itemData?.date || "" : addpayInfo.date || ""}
           onChange={(value) => setAddPayInfo("date", value)}
         />
 

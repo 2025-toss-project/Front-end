@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import SelectCategory from "../components/SelectCategory";
-import { IconButton, SaveButton } from "../components/common/Buttons";
+import { SaveButton } from "../components/common/Buttons";
 import { useCategoryInfo } from "../stores/categoryInfo";
 import useAddPayInfo from "../stores/addpayInfo";
 import { api } from "../utils/api";
@@ -18,11 +18,9 @@ const PayDetailPage = () => {
   const [itemData, setItemData] = useState<any | null>(null);
   const { isOpen, setIsOpen } = useCategoryInfo();
   const { addpayInfo, resetAddPayInfo } = useAddPayInfo();
-  const { selectCategory } = useCategoryInfo();
+  const { selectCategory, setSelectCategory } = useCategoryInfo();
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
   const { spendingRecords, setSpendingData } = useSpendingInfo();
-  const { setSelectCategory } = useCategoryInfo();
-
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");
@@ -51,6 +49,10 @@ const PayDetailPage = () => {
       };
       fetchPayDetail();
     }
+    return () => {
+      resetAddPayInfo();
+      setSelectCategory("");
+    };
   }, [id]);
 
   if (loading) return <div>로딩 중...</div>;
@@ -69,7 +71,6 @@ const PayDetailPage = () => {
   const handleClickUpdate = async () => {
     console.log("update 이전 정보", spendingRecords);
     console.log("update 할 정보", addpayInfo);
-    //if (!isAddpayInfoComplete) return alert("모든 정보를 입력해주세요.");
 
     try {
       const res = await api.post("/consumption/update", {
