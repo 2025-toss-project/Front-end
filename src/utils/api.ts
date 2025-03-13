@@ -1,11 +1,11 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL,
+  baseURL: "/api",
 });
 
 export const apiWithoutAuth = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL,
+  baseURL: "/api",
 });
 
 api.interceptors.request.use(
@@ -33,4 +33,3 @@ api.interceptors.request.use(
   },
   (error) => Promise.reject(error),
 );
-
