@@ -115,31 +115,32 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
           record.month === selectedMonth &&
           record.day === day,
       );
+      // "bg-[#c80151]
 
       return (
         <div
           onClick={() => handleClickDate(currentDate)}
           className={`relative my-1 grid aspect-square h-9 w-9 place-items-center text-center text-xs font-medium ${
             isInRange
-              ? "bg-main text-white"
+              ? "bg-[#c80151a6] text-white"
               : isStartDate || isEndDate
                 ? "bg-white text-second-dark"
                 : ""
-          } ${isInRange && isStartDate ? "rounded-l-full" : ""} ${
-            isInRange && isEndDate ? "rounded-r-full" : ""
-          } ${isInRange && !isSingleSelect ? "w-full" : "w-8"}`}
+          } ${isInRange && isStartDate ? "rounded-l-full bg-[#c80151a6]" : "text-black"} ${
+            isInRange && isEndDate ? "rounded-r-full bg-[#c80151a6]" : ""
+          } ${isInRange && !isSingleSelect ? "w-full bg-[#c80151a6]" : "w-8 text-black"} `}
           key={index}
         >
           <span
-            className={`relative z-20 h-5 w-5 text-center leading-5 ${isStartDate || isEndDate ? "text-white" : ""}`}
+            className={`relative z-20 h-5 w-5 text-center leading-5 ${isInRange && isStartDate ? "text-white" : ""}`}
           >
             {day}
             {isSingleSelect && isStartDate && (
-              <span className="absolute inset-0 -z-10 aspect-square h-full rounded-full bg-main"></span>
+              <span className="absolute inset-0 -z-10 aspect-square h-full rounded-full"></span>
             )}
           </span>
           {/* 지출금액 표시할 곳 */}
-          {isSingleSelect && dayRecord && (
+          {dayRecord && (
             <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-xs text-red-500">
               {dayRecord.datePrice.toLocaleString()}
             </div>
@@ -147,7 +148,7 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
           {!isSingleSelect && (isStartDate || isEndDate) && (
             <div
               className={
-                "absolute z-10 aspect-square h-full rounded-full bg-main text-white"
+                "absolute z-10 aspect-square h-full rounded-full bg-transparent"
               }
             />
           )}
