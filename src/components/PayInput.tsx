@@ -7,6 +7,7 @@ import useAddPayInfo from "../stores/addpayInfo";
 import { InputformatPrice, inputFormatPriceCheck } from "../utils/formatFunc";
 import useLocationInfo from "../stores/locationInfo";
 import { isElement } from "lodash";
+import CustomDatePicker from "./common/CustomDatePicker";
 
 interface payInfo {
   id: number;
@@ -89,13 +90,35 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData, category }) => {
           onChange={(value) => setAddPayInfo("detail", value)}
         />
 
-        <InputDefault
+        {/* <InputDefault
           label="날짜"
           type="date"
           placeholder="날짜를 입력하세요"
           value={isEditMode ? itemData?.date || "" : addpayInfo.date || ""}
           onChange={(value) => setAddPayInfo("date", value)}
-        />
+        /> */}
+
+        <div className="flex items-center pb-3 pt-2">
+          <label className="w-20 border-b pb-3">날짜</label>
+          <CustomDatePicker
+            selectedDate={
+              isEditMode &&
+              itemData?.date &&
+              !isNaN(new Date(itemData.date).getTime())
+                ? new Date(itemData.date)
+                : addpayInfo.date && !isNaN(new Date(addpayInfo.date).getTime())
+                  ? new Date(addpayInfo.date)
+                  : null
+            }
+            onChange={(date) =>
+              setAddPayInfo(
+                "date",
+                date ? date.toISOString().split("T")[0] : "",
+              )
+            }
+            placeholder="날짜를 선택하세요"
+          />
+        </div>
 
         <InputDefault
           label="카테고리"
