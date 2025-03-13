@@ -45,6 +45,7 @@ const PayDetailPage = () => {
         } catch (error) {
           console.error(error);
         } finally {
+          resetAddPayInfo();
           setLoading(false);
         }
       };

@@ -5,6 +5,7 @@ interface LocationState {
   lng: number | null; //경도
   locationName: string;
   setLocationInfo: (name: string, lat: number, lng: number) => void;
+  resetLocationInfo: () => void;
 }
 
 export const useLocationInfo = create<LocationState>((set) => ({
@@ -12,6 +13,13 @@ export const useLocationInfo = create<LocationState>((set) => ({
   lat: null,
   lng: null,
   setLocationInfo: (name, lat, lng) => set({ locationName: name, lat, lng }),
+  resetLocationInfo: () => {
+    set({
+      locationName: "",
+      lat: 0,
+      lng: 0,
+    });
+  },
 }));
 
 export default useLocationInfo;
