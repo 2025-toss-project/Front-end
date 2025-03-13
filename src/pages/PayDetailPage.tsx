@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 
 import SelectCategory from "../components/SelectCategory";
-import { IconButton, SaveButton } from "../components/common/Buttons";
+import { SaveButton } from "../components/common/Buttons";
 import { useCategoryInfo } from "../stores/categoryInfo";
 import useAddPayInfo from "../stores/addpayInfo";
 import { api } from "../utils/api";
-import { usePlaceInfo } from "../stores/placeInfo";
 import { useLocation } from "react-router-dom";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
@@ -15,16 +14,48 @@ import PayInput from "../components/PayInput";
 import { formatDateToYMD } from "../utils/formatFunc";
 
 const PayDetailPage = () => {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [itemData, setItemData] = useState<any | null>(null);
   const { isOpen, setIsOpen } = useCategoryInfo();
   const { addpayInfo, resetAddPayInfo } = useAddPayInfo();
-  const { selectCategory } = useCategoryInfo();
-  const { selectPlace, placeInfo } = usePlaceInfo();
+  const { selectCategory, setSelectCategory } = useCategoryInfo();
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
-  const { spendingRecords } = useSpendingInfo();
-
+  const { spendingRecords, setSpendingData } = useSpendingInfo();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");
+
+  useEffect(() => {
+    if (id) {
+      const fetchPayDetail = async () => {
+        try {
+          setLoading(true);
+          const res = await api.get("/map/detail", {
+            params: { id: id },
+          });
+
+          // 기존 itemData 값과 addpayInfo 값 병합
+          setItemData((prevItemData: any) => ({
+            ...res.data.result,
+            locationName:
+              addpayInfo.locationName || res.data.result.locationName, // addpayInfo.locationName이 있으면 우선 적용
+          }));
+        } catch (error) {
+          console.error(error);
+        } finally {
+          resetAddPayInfo();
+          setLoading(false);
+        }
+      };
+      fetchPayDetail();
+    }
+    return () => {
+      resetAddPayInfo();
+      setSelectCategory("");
+    };
+  }, [id]);
+
+  if (loading) return <div>로딩 중...</div>;
 
   const isAddpayInfoComplete = Object.values(addpayInfo).every((value) => {
     if (typeof value === "object" && value !== null) {
@@ -38,8 +69,8 @@ const PayDetailPage = () => {
   });
 
   const handleClickUpdate = async () => {
-    console.log(addpayInfo);
-    if (!isAddpayInfoComplete) return alert("모든 정보를 입력해주세요.");
+    console.log("update 이전 정보", spendingRecords);
+    console.log("update 할 정보", addpayInfo);
 
     try {
       const res = await api.post("/consumption/update", {
@@ -47,19 +78,20 @@ const PayDetailPage = () => {
         price: Number(addpayInfo.price),
         detail: addpayInfo.detail,
         category: selectCategory,
-        lat: Number(placeInfo.lat),
-        lng: Number(placeInfo.lng),
-        locationName: selectPlace,
+        lat: Number(addpayInfo.lat),
+        lng: Number(addpayInfo.lng),
+        locationName: addpayInfo.locationName,
         date: addpayInfo.date,
       });
-      console.log(res.data);
+      console.log("update", res.data.result);
+      setSpendingData(res.data.result);
     } catch (error) {
       console.error(error);
     } finally {
       const formattedDate = formatDateToYMD(new Date(addpayInfo.date));
       moveToPage(`${PageUrls.PAY_RECODE}?refresh=${formattedDate}`);
       resetAddPayInfo();
-      console.log("addpay data remove", addpayInfo.date);
+      setSelectCategory("");
     }
   };
 
@@ -109,7 +141,11 @@ const PayDetailPage = () => {
         >
           <LucideX />
         </div>
-        <PayInput toggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
+        <PayInput
+          toggle={() => setIsOpen(!isOpen)}
+          isOpen={isOpen}
+          itemData={itemData}
+        />
         <SelectCategory classname={isOpen ? "block" : "hidden"} />
       </div>
       <div className="flex flex-row items-center gap-3">

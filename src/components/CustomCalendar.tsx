@@ -115,6 +115,7 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
           record.month === selectedMonth &&
           record.day === day,
       );
+      // "bg-[#c80151]
 
       return (
         <div
@@ -125,9 +126,9 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
               : isStartDate || isEndDate
                 ? "bg-white text-second-dark"
                 : ""
-          } ${isInRange && isStartDate ? "rounded-l-full" : ""} ${
+          } ${isInRange && isStartDate ? "rounded-l-full" : "text-black"} ${
             isInRange && isEndDate ? "rounded-r-full" : ""
-          }`}
+          } ${isInRange && !isSingleSelect ? "w-full" : "w-8"} `}
           key={index}
         >
           <span
@@ -139,7 +140,7 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
             )}
           </span>
           {/* 지출금액 표시할 곳 */}
-          {isSingleSelect && dayRecord && (
+          {dayRecord && (
             <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-xs text-red-500">
               {dayRecord.datePrice.toLocaleString()}
             </div>
@@ -147,7 +148,7 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
           {!isSingleSelect && (isStartDate || isEndDate) && (
             <div
               className={
-                "absolute z-10 aspect-square h-full rounded-full bg-main text-white"
+                "absolute z-10 aspect-square h-full rounded-full bg-main"
               }
             />
           )}

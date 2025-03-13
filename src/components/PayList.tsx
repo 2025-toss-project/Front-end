@@ -8,6 +8,7 @@ import { api } from "../utils/api";
 import { useLocation, useNavigate } from "react-router-dom";
 import { activeMonth, formatDateWithWeekday } from "../utils/formatFunc";
 import useCalendarInfo from "../stores/CalendarInfo";
+import useAddPayInfo from "../stores/addpayInfo";
 
 interface PayDayProps {
   data: any; // 필요한 타입으로 수정
@@ -23,19 +24,19 @@ const getIcon = (categoryText: string) => {
 const PayDay: React.FC<PayDayProps> = ({ data, onClick }) => {
   const categoryIcon = getIcon(data.category);
   return (
-    <div onClick={onClick} className="flex w-full flex-col">
+    <div onClick={onClick} className="flex flex-col w-full">
       <div className="flex flex-row items-center">
         {/* 카테고리 아이콘 */}
-        <div className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-second-lighter">
+        <div className="flex items-center justify-center flex-none w-10 h-10 rounded-full bg-second-lighter">
           {categoryIcon?.icon({ size: 24 })}
         </div>
         {/* 지출 내용 */}
-        <div className="flex max-w-44 flex-grow flex-col gap-1 p-3">
+        <div className="flex flex-col flex-grow gap-1 p-3 max-w-44">
           <p className="text-sm"> {data.details} </p>
-          <p className="text-xs text-second"> {data.point_name} </p>
+          <p className="text-xs text-second"> {data.locationName} </p>
         </div>
         {/* 지출 금액 */}
-        <p className="ml-auto text-right text-base font-medium text-main">
+        <p className="ml-auto text-base font-medium text-right text-main">
           {data.price.toLocaleString()}원
         </p>
       </div>
@@ -60,8 +61,9 @@ const PayList: React.FC<PayListProps> = ({
     ConsumptionInfoByDate[]
   >([]);
   const { moveToPage } = useMovePage();
-  const { setSpendingData } = useSpendingInfo();
+  const { setSpendingData, resetSpendingData } = useSpendingInfo();
   const { selectCategory, setSelectCategory } = useCategoryInfo();
+  const { addpayInfo } = useAddPayInfo();
   const { activeDate } = useCalendarInfo();
   const location = useLocation();
   const navigate = useNavigate();
@@ -93,6 +95,11 @@ const PayList: React.FC<PayListProps> = ({
         let effectiveStartDate = startDate || refresh;
         let effectiveEndDate = endDate || refresh;
 
+        if (!activeDate) {
+          console.warn("activeDate가 없어서 API 호출을 중단합니다.");
+          return;
+        }
+
         if (!effectiveStartDate || !effectiveEndDate) {
           console.warn("start, end, refresh 모두 없음 → 해당 월 전체 조회");
           const { startOfMonth, endOfMonth } = activeMonth(
@@ -110,6 +117,15 @@ const PayList: React.FC<PayListProps> = ({
               return;
             }
           }
+        }
+
+        if (
+          !refresh &&
+          effectiveStartDate === effectiveEndDate &&
+          !validDates.includes(effectiveStartDate)
+        ) {
+          console.warn("소비 기록이 없는 날짜 → API 호출 중단");
+          return;
         }
 
         const params = {
@@ -138,6 +154,7 @@ const PayList: React.FC<PayListProps> = ({
           );
 
         setFilteredRecords(filtered);
+        console.log("data", data);
       } catch (err) {
         console.error(err);
       } finally {
@@ -145,10 +162,10 @@ const PayList: React.FC<PayListProps> = ({
       }
     };
     ReadConsumption();
-  }, [startDate, endDate, refresh, selectCategory, activeDate]);
+  }, [startDate, endDate, refresh, selectCategory, activeDate, addpayInfo]);
 
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex flex-col w-full">
       {filteredRecords.length > 0 ? (
         filteredRecords.map((dayData) => (
           <div key={dayData.day} className="mb-5">
