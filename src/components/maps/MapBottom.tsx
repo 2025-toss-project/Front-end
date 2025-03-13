@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import IconMyLocation from "../../assets/IconMyLocation";
 import { LucidePlus } from "lucide-react";
 import { useMovePage } from "../../hooks/useMovePage";
@@ -8,6 +8,11 @@ import useMapInfo from "../../stores/mapInfo";
 import useClickOutside from "../../hooks/useClickOutside";
 import { DataProps } from "../../pages/MainPage";
 import PageUrls from "../../constants/PageUrls";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import "../../assets/css/carousel.css";
+import { findCategory } from "../../utils/findTypeOrCategory";
 
 const IconMoveMyLocation: React.FC<{ moveToCurrentLocation: () => void }> = ({
   moveToCurrentLocation,
@@ -35,27 +40,30 @@ const IconFastInputPay: React.FC = () => {
 
 const ShowDetailInfo: React.FC<{
   showBubbleRef: React.RefObject<HTMLDivElement>;
-  selectedData: DataProps;
-  categoryInfo: CategoryProps;
-}> = ({ showBubbleRef, selectedData, categoryInfo }) => {
+  selectedData?: any;
+  categoryInfo?: CategoryProps;
+  showBubble: boolean;
+}> = ({ showBubbleRef, selectedData, categoryInfo, showBubble }) => {
   const { moveToPage } = useMovePage();
   const { userSelect } = useMapInfo();
 
   const handleClickShowDetail = () => {
     if (userSelect.type === "나의 소비") {
-      moveToPage(`${PageUrls.PAY_DETAIL}?id=${selectedData.id}`);
+      moveToPage(`${PageUrls.PAY_DETAIL}?id=${selectedData?.details[0].id}`);
     }
   };
+  if (!selectedData || !showBubble) return null;
 
-  // TODO : 다른 사람 소비일 때, 바꿔줘야함
   return (
     <div
       ref={showBubbleRef}
       onClick={handleClickShowDetail}
-      className="flex flex-col gap-2 rounded-lg bg-white p-3 drop-shadow-10"
+      className="mb-2.5 flex flex-col gap-2 rounded-lg bg-white p-3 drop-shadow-10"
     >
       <div className="flex items-center justify-between">
-        {selectedData!.locationName}
+        {userSelect.type === "나의 소비"
+          ? selectedData?.details[0]?.locationName
+          : selectedData.locationName}
         <div
           className={`flex items-center gap-1 rounded-lg border px-1.5 py-1 ${categoryInfo?.bgColor} ${categoryInfo?.borderColor}`}
         >
@@ -63,8 +71,76 @@ const ShowDetailInfo: React.FC<{
           <div className="text-sm">{selectedData!.category}</div>
         </div>
       </div>
-      <div className="text-xs font-light">{selectedData!.details}</div>
-      <div className="text-right">{formatPrice(selectedData!.price)}원</div>
+      {userSelect.type === "나의 소비" && (
+        <div className="text-xs font-light">
+          {selectedData?.details[0]?.details}
+        </div>
+      )}
+      {userSelect.type === "나의 소비" ? (
+        <div className="text-right">
+          {formatPrice(selectedData?.details[0]?.price)}원
+        </div>
+      ) : (
+        <div className="text-xs">
+          <span className="font-medium text-main">
+            {selectedData?.ageGroup} {selectedData?.type}
+          </span>
+          은 여기서{" "}
+          <span className="font-medium text-main">
+            {formatPrice(selectedData.price)}원
+          </span>
+          을 썼어요!
+        </div>
+      )}
+    </div>
+  );
+};
+
+const Carousel: React.FC<{
+  showBubbleRef: React.RefObject<HTMLDivElement>;
+  selectedData?: any;
+  showBubble: boolean;
+}> = ({ showBubbleRef, selectedData, showBubble }) => {
+  const settings = {
+    infinite: false,
+    arrows: false,
+    slidesToShow: 1,
+    swipeToSlide: true,
+    centerMode: true,
+    centerPadding: "7%",
+  };
+  const { moveToPage } = useMovePage();
+
+  const handleClickShowDetail = (id: number) => {
+    moveToPage(`${PageUrls.PAY_DETAIL}?id=${id}`);
+  };
+
+  return (
+    <div ref={showBubbleRef}>
+      <Slider {...settings} className="w-screen max-w-[500px] -translate-x-6">
+        {selectedData.details.map((data: any) => {
+          const categoryInfo = findCategory(data.category);
+          return (
+            <div
+              key={data.id}
+              className="rounded-lg bg-white p-3 drop-shadow-10"
+              onClick={() => handleClickShowDetail(data.id)}
+            >
+              <div className="mb-2 flex items-center justify-between">
+                <div className="">{data.locationName}</div>
+                <div
+                  className={`flex items-center gap-1 rounded-lg border px-1.5 py-1 ${categoryInfo?.bgColor} ${categoryInfo?.borderColor}`}
+                >
+                  <div>{categoryInfo?.icon({ size: 16 })}</div>
+                  <div className="text-sm">{data.category}</div>
+                </div>
+              </div>
+              <div className="mb-2 text-xs font-light">{data.details}</div>
+              <div className="text-right">{formatPrice(data.price)}원</div>
+            </div>
+          );
+        })}
+      </Slider>
     </div>
   );
 };
@@ -86,6 +162,7 @@ const MapBottom: React.FC<{
       );
     }
   };
+
   return (
     <>
       <div className="z-10 flex flex-col gap-3">
@@ -93,11 +170,21 @@ const MapBottom: React.FC<{
           <IconMoveMyLocation moveToCurrentLocation={moveToCurrentLocation} />
           <IconFastInputPay />
         </div>
-        {showBubble && (
+
+        {showBubble &&
+        selectedData?.details &&
+        selectedData.details.length > 1 ? (
+          <Carousel
+            showBubbleRef={showBubbleRef}
+            selectedData={selectedData}
+            showBubble={showBubble}
+          />
+        ) : (
           <ShowDetailInfo
             showBubbleRef={showBubbleRef}
-            selectedData={selectedData!}
-            categoryInfo={categoryInfo!}
+            selectedData={selectedData}
+            categoryInfo={categoryInfo}
+            showBubble={showBubble}
           />
         )}
       </div>

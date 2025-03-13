@@ -7,6 +7,7 @@ import { findType } from "../../utils/findTypeOrCategory";
 import IconMyPay from "../../assets/payTypeIcons/IconMyPay";
 import useMapInfo from "../../stores/mapInfo";
 import { api } from "../../utils/api";
+import userStore from "../../stores/user";
 
 const Category: React.FC<CategoryProps> = ({ text, icon }) => {
   const { setUserSelect, userSelect } = useMapInfo();
@@ -85,17 +86,7 @@ const DropDown: React.FC<DropDownProps> = ({ isOpen, setIsOpen }) => {
 };
 
 const MyProperty = () => {
-  const [userInfo, setUserInfo] = useState({
-    nickname: "",
-    email: "",
-    type: "",
-    ageGroup: "",
-    home: {
-      lng: 0,
-      lat: 0,
-    },
-  });
-
+  const { userInfo, setUserInfo } = userStore();
   useEffect(() => {
     const getMyInfo = async () => {
       try {
