@@ -2,7 +2,6 @@ import React, { useDeferredValue, useEffect, useState } from "react";
 import InputDefault from "./common/InputDefault";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
-import { useCategoryInfo } from "../stores/categoryInfo";
 import { useLocation } from "react-router-dom";
 import useAddPayInfo from "../stores/addpayInfo";
 import { InputformatPrice, inputFormatPriceCheck } from "../utils/formatFunc";
@@ -23,13 +22,13 @@ interface payInfo {
 interface PayInputProps {
   toggle?: () => void;
   isOpen?: boolean;
+  category: string;
   itemData?: payInfo;
 }
 
-const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
+const PayInput: React.FC<PayInputProps> = ({ toggle, itemData, category }) => {
   const { moveToPage } = useMovePage();
   const { addpayInfo, setAddPayInfo, resetAddPayInfo } = useAddPayInfo();
-  const { selectCategory, setSelectCategory } = useCategoryInfo();
   const { locationName, lat, lng } = useLocationInfo();
 
   const location = useLocation();
@@ -39,17 +38,14 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
 
   useEffect(() => {
     if (itemData) {
-      console.log("addpay", addpayInfo);
-      console.log("itemData", itemData);
-      console.log("locationName", locationName);
-      // 부모에서 전달받은 데이터로 상태 초기화
+      // 수정 값 || 부모에서 전달받은 데이터로 상태 초기화
       setAddPayInfo("price", String(itemData.price));
       setAddPayInfo("detail", itemData.details);
       setAddPayInfo("date", itemData.date);
       setAddPayInfo("lat", String(lat) || String(itemData.lat));
       setAddPayInfo("lng", String(lng) || String(itemData.lng));
       setAddPayInfo("locationName", locationName || itemData.locationName);
-      setSelectCategory(itemData.category || "");
+      setAddPayInfo("category", category || itemData.category);
     }
   }, [itemData, locationName, lat, lng]);
 
@@ -104,7 +100,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
         <InputDefault
           label="카테고리"
           type="category"
-          value={isEditMode ? itemData?.category : selectCategory || ""}
+          value={category || itemData?.category || ""}
           placeholder="미선택"
           isReadOnly={true}
           onClick={toggle}

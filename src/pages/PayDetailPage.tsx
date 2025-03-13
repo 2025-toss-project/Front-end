@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 
 import SelectCategory from "../components/SelectCategory";
 import { SaveButton } from "../components/common/Buttons";
-import { useCategoryInfo } from "../stores/categoryInfo";
 import useAddPayInfo from "../stores/addpayInfo";
 import { api } from "../utils/api";
 import { useLocation } from "react-router-dom";
@@ -16,11 +15,11 @@ import { formatDateToYMD } from "../utils/formatFunc";
 const PayDetailPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [itemData, setItemData] = useState<any | null>(null);
-  const { isOpen, setIsOpen } = useCategoryInfo();
-  const { addpayInfo, resetAddPayInfo } = useAddPayInfo();
-  const { selectCategory, setSelectCategory } = useCategoryInfo();
+  const { addpayInfo, setAddPayInfo, resetAddPayInfo } = useAddPayInfo();
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
   const { spendingRecords, setSpendingData } = useSpendingInfo();
+  const [isOpen, setIsOpen] = useState(false); // 카테고리 선택 창 상태
+  const [category, setCategory] = useState("");
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");
@@ -51,7 +50,6 @@ const PayDetailPage = () => {
     }
     return () => {
       resetAddPayInfo();
-      //setSelectCategory("");
     };
   }, [id]);
 
@@ -69,6 +67,10 @@ const PayDetailPage = () => {
   });
 
   const handleClickUpdate = async () => {
+    if (!isAddpayInfoComplete) {
+      console.log("입력 값", addpayInfo);
+      return alert("모든 정보를 입력해주세요.");
+    }
     console.log("update 이전 정보", spendingRecords);
     console.log("update 할 정보", addpayInfo);
 
@@ -77,7 +79,7 @@ const PayDetailPage = () => {
         id: id,
         price: Number(addpayInfo.price),
         detail: addpayInfo.detail,
-        category: selectCategory,
+        category: addpayInfo.category,
         lat: Number(addpayInfo.lat),
         lng: Number(addpayInfo.lng),
         locationName: addpayInfo.locationName,
@@ -91,7 +93,6 @@ const PayDetailPage = () => {
       const formattedDate = formatDateToYMD(new Date(addpayInfo.date));
       moveToPage(`${PageUrls.PAY_RECODE}?refresh=${formattedDate}`);
       resetAddPayInfo();
-      setSelectCategory("");
     }
   };
 
@@ -132,6 +133,13 @@ const PayDetailPage = () => {
     }
   };
 
+  // 카테고리 선택 처리
+  const handleCategorySelect = (selectedCategory: string) => {
+    setCategory(selectedCategory);
+    //setAddPayInfo("category", selectedCategory);
+    setIsOpen(false); // 선택 후 닫기
+  };
+
   return (
     <div className="flex w-full flex-col">
       <div className="flex flex-col px-2">
@@ -142,11 +150,16 @@ const PayDetailPage = () => {
           <LucideX />
         </div>
         <PayInput
+          category={category}
           toggle={() => setIsOpen(!isOpen)}
           isOpen={isOpen}
           itemData={itemData}
         />
-        <SelectCategory classname={isOpen ? "block" : "hidden"} />
+        <SelectCategory
+          style={isOpen ? "block" : "hidden"}
+          closeCategory={() => setIsOpen(false)}
+          onSelectCategory={handleCategorySelect}
+        />
       </div>
       <div className="flex flex-row items-center gap-3">
         <SaveButton

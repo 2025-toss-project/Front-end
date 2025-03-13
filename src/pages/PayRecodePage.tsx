@@ -3,7 +3,6 @@ import CustomCalendar from "../components/CustomCalendar";
 import { DropButton } from "../components/common/Buttons";
 import PayList from "../components/PayList";
 import SelectCategory from "../components/SelectCategory";
-import { useCategoryInfo } from "../stores/categoryInfo";
 import { api } from "../utils/api";
 import useCalendarInfo, { calenderInfoDTOS } from "../stores/CalendarInfo";
 
@@ -12,10 +11,9 @@ const PayRecodePage = () => {
   const [validDates, setValidDates] = useState<string[]>([]); // 소비 데이터가 있는 날짜 저장
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-
-  const { selectCategory, setSelectCategory, isOpen, setIsOpen } =
-    useCategoryInfo();
   const { activeDate, setDayData } = useCalendarInfo();
+  const [category, setCategory] = useState<string>("");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   // 캘린더 변경(구간 변경)
   const handleDateChange = (startDate: string, endDate: string) => {
@@ -68,7 +66,7 @@ const PayRecodePage = () => {
       console.error(err);
     } finally {
       setLoading(false);
-      setSelectCategory("");
+      //setSelectCategory("");
     }
   }, [activeDate, setDayData]); // useCallback으로 불필요한 재생성 방지
 
@@ -77,20 +75,34 @@ const PayRecodePage = () => {
     fetchCalendar();
   }, [fetchCalendar]);
 
+  // 카테고리 선택 처리
+  const handleCategorySelect = (selectedCategory: string) => {
+    setCategory(selectedCategory);
+    //setAddPayInfo("category", selectedCategory);
+    setIsOpen(false); // 선택 후 닫기
+  };
+
   return (
-    <div className="flex flex-col w-full gap-2">
+    <div className="flex w-full flex-col gap-2">
       <CustomCalendar onDateChange={handleDateChange} />
-      <div className="flex flex-col w-full mt-5 bg-white rounded-lg">
+      <div className="mt-5 flex w-full flex-col rounded-lg bg-white">
         <DropButton
-          title={selectCategory || "전체 항목"}
+          title={category || "전체 항목"}
           toggle={() => setIsOpen(!isOpen)}
           isOpen={isOpen}
         />
-        <SelectCategory classname={isOpen ? "block" : "hidden"} />
+        {isOpen && (
+          <SelectCategory
+            style={isOpen ? "block" : "hidden"}
+            closeCategory={() => setIsOpen(false)}
+            onSelectCategory={handleCategorySelect}
+          />
+        )}
         <PayList
           startDate={startDate}
           endDate={endDate}
           validDates={validDates}
+          category={category}
         />
       </div>
     </div>
