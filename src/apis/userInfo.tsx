@@ -6,6 +6,7 @@ import { useState } from "react";
 export interface userInfoAd {
   lng: number;
   lat: number;
+  address: string;
 }
 
 // 유저 정보(서버 GET)
@@ -14,7 +15,7 @@ export interface userInfo {
   email: string;
   type: string;
   ageGroup: string;
-  home: userInfoAd | string;
+  home: userInfoAd;
 }
 
 // GET

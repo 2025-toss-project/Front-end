@@ -11,7 +11,6 @@ export const apiWithoutAuth = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
-    console.log("request i/c");
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -27,7 +26,6 @@ api.interceptors.request.use(
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
-    console.log("request interceptor 실행");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

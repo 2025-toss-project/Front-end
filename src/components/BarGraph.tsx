@@ -8,7 +8,7 @@ const BarGraph: React.FC<BarGraphProps> = ({ props, height = "h-2" }) => {
   const barColor = props >= 100 ? "bg-main" : "bg-marker-home";
 
   return (
-    <div className={`w-full ${height} rounded-full bg-second-light`}>
+    <div className={`w-full ${height} rounded-full bg-second-light overflow-hidden`}>
       <div
         className={`rounded-full ${barColor} ${height}`}
         style={{ width: `${limitedPercentage}%` }}

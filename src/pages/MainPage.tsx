@@ -16,8 +16,8 @@ const MyCurrentLocation: React.FC<{
       position={{ lat: location.lat, lng: location.lng }}
       zIndex={1}
     >
-      <div className="grid aspect-square w-8 animate-pulse place-items-center rounded-full bg-main bg-opacity-30"></div>
-      <div className="absolute left-1/2 top-1/2 aspect-square w-4 -translate-x-1/2 -translate-y-1/2 transform rounded-full border-2 border-white bg-main"></div>
+      <div className="grid w-8 rounded-full aspect-square animate-pulse place-items-center bg-main bg-opacity-30"></div>
+      <div className="absolute w-4 transform -translate-x-1/2 -translate-y-1/2 border-2 border-white rounded-full left-1/2 top-1/2 aspect-square bg-main"></div>
     </CustomOverlayMap>
   );
 };
@@ -91,7 +91,7 @@ const MainPage: React.FC = () => {
           />
         ))}
       </KakaoMap>
-      <div className="flex h-full w-full flex-col justify-between px-6 pb-5 pt-10">
+      <div className="flex flex-col justify-between w-full h-full px-6 pt-10 pb-5">
         <MapHeader />
         <MapBottom
           selectedData={selectedData}

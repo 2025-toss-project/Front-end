@@ -3,14 +3,42 @@ import Header from "../components/common/Header";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
 import useSignupInfo from "../stores/signupInfo";
+import { useLocation } from "react-router-dom";
+import userStore from "../stores/user";
 
 const SearchLocation = () => {
-  const { moveToPage } = useMovePage();
+  const { moveToBack, moveToMyPage } = useMovePage();
   const { setSignupInfo } = useSignupInfo();
+  const { setUserInfo } = userStore();
+  const location = useLocation();
 
   const getCoordinates = async (address: string) => {
     const API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY;
     const url = `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURIComponent(address)}`;
+
+    //   try {
+    //     const response = await fetch(url, {
+    //       headers: { Authorization: `KakaoAK ${API_KEY}` },
+    //     });
+    //     const data = await response.json();
+
+    //     if (data.documents.length > 0) {
+    //       const { x, y } = data.documents[0];
+    //       // 회원가입 일 때
+    //       if(location.state.prevPage === "mypage"){
+    //         setUserInfo
+    //       } else{
+    //       setSignupInfo("location", address);
+    //       setSignupInfo("home", { lat: parseFloat(y), lng: parseFloat(x) });
+    //       }
+    //       console.log("lat : ", y, "lng : ", x);
+    //     } else {
+    //       console.error("주소를 찾을 수 없습니다.");
+    //     }
+    //   } catch (error) {
+    //     console.error("좌표 변환 오류:", error);
+    //   }
+    // };
 
     try {
       const response = await fetch(url, {
@@ -18,11 +46,20 @@ const SearchLocation = () => {
       });
       const data = await response.json();
 
-      if (data.documents.length > 0) {
+      if (data.documents && data.documents.length > 0) {
         const { x, y } = data.documents[0];
-        setSignupInfo("location", address);
-        setSignupInfo("home", { lat: parseFloat(y), lng: parseFloat(x) });
-        console.log("lat : ", y, "lng : ", x);
+        if (location.state && location.state.prevPage === "mypage") {
+          // 업데이트할 때 선택된 주소(address)를 명시적으로 넣어 최신화합니다.
+          const currentUserInfo = userStore.getState().userInfo;
+          setUserInfo({
+            ...currentUserInfo,
+            home: { lat: parseFloat(y), lng: parseFloat(x), address: address },
+          });
+        } else {
+          setSignupInfo("location", address);
+          setSignupInfo("home", { lat: parseFloat(y), lng: parseFloat(x) });
+        }
+        console.log("lat:", y, "lng:", x, "address:", address);
       } else {
         console.error("주소를 찾을 수 없습니다.");
       }
@@ -32,12 +69,15 @@ const SearchLocation = () => {
   };
 
   const onComplete = async (data: any) => {
+    console.log("선택된 주소:", data.address);
     await getCoordinates(data.address);
-    moveToPage(PageUrls.SIGNUP);
+    if (location.state && location.state.prevPage === "mypage") {
+      moveToMyPage(PageUrls.MY_PAGE);
+    }
   };
 
   return (
-    <div className="flex h-full w-full flex-col">
+    <div className="flex flex-col w-full h-full">
       <Header />
       <DaumPostcodeEmbed style={{ height: "100%" }} onComplete={onComplete} />
     </div>
