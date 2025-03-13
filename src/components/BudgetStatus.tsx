@@ -1,6 +1,5 @@
 import React from "react";
 import HalfCircleGauge from "./HalfCircleGauge";
-import HalfDoughnutChart from "./charts/HalfDoughnutChart";
 
 interface BudgetStatusProps {
   totalBudget: number;

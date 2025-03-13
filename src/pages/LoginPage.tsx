@@ -61,7 +61,6 @@ const LoginAndSignUp: React.FC<{
         password: loginInfo.password,
       });
 
-      console.log(res.data);
       localStorage.setItem("accessToken", res.data.accessToken);
       localStorage.setItem("refreshToken", res.data.refreshToken);
 
