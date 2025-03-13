@@ -16,14 +16,16 @@ import PayDetailPage from "./pages/PayDetailPage";
 import MapPinPage from "./pages/SearchPlaceMapPage";
 import PageUrls from "./constants/PageUrls";
 import NavBarLayout from "./layouts/NavBarLayout";
-import { use, useEffect } from "react";
 import PrivateRoute from "./routers/PrivateRoute";
+import ErrorPage from "./pages/ErrorPage";
 
 const App: React.FC = () => {
   return (
     <Routes>
       <Route path={PageUrls.LOGIN} element={<LoginPage />} />
       <Route path={PageUrls.SEARCH_LOCATION} element={<SearchLocation />} />
+      <Route path={"/error"} element={<ErrorPage />} />
+      <Route path="*" element={<Navigate to="/error" replace />} />
       {/* Header + Navbar */}
       <Route element={<MainLayout />}>
         <Route element={<PrivateRoute />}>
