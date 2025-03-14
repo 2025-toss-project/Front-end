@@ -12,7 +12,7 @@ import { isElement } from "lodash";
 interface payInfo {
   id: number;
   category: string;
-  details: string;
+  detail: string;
   locationName: string;
   lat: number;
   lng: number;
@@ -39,12 +39,9 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
 
   useEffect(() => {
     if (itemData) {
-      console.log("addpay", addpayInfo);
-      console.log("itemData", itemData);
-      console.log("locationName", locationName);
       // 부모에서 전달받은 데이터로 상태 초기화
       setAddPayInfo("price", String(itemData.price));
-      setAddPayInfo("detail", itemData.details);
+      setAddPayInfo("detail", itemData.detail);
       setAddPayInfo("date", itemData.date);
       setAddPayInfo("lat", String(lat) || String(itemData.lat));
       setAddPayInfo("lng", String(lng) || String(itemData.lng));
@@ -89,7 +86,11 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
         <InputDefault
           label="내용"
           placeholder="지출내용을 입력하세요"
-          value={isEditMode ? itemData?.details || "" : addpayInfo.detail || ""}
+          value={
+            isEditMode
+              ? itemData?.detail || ""
+              : addpayInfo.detail || "내용없음"
+          }
           onChange={(value) => setAddPayInfo("detail", value)}
         />
 

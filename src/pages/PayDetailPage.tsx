@@ -35,10 +35,12 @@ const PayDetailPage = () => {
           });
 
           // 기존 itemData 값과 addpayInfo 값 병합
-          setItemData((prevItemData: any) => ({
+          setItemData(() => ({
             ...res.data.result,
             locationName:
-              addpayInfo.locationName || res.data.result.locationName, // addpayInfo.locationName이 있으면 우선 적용
+              addpayInfo.locationName || res.data.result.locationName,
+            lat: addpayInfo.lat || res.data.result.lat,
+            lng: addpayInfo.lng || res.data.result.lng, // addpayInfo.locationName이 있으면 우선 적용
           }));
         } catch (error) {
           console.error(error);
@@ -70,18 +72,18 @@ const PayDetailPage = () => {
 
   const handleClickUpdate = async () => {
     console.log("update 이전 정보", spendingRecords);
-    console.log("update 할 정보", addpayInfo);
+    console.log("update 할 정보", itemData);
 
     try {
       const res = await api.post("/consumption/update", {
         id: id,
-        price: Number(addpayInfo.price),
-        detail: addpayInfo.detail,
+        price: Number(itemData.price),
+        details: itemData.detail,
         category: selectCategory,
-        lat: Number(addpayInfo.lat),
-        lng: Number(addpayInfo.lng),
-        locationName: addpayInfo.locationName,
-        date: addpayInfo.date,
+        lat: Number(itemData.lat),
+        lng: Number(itemData.lng),
+        locationName: itemData.locationName,
+        date: itemData.date,
       });
       console.log("update", res.data.result);
       setSpendingData(res.data.result);
@@ -90,7 +92,7 @@ const PayDetailPage = () => {
     } finally {
       const formattedDate = formatDateToYMD(new Date(addpayInfo.date));
       moveToPage(`${PageUrls.PAY_RECODE}?refresh=${formattedDate}`);
-      resetAddPayInfo();
+      //resetAddPayInfo();
       setSelectCategory("");
     }
   };
