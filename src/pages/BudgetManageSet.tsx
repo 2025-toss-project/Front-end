@@ -118,11 +118,12 @@ const BudgetManageSet: React.FC = () => {
   useEffect(() => {
     const getBudgetData = async () => {
       try {
+        setLoading(true);
+         
         // api 연동시
         const response = await fetchBudgetInfo(); // ✅ API 호출
         const data: BudgetInfo = response.result; // ✅ data.result 사용
-        setLoading(true);
-
+       
         setTotalId(data.totalId ?? 0);
         setTotalBudget(data.totalBudget ?? 0);
         setCategoryBudgets(
@@ -143,6 +144,7 @@ const BudgetManageSet: React.FC = () => {
     getBudgetData();
   }, []);
 
+  
   // 클릭 시 POST API 호출 후 navigate("/budget")로 전환하는 함수 추가
   const saveAndPost = async () => {
     try {
@@ -162,14 +164,6 @@ const BudgetManageSet: React.FC = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center">
-        <Loading />
-      </div>
-    );
-  }
-
   const handleCategoryBudgetChange = (category: string, newPrice: number) => {
     setCategoryBudgets((prev) =>
       prev.map((item) => {
@@ -186,6 +180,14 @@ const BudgetManageSet: React.FC = () => {
   const remain = totalBudget - used;
   const isOverBudget = remain < 0;
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+  
   return (
     <div className="flex h-full w-full flex-col bg-second-bg">
       <div className="flex h-full flex-col bg-[#f8f8f8] py-5">

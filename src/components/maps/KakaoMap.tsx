@@ -4,6 +4,7 @@ import { Map } from "react-kakao-maps-sdk";
 import { api } from "../../utils/api";
 
 import { debounce } from "lodash";
+import Loading from "../loading";
 
 const KakaoMap: React.FC<{
   children: React.ReactNode;
@@ -163,7 +164,7 @@ const KakaoMap: React.FC<{
 
   return myLocation.lat === 0 && myLocation.lng === 0 ? (
     <div className="absolute inset-0 z-[100] grid h-screen w-screen place-items-center bg-black/20">
-      Loading...
+    <Loading/>
     </div>
   ) : (
     <Map

@@ -9,6 +9,7 @@ import { formatPrice } from "../utils/formatFunc";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
 import { findCategory } from "../utils/findTypeOrCategory";
+import Loading from "../components/loading";
 
 export interface AnalyticsData {
   category: string;
@@ -43,7 +44,9 @@ const MonthPayBox: React.FC<{ monthPay: number; restBudget: number }> = ({
       </div>
       <div className="py-2.5">
         <BarGraph
-          props={Math.abs(Math.floor((monthPay / restBudget) * 100))}
+          props={Math.abs(
+            Math.floor((monthPay / (restBudget + monthPay)) * 100),
+          )}
           height="h-5"
         />
       </div>
@@ -73,26 +76,25 @@ const PrevMonthPayBox: React.FC<{
     if (!data || !data.analyicsInfoDTOS) return 0;
     return data.analyicsInfoDTOS.reduce(
       (sum: number, item: any) => sum + (item.price || 0),
-      0
+      0,
     );
   };
 
   const monthTotal = sumItem(monthPay);
   const prevTotal = sumItem(prevPay);
   const diff = monthTotal - prevTotal; // 양수이면 지난 달보다 더 쓴 경우
-  
-  useEffect(() => {
-  }, [monthPay, prevPay]);
+
+  useEffect(() => {}, [monthPay, prevPay]);
   return (
     <BoxWrapper>
       <div>지난 달보다</div>
       <div className="flex items-center justify-between">
         <div className="text-xl font-medium text-main">
-        {formatPrice(Math.abs(diff))} 원
+          {formatPrice(Math.abs(diff))} 원
         </div>
         <div>{diff > 0 ? "더 쓰고 있어요" : "덜 쓰고 있어요"}</div>
       </div>
-      <div className="py-5">
+      <div className="py-2">
         <BarChart
           monthPay={monthPay.analyicsInfoDTOS}
           prevPay={prevPay.analyicsInfoDTOS}
@@ -180,20 +182,28 @@ const StatisticPage = () => {
     budgetInfoList: [],
   });
   const [analyticsData, setAnalyticsData] = useState();
+  const [loading, setLoading] = useState<boolean>(true);
   const getAnalytics = async () => {
     try {
+      setLoading(true);
+      
       const res = await api.get("/analytics");
       return res.data.result;
     } catch (error) {
       return Promise.reject(error);
+    } finally {
+      setLoading(false);
     }
   };
   const getBudget = async () => {
     try {
+    
       const res = await api.get("/budget");
       return res.data.result;
     } catch (error) {
       return Promise.reject(error);
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -218,6 +228,14 @@ const StatisticPage = () => {
     getInfos();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+  
   return (
     <div className="flex flex-col w-full gap-5 py-6">
       <MonthPayBox
