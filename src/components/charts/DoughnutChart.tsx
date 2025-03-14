@@ -17,6 +17,7 @@ const DoughnutChart: React.FC<{ categoryPay?: any }> = ({ categoryPay }) => {
           (category: AnalyticsData) =>
             findCategory(category.category)?.border || "#ccc",
         ),
+
         borderWidth: labels.length < 2 ? 0 : 2,
       },
     ],

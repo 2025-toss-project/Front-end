@@ -35,13 +35,15 @@ const ProfileUpdate: React.FC<{ userData: userInfo }> = ({ userData }) => {
 
     try {
       await updateProfileInfo(originUserInfo);
-      setMessage("프로필 업데이트 완료");
+      setMessage("프로필 업데이트 완료1");
       setUserInfo(originUserInfo);
+      setTimeout(() => {
+        setMessage("");
+      }, 1000);
     } catch (error) {
-      console.error(error);
       setMessage("프로필 업데이트 실패!");
     } finally {
-      setLoading(false); // API 요청 완료 후 로딩 상태 false로 설정
+      setLoading(false); 
     }
   };
 

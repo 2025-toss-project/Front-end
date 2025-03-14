@@ -4,7 +4,7 @@ import { findType } from "../utils/findTypeOrCategory";
 import ProfileUpdate from "../apis/ProfileUpdate";
 import TypeTab from "../components/TypeTab";
 import userStore from "../stores/user";
-
+import Loading from "../components/loading";
 interface TypeTabProps {
   userData: UserInfoType | null;
 }
@@ -13,23 +13,41 @@ const MyPage: React.FC = () => {
   const { userInfo, setUserInfo } = userStore();
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const tabs = ["프로필", "성향"];
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const getUserData = async () => {
       try {
+        setLoading(true);
         const { result } = await fetchUserInfo();
         setUserInfo(result);
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false); // 데이터 로딩 후 loading 상태를 false로 변경
       }
     };
-    if (!userInfo.email) getUserData();
+  
+    if (!userInfo.email) {
+      getUserData();
+    } else {
+      setLoading(false);
+    }
   }, []);
-
+  
+  
   const userType = findType(userInfo?.type ?? "");
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex w-full flex-col gap-2">
+    <div className="flex flex-col w-full gap-2">
       <div className="flex items-center gap-2 py-4">
         {userType?.icon && <div>{userType.icon({ size: 48 })}</div>}
         <div>
