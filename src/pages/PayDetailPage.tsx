@@ -35,15 +35,16 @@ const PayDetailPage = () => {
           });
 
           // 기존 itemData 값과 addpayInfo 값 병합
-          setItemData((prevItemData: any) => ({
+          setItemData(() => ({
             ...res.data.result,
             locationName:
-              addpayInfo.locationName || res.data.result.locationName, // addpayInfo.locationName이 있으면 우선 적용
+              addpayInfo.locationName || res.data.result.locationName,
+            lat: addpayInfo.lat || res.data.result.lat,
+            lng: addpayInfo.lng || res.data.result.lng, // addpayInfo.locationName이 있으면 우선 적용
           }));
         } catch (error) {
           console.error(error);
         } finally {
-          resetAddPayInfo();
           setLoading(false);
         }
       };
@@ -90,7 +91,7 @@ const PayDetailPage = () => {
     } finally {
       const formattedDate = formatDateToYMD(new Date(addpayInfo.date));
       moveToPage(`${PageUrls.PAY_RECODE}?refresh=${formattedDate}`);
-      resetAddPayInfo();
+      //resetAddPayInfo();
       setSelectCategory("");
     }
   };

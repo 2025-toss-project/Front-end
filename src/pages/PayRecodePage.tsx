@@ -78,9 +78,9 @@ const PayRecodePage = () => {
   }, [fetchCalendar]);
 
   return (
-    <div className="flex flex-col w-full gap-2">
+    <div className="flex w-full flex-col gap-2">
       <CustomCalendar onDateChange={handleDateChange} />
-      <div className="flex flex-col w-full mt-5 bg-white rounded-lg">
+      <div className="mt-5 flex w-full flex-col rounded-lg bg-white">
         <DropButton
           title={selectCategory || "전체 항목"}
           toggle={() => setIsOpen(!isOpen)}
