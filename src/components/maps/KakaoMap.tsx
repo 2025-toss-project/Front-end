@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import useMapInfo from "../../stores/mapInfo";
 import { Map } from "react-kakao-maps-sdk";
 import { api } from "../../utils/api";
-
 import { debounce } from "lodash";
 import Loading from "../loading";
 
@@ -164,7 +163,7 @@ const KakaoMap: React.FC<{
 
   return myLocation.lat === 0 && myLocation.lng === 0 ? (
     <div className="absolute inset-0 z-[100] grid h-screen w-screen place-items-center bg-black/20">
-    <Loading/>
+      <Loading />
     </div>
   ) : (
     <Map
@@ -174,7 +173,6 @@ const KakaoMap: React.FC<{
         height: "100%",
         position: "absolute",
       }}
-      // onCreate={() => getPayList()}
       isPanto={true}
       level={level}
       ref={mapRef}
