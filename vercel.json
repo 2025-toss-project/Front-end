@@ -1,11 +1,11 @@
 {
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "http://3.37.61.199:8080/$1"
+      "src": "^/api/.*",
+      "dest": "http://3.37.61.199:8080"
     },
     {
-      "src": "^(?!/api/).*",
+      "src": "^(?!/api/|/assets/|/static/).*",
       "dest": "/",
       "status": 200
     }
