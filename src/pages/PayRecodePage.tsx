@@ -92,13 +92,7 @@ const PayRecodePage = () => {
           toggle={() => setIsOpen(!isOpen)}
           isOpen={isOpen}
         />
-        {isOpen && (
-          <SelectCategory
-            style={isOpen ? "block" : "hidden"}
-            closeCategory={() => setIsOpen(false)}
-            onSelectCategory={handleCategorySelect}
-          />
-        )}
+        {isOpen && <SelectCategory classname={isOpen ? "block" : "hidden"} />}
         <PayList
           startDate={startDate}
           endDate={endDate}

@@ -10,7 +10,7 @@ interface AddPayInfoStore {
 const useAddPayInfo = create<AddPayInfoStore>((set) => ({
   addpayInfo: {
     price: 0,
-    detail: "",
+    details: "",
     date: "",
     locationName: "",
     lat: 0,
@@ -30,7 +30,7 @@ const useAddPayInfo = create<AddPayInfoStore>((set) => ({
     set({
       addpayInfo: {
         price: 0,
-        detail: "",
+        details: "",
         date: "",
         locationName: "",
         lat: 0,

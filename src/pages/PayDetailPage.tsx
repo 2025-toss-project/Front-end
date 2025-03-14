@@ -81,7 +81,7 @@ const PayDetailPage = () => {
       const res = await api.post("/consumption/update", {
         id: id,
         price: Number(addpayInfo.price),
-        detail: addpayInfo.detail,
+        details: addpayInfo.details,
         category: selectCategory,
         lat: Number(addpayInfo.lat),
         lng: Number(addpayInfo.lng),

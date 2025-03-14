@@ -12,7 +12,7 @@ import { add } from "lodash";
 
 export interface addpayInfo {
   price: number;
-  detail: string;
+  details: string;
   date: string;
   locationName: string;
   lat: number;
@@ -47,7 +47,7 @@ const AddPayPage = () => {
       console.log(addpayInfo, "seok");
       const res = await api.post("/consumption/create", {
         price: Number(addpayInfo.price),
-        detail: addpayInfo.detail,
+        details: addpayInfo.details,
         category: selectCategory,
         lat: Number(addpayInfo.lat),
         lng: Number(addpayInfo.lng),

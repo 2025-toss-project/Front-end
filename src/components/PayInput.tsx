@@ -42,7 +42,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
     if (itemData) {
       // 부모에서 전달받은 데이터로 상태 초기화
       setAddPayInfo("price", String(itemData.price));
-      setAddPayInfo("detail", itemData.details);
+      setAddPayInfo("details", itemData.details);
       setAddPayInfo("date", itemData.date);
       setAddPayInfo("lat", String(itemData.lat));
       setAddPayInfo("lng", String(itemData.lng));
@@ -89,8 +89,8 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
         <InputDefault
           label="내용"
           placeholder="지출내용을 입력하세요"
-          value={itemData?.details || addpayInfo.detail || ""}
-          onChange={(value) => setAddPayInfo("detail", value)}
+          value={itemData?.details || addpayInfo.details || ""}
+          onChange={(value) => setAddPayInfo("details", value)}
         />
 
         <InputDefault

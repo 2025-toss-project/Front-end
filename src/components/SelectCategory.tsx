@@ -36,7 +36,11 @@ const SelectCategory: React.FC<CategoryProps> = ({ classname }) => {
       ))}
 
       {/* 전체항목 선택 (이걸 클릭하면 리스트가 펼쳐짐) */}
-      <CategorySection icon={<IconAll />} name="전체항목" toggle={toggleAll} />
+      <CategorySection
+        icon={<IconAll />}
+        name="전체항목"
+        toggle={() => handleCategorySelect(selectCategory)}
+      />
     </div>
   );
 };
