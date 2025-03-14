@@ -1,7 +1,6 @@
 import { LucideCircleX, LucideSearch } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import SearchPlace from "../components/SearchPlace";
-import { useLocation } from "react-router-dom";
 
 const SearchHeader = ({ place, setPlace, onSearch }: any) => {
   // 검색한 값 place에 저장
@@ -20,16 +19,28 @@ const SearchHeader = ({ place, setPlace, onSearch }: any) => {
 
   return (
     <div className="flex h-14 w-full flex-row items-center justify-between bg-second-lighter px-2 py-4">
-      <LucideSearch size={22} color="#333" />
-      <form onSubmit={handleSearch} className="flex flex-1 pl-5">
+      <form
+        onSubmit={handleSearch}
+        className="relative flex w-full flex-1 px-6"
+      >
+        <LucideSearch
+          size={22}
+          color="#333"
+          style={{ position: "absolute", left: "0px", zIndex: 2 }}
+        />
         <input
           type="text"
-          className="flex flex-1 bg-second-lighter focus:outline-none"
+          className="flex flex-1 bg-second-lighter px-2 focus:outline-none"
           value={place}
           onChange={handleInputChange}
         />
+        <LucideCircleX
+          size={24}
+          color="#aaa"
+          style={{ position: "absolute", right: "0px", zIndex: 2 }}
+          onClick={() => setPlace("")}
+        />
       </form>
-      <LucideCircleX size={24} color="#aaa" onClick={() => setPlace("")} />
     </div>
   );
 };
