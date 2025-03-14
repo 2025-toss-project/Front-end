@@ -3,7 +3,10 @@ import { signupInfo } from "../pages/SignupPage";
 
 interface SignupInfoStore {
   signupInfo: signupInfo;
-  setSignupInfo: (key: keyof signupInfo, value: string | object) => void;
+  setSignupInfo: (
+    key: keyof signupInfo,
+    value: string | object | boolean,
+  ) => void;
   resetSignupInfo: () => void;
 }
 
@@ -14,13 +17,14 @@ const useSignupInfo = create<SignupInfoStore>((set) => ({
     password: "",
     checkPassword: "",
     nickname: "",
-    location: "",
     home: {
       lat: 0,
       lng: 0,
+      address: "",
     },
     ageGroup: "",
     type: "",
+    isMailCertified: false,
   },
 
   setSignupInfo: (key, value) => {
@@ -39,13 +43,14 @@ const useSignupInfo = create<SignupInfoStore>((set) => ({
         password: "",
         checkPassword: "",
         nickname: "",
-        location: "",
         home: {
           lat: 0,
           lng: 0,
+          address: "",
         },
         ageGroup: "",
         type: "",
+        isMailCertified: false,
       },
     });
   },

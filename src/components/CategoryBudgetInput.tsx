@@ -11,7 +11,9 @@ const CategoryBudgetInput: React.FC<CategoryBudgetInputProps> = ({
   budgetPrice,
   onChangeCategoryBudget,
 }) => {
-  const [rawValue, setRawValue] = useState<string>(budgetPrice.toLocaleString());
+  const [rawValue, setRawValue] = useState<string>(
+    budgetPrice.toLocaleString(),
+  );
   const inputRef = useRef<HTMLInputElement>(null); // input 요소 참조
 
   useEffect(() => {
@@ -19,16 +21,16 @@ const CategoryBudgetInput: React.FC<CategoryBudgetInputProps> = ({
   }, [budgetPrice]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const onlyNums = e.target.value.replace(/\D/g, "");
+    let onlyNums = e.target.value.replace(/\D/g, "");
 
-    if (onlyNums === "") {
-      setRawValue("0");
-      onChangeCategoryBudget(category, 0);
+    if (onlyNums !== "") {
+      onlyNums = String(parseInt(onlyNums, 10)); // 앞의 0 제거
     } else {
-      setRawValue(onlyNums);
-      const parsed = parseInt(onlyNums, 10);
-      onChangeCategoryBudget(category, isNaN(parsed) ? 0 : parsed);
+      onlyNums = "0";
     }
+
+    setRawValue(onlyNums);
+    onChangeCategoryBudget(category, parseInt(onlyNums, 10));
   };
 
   const handleBlur = () => {

@@ -13,12 +13,16 @@ const Header: React.FC<HeaderProps> = ({
   rightIcon = <div className="h-6 w-6" />,
 }) => {
   const { moveToBack } = useMovePage();
-  const { title, pageColor } = usePageUpdate();
+  const { title, pageColor, backButton } = usePageUpdate();
   return (
     <header
       className={`sticky inset-0 z-50 flex h-16 w-full items-center justify-between px-3 ${pageColor}`}
     >
-      <div onClick={moveToBack}>{leftIcon}</div>
+      {backButton ? (
+        <div onClick={moveToBack}>{leftIcon}</div>
+      ) : (
+        <div>{rightIcon}</div>
+      )}
       <p className="text-base font-medium">{title}</p>
       {rightIcon}
     </header>
