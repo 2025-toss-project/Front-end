@@ -6,6 +6,7 @@ const usePageUpdate = () => {
   const location = useLocation();
   const [pageColor, setPageColor] = useState<string>("bg-white");
   const [title, setTitle] = useState<string>("PayRode");
+  const [backButton, setBackButton] = useState<boolean>(false);
 
   useEffect(() => {
     // 페이지 색상
@@ -52,9 +53,22 @@ const usePageUpdate = () => {
       default:
         setTitle("PayRode");
     }
+
+    // 뒤로가기 버튼
+    switch (location.pathname) {
+      case PageUrls.ADD_PAY:
+      case PageUrls.SEARCH_PLACE:
+      case PageUrls.SEARCH_PLACE_MAP:
+      case PageUrls.BUDGET_SET:
+        setBackButton(true);
+        break;
+      default:
+        setBackButton(false);
+        break;
+    }
   }, [location.pathname]);
 
-  return { pageColor, title };
+  return { pageColor, title, backButton };
 };
 
 export default usePageUpdate;
