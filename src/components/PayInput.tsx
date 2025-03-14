@@ -2,13 +2,12 @@ import React, { useDeferredValue, useEffect, useState } from "react";
 import InputDefault from "./common/InputDefault";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
+import { useCategoryInfo } from "../stores/categoryInfo";
 import { useLocation } from "react-router-dom";
 import useAddPayInfo from "../stores/addpayInfo";
 import { InputformatPrice, inputFormatPriceCheck } from "../utils/formatFunc";
 import useLocationInfo from "../stores/locationInfo";
 import { isElement } from "lodash";
-import CustomDatePicker from "./common/CustomDatePicker";
-import { useCategoryInfo } from "../stores/categoryInfo";
 
 interface payInfo {
   id: number;
@@ -24,15 +23,14 @@ interface payInfo {
 interface PayInputProps {
   toggle?: () => void;
   isOpen?: boolean;
-  category: string;
   itemData?: payInfo;
 }
 
-const PayInput: React.FC<PayInputProps> = ({ toggle, itemData, category }) => {
+const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
   const { moveToPage } = useMovePage();
   const { addpayInfo, setAddPayInfo, resetAddPayInfo } = useAddPayInfo();
+  const { selectCategory, setSelectCategory } = useCategoryInfo();
   const { locationName, lat, lng } = useLocationInfo();
-  const { setSelectCategory, selectCategory } = useCategoryInfo();
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -52,6 +50,8 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData, category }) => {
       setSelectCategory(itemData.category || "");
     }
   }, [locationName, lat, lng]);
+
+  console.log("update payinfo", addpayInfo);
 
   return (
     <div>
@@ -93,40 +93,18 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData, category }) => {
           onChange={(value) => setAddPayInfo("detail", value)}
         />
 
-        {/* <InputDefault
+        <InputDefault
           label="날짜"
           type="date"
           placeholder="날짜를 입력하세요"
           value={isEditMode ? itemData?.date || "" : addpayInfo.date || ""}
           onChange={(value) => setAddPayInfo("date", value)}
-        /> */}
-
-        <div className="flex items-center pb-3 pt-2">
-          <label className="w-20 border-b pb-3">날짜</label>
-          <CustomDatePicker
-            selectedDate={
-              isEditMode &&
-              itemData?.date &&
-              !isNaN(new Date(itemData.date).getTime())
-                ? new Date(itemData.date)
-                : addpayInfo.date && !isNaN(new Date(addpayInfo.date).getTime())
-                  ? new Date(addpayInfo.date)
-                  : null
-            }
-            onChange={(date) =>
-              setAddPayInfo(
-                "date",
-                date ? date.toISOString().split("T")[0] : "",
-              )
-            }
-            placeholder="날짜를 선택하세요"
-          />
-        </div>
+        />
 
         <InputDefault
           label="카테고리"
           type="category"
-          value={category || itemData?.category || ""}
+          value={selectCategory || itemData?.category || ""}
           placeholder="미선택"
           isReadOnly={true}
           onClick={toggle}
