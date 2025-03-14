@@ -1,48 +1,12 @@
-import React, {
-  useState,
-  useEffect,
-  Component,
-  ErrorInfo,
-  ReactNode,
-} from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { categoryList } from "../constants/category";
 import BarGraph from "../components/BarGraph";
 import { fetchBudgetInfo, BudgetInfo } from "../apis/BudgetInfo";
 import CategoryBudgetInput from "../components/CategoryBudgetInput";
-import BudgetUpdate, { updateBudgetInfo } from "../apis/BudgetUpdate";
+import { updateBudgetInfo } from "../apis/BudgetUpdate";
 import Loading from "../components/loading";
-
-// --- 에러 바운더리 ---
-interface ErrorBoundaryProps {
-  children: ReactNode;
-}
-
-interface ErrorBoundaryState {
-  hasError: boolean;
-}
-
-class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(_: Error): ErrorBoundaryState {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("Uncaught error:", error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <h1>Something went wrong.</h1>;
-    }
-    return this.props.children;
-  }
-}
+import { SaveButton } from "../components/common/Buttons";
 
 // --- 타입 정의 ---
 interface CategoryBudget {
@@ -64,14 +28,14 @@ const MonthlyBudgetSet: React.FC<{
   };
 
   return (
-    <div className="p-4 mb-4 bg-white rounded-2xl drop-shadow-10">
+    <div className="mb-4 rounded-2xl bg-white p-4 drop-shadow-10">
       <div className="text-lg font-bold">
         한달에 소비할 <span className="text-marker-home">예산</span>
       </div>
       <div className="text-sm">대략 한 달에 얼마를 사용할지 예상해보세요.</div>
       <div className="text-sm">예산은 언제든지 수정이 가능해요.</div>
       <div className="flex flex-col items-center pt-9">
-        <div className="flex flex-row items-center text-2xl font-bold border-b-2 border-b-second text-main focus-within:border-b-main">
+        <div className="flex flex-row items-center border-b-2 border-b-second text-2xl font-bold text-main focus-within:border-b-main">
           <input
             maxLength={11}
             type="text"
@@ -80,7 +44,7 @@ const MonthlyBudgetSet: React.FC<{
             style={{
               width: `${(monthBudget === 0 ? 1 : monthBudget.toString().length) + 1}ch`,
             }}
-            className="text-2xl font-bold text-right bg-white border-0 focus:outline-none"
+            className="border-0 bg-white text-right text-2xl font-bold focus:outline-none"
           />
           <span className="ml-1 text-2xl font-bold text-main">원</span>
         </div>
@@ -110,14 +74,14 @@ const MonthlyBudgetBar: React.FC<{
         const percentage = totalBudget ? (budgetPrice / totalBudget) * 100 : 0;
 
         return (
-          <div key={i} className="flex pt-2 gap-y-3">
+          <div key={i} className="flex gap-y-3 pt-2">
             <div className="w-full rounded-2xl bg-[#f8f8f8] px-2 py-2.5">
-              <div className="flex items-center justify-between pb-2 mb-1">
+              <div className="mb-1 flex items-center justify-between pb-2">
                 <div className="z-20 flex items-center space-x-2">
                   <div className="flex rounded-full bg-second-lighter">
                     {cat.icon({})}
                   </div>
-                  <div className="text-sm font-medium shrink-0">{cat.text}</div>
+                  <div className="shrink-0 text-sm font-medium">{cat.text}</div>
                   <div className="text-xs font-medium">
                     {totalBudget ? Math.round(percentage) : 0}%
                   </div>
@@ -221,16 +185,15 @@ const BudgetManageSet: React.FC = () => {
   const used = categoryBudgets.reduce((sum, c) => sum + c.budgetPrice, 0);
   const remain = totalBudget - used;
   const isOverBudget = remain < 0;
-  const isBudgetDepleted = remain == 0;
 
   return (
-    <div className="flex flex-col w-full h-full bg-second-bg">
+    <div className="flex h-full w-full flex-col bg-second-bg">
       <div className="flex h-full flex-col bg-[#f8f8f8] py-5">
         <MonthlyBudgetSet
           monthBudget={totalBudget}
           setMonthBudget={setTotalBudget}
         />
-        <div className="p-4 mt-4 text-lg bg-white rounded-2xl drop-shadow-10">
+        <div className="mt-4 rounded-2xl bg-white p-4 text-lg drop-shadow-10">
           <div className="font-bold">
             카테고리별 소비{" "}
             <span className="font-bold text-marker-home">예산</span>
@@ -243,13 +206,11 @@ const BudgetManageSet: React.FC = () => {
             <div className="flex flex-col items-end pb-2.5 pt-2.5 text-base">
               남은예산
               <div
-                className={`font-bold text-marker-home ${isOverBudget ? "text-main" : isBudgetDepleted ? "text-black" : ""}`}
+                className={`font-bold ${isOverBudget ? "text-main" : "text-marker-home"}`}
               >
                 {isOverBudget
                   ? `${Math.abs(remain).toLocaleString()}원 초과`
-                  : isBudgetDepleted
-                    ? "소진"
-                    : `${remain.toLocaleString()}원 남음`}
+                  : `${remain.toLocaleString()}원 남음`}
               </div>
             </div>
           </div>
@@ -260,26 +221,10 @@ const BudgetManageSet: React.FC = () => {
           />
         </div>
       </div>
-      <div onClick={saveAndPost} className="cursor-pointer">
-        <BudgetUpdate
-          totalId={totalId}
-          totalBudget={totalBudget}
-          categoryBudgets={categoryBudgets}
-        />
-      </div>
+
+      <SaveButton title="저장하기" onClick={saveAndPost} />
     </div>
   );
 };
 
-// --- App 컴포넌트 (라우터 중첩 제거) ---
-const App: React.FC = () => {
-  return (
-    <ErrorBoundary>
-      <Routes>
-        <Route path="/" element={<BudgetManageSet />} />
-      </Routes>
-    </ErrorBoundary>
-  );
-};
-
-export default App;
+export default BudgetManageSet;
