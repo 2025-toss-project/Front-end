@@ -17,41 +17,39 @@ const TypeTab: React.FC<{ userData: userInfo }> = ({ userData }) => {
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [originUserInfo, setOriginUserInfo] = useState(userData);
-  const { setUserInfo } = userStore()
-  
-  
+  const { setUserInfo } = userStore();
+
   const handleSave = async () => {
     setLoading(true);
     setMessage("");
-  
+
     // merge된 객체를 만들어 전송
     const updatedData = {
       ...originUserInfo,
       type: selectedPayType,
     };
-  
+
     const handleSave = async () => {
       setMessage("프로필 저장중...");
-    }
-
-  try {
-        await updateProfileInfo(originUserInfo);
-        setMessage("프로필 업데이트 완료!");
-        setUserInfo(originUserInfo);
-        setTimeout(() => {
-          setMessage("");
-        }, 1000);
-      } catch (error) {
-        setMessage("프로필 업데이트 실패!");
-      } finally {
-        setLoading(false); 
-      }
     };
 
-    
+    try {
+      await updateProfileInfo(updatedData);
+      setMessage("프로필 업데이트 완료!");
+      setUserInfo(updatedData);
+      setTimeout(() => {
+        setMessage("");
+      }, 1000);
+    } catch (error) {
+      setMessage("프로필 업데이트 실패!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
-      <div className="flex flex-col gap-5 px-3 border rounded-lg border-second-light py-7">
+      <div className="flex flex-col gap-5 rounded-lg border border-second-light px-3 py-7">
         <div className="flex flex-col">
           <div className="text-lg font-bold">소비성향 설정</div>
           <div className="text-sm">
@@ -63,13 +61,13 @@ const TypeTab: React.FC<{ userData: userInfo }> = ({ userData }) => {
           setSelectedPayType={setSelectedPayType}
         />
       </div>
-       <SaveButton title="프로필 저장" onClick={handleSave} />
-      
-            {message && (
-              <div className="relative flex justify-center text-sm bottom-5">
-                {message}
-              </div>
-            )}
+      <SaveButton title="프로필 저장" onClick={handleSave} />
+
+      {message && (
+        <div className="relative bottom-5 flex justify-center text-sm">
+          {message}
+        </div>
+      )}
     </>
   );
 };
