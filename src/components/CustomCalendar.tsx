@@ -141,7 +141,7 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({
           </span>
           {/* 지출금액 표시할 곳 */}
           {dayRecord && (
-            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-xs text-red-500">
+            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[10px] text-red-500">
               {dayRecord.datePrice.toLocaleString()}
             </div>
           )}

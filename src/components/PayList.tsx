@@ -3,13 +3,13 @@ import { categoryList } from "../constants/category";
 import useSpendingInfo, { ConsumptionInfoByDate } from "../stores/spendingInfo";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
-import { useCategoryInfo } from "../stores/categoryInfo";
 import { api } from "../utils/api";
 import { useLocation, useNavigate } from "react-router-dom";
 import { activeMonth, formatDateWithWeekday } from "../utils/formatFunc";
 import useCalendarInfo from "../stores/CalendarInfo";
 import useAddPayInfo from "../stores/addpayInfo";
 import Loading from "./loading";
+import { useCategoryInfo } from "../stores/categoryInfo";
 
 interface PayDayProps {
   data: any; // 필요한 타입으로 수정
@@ -63,9 +63,9 @@ const PayList: React.FC<PayListProps> = ({
   >([]);
   const { moveToPage } = useMovePage();
   const { setSpendingData, resetSpendingData } = useSpendingInfo();
-  const { selectCategory, setSelectCategory } = useCategoryInfo();
   const { addpayInfo } = useAddPayInfo();
   const { activeDate } = useCalendarInfo();
+  const { selectCategory, setSelectCategory } = useCategoryInfo();
   const location = useLocation();
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
@@ -123,7 +123,7 @@ const PayList: React.FC<PayListProps> = ({
         }
 
         const params = {
-          category: selectCategory,
+          category: selectCategory || "",
           startDate: effectiveStartDate,
           endDate: effectiveEndDate,
         };
