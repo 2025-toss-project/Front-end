@@ -16,8 +16,6 @@ const BudgetManage = () => {
     const getBudgetData = async () => {
       try {
         setLoading(true);
-        // 로딩 화면 테스트
-        // await new Promise((resolve) => setTimeout(resolve, 3000));
 
         const data = await fetchBudgetInfo(); // ✅ API 호출
         setBudgetData(data.result);
