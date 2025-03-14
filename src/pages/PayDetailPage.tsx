@@ -154,16 +154,11 @@ const PayDetailPage = () => {
           <LucideX />
         </div>
         <PayInput
-          category={selectCategory}
           toggle={() => setIsOpen(!isOpen)}
           isOpen={isOpen}
           itemData={itemData}
         />
-        <SelectCategory
-          style={isOpen ? "block" : "hidden"}
-          closeCategory={() => setIsOpen(false)}
-          onSelectCategory={handleCategorySelect}
-        />
+        <SelectCategory classname={isOpen ? "block" : "hidden"} />
       </div>
       <div className="flex flex-row items-center gap-3">
         <SaveButton

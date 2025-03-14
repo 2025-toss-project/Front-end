@@ -7,8 +7,8 @@ import useAddPayInfo from "../stores/addpayInfo";
 import PageUrls from "../constants/PageUrls";
 import { useMovePage } from "../hooks/useMovePage";
 import PayInput from "../components/PayInput";
+import { useCategoryInfo } from "../stores/categoryInfo";
 import { add } from "lodash";
-import { useLocation } from "react-router-dom";
 
 export interface addpayInfo {
   price: number;
@@ -20,18 +20,10 @@ export interface addpayInfo {
 }
 
 const AddPayPage = () => {
-  const { addpayInfo, setAddPayInfo, resetAddPayInfo } = useAddPayInfo();
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
-  const [isOpen, setIsOpen] = useState(false); // 카테고리 선택 창 상태
-  const [category, setCategory] = useState("");
-
-  const location = useLocation();
-
-  useEffect(() => {
-    return () => {
-      resetAddPayInfo(); // 언마운트될 때 초기화
-    };
-  }, [location]);
+  const { isOpen, setIsOpen } = useCategoryInfo();
+  const { addpayInfo, resetAddPayInfo } = useAddPayInfo();
+  const { selectCategory, setSelectCategory } = useCategoryInfo();
 
   const isAddpayInfoComplete = Object.values(addpayInfo).every((value) => {
     if (typeof value === "object" && value !== null) {
@@ -47,15 +39,16 @@ const AddPayPage = () => {
   // API 호출
   const handleClickSubmit = async () => {
     if (!isAddpayInfoComplete) {
-      console.warn("모든 정보를 입력해주세요.");
-      return;
+      console.log("입력 값", addpayInfo);
+      return alert("모든 정보를 입력해주세요.");
     }
 
     try {
+      console.log(addpayInfo, "seok");
       const res = await api.post("/consumption/create", {
         price: Number(addpayInfo.price),
         detail: addpayInfo.detail,
-        category: SelectCategory,
+        category: selectCategory,
         lat: Number(addpayInfo.lat),
         lng: Number(addpayInfo.lng),
         locationName: addpayInfo.locationName,
@@ -67,30 +60,16 @@ const AddPayPage = () => {
     } finally {
       moveToPage(`${PageUrls.PAY_RECODE}?refresh=${addpayInfo.date}`);
       resetAddPayInfo();
+      //setSelectCategory("");
     }
-  };
-
-  // 카테고리 선택 처리
-  const handleCategorySelect = (selectedCategory: string) => {
-    setCategory(selectedCategory);
-    //setAddPayInfo("category", selectedCategory);
-    setIsOpen(false); // 선택 후 닫기
   };
 
   return (
     <div className="flex w-full flex-col">
       {/* 클릭 시 카테고리 리스트 열기  */}
-      <PayInput
-        category={category}
-        toggle={() => setIsOpen(!isOpen)}
-        isOpen={isOpen}
-      />
+      <PayInput toggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
       {/* 카테고리 선택 리스트 */}
-      <SelectCategory
-        style={isOpen ? "block" : "hidden"}
-        closeCategory={() => setIsOpen(false)}
-        onSelectCategory={handleCategorySelect}
-      />
+      <SelectCategory classname={isOpen ? "block" : "hidden"} />
       {/* 인풋 값 create */}
       <SaveButton title="저장하기" onClick={handleClickSubmit} />
     </div>
