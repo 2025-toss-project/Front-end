@@ -35,7 +35,7 @@ const ProfileUpdate: React.FC<{ userData: userInfo }> = ({ userData }) => {
 
     try {
       await updateProfileInfo(originUserInfo);
-      setMessage("프로필 업데이트 완료1");
+      setMessage("프로필 업데이트 완료");
       setUserInfo(originUserInfo);
       setTimeout(() => {
         setMessage("");
