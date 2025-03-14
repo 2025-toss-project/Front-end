@@ -38,20 +38,20 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
   const isEditMode = Boolean(id); // 수정 모드 여부 판단
 
   useEffect(() => {
-    console.log("itemData", itemData);
     if (itemData) {
+      console.log("addpay", addpayInfo);
+      console.log("itemData", itemData);
+      console.log("locationName", locationName);
       // 부모에서 전달받은 데이터로 상태 초기화
       setAddPayInfo("price", String(itemData.price));
       setAddPayInfo("detail", itemData.details);
       setAddPayInfo("date", itemData.date);
-      setAddPayInfo("lat", String(itemData.lat));
-      setAddPayInfo("lng", String(itemData.lng));
-      setAddPayInfo("locationName", itemData.locationName);
+      setAddPayInfo("lat", String(lat) || String(itemData.lat));
+      setAddPayInfo("lng", String(lng) || String(itemData.lng));
+      setAddPayInfo("locationName", locationName || itemData.locationName);
       setSelectCategory(itemData.category || "");
     }
-  }, [locationName, lat, lng]);
-
-  console.log("update payinfo", addpayInfo);
+  }, [itemData, locationName, lat, lng]);
 
   return (
     <div>
@@ -89,7 +89,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
         <InputDefault
           label="내용"
           placeholder="지출내용을 입력하세요"
-          value={itemData?.details || addpayInfo.detail || ""}
+          value={isEditMode ? itemData?.details || "" : addpayInfo.detail || ""}
           onChange={(value) => setAddPayInfo("detail", value)}
         />
 
