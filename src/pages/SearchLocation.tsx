@@ -32,8 +32,11 @@ const SearchLocation = () => {
             home: { lat: parseFloat(y), lng: parseFloat(x), address: address },
           });
         } else if (location.state && location.state.prevPage === "signup") {
-          setSignupInfo("location", address);
-          setSignupInfo("home", { lat: parseFloat(y), lng: parseFloat(x) });
+          setSignupInfo("home", {
+            lat: parseFloat(y),
+            lng: parseFloat(x),
+            address: address,
+          });
         }
       } else {
         console.error("주소를 찾을 수 없습니다.");

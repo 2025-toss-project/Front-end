@@ -7,6 +7,7 @@ import { apiWithoutAuth } from "../utils/api";
 import PageUrls from "../constants/PageUrls";
 import { useMovePage } from "../hooks/useMovePage";
 import useSignupInfo from "../stores/signupInfo";
+import axios from "axios";
 
 export interface signupInfo {
   email: string;
@@ -14,10 +15,10 @@ export interface signupInfo {
   password: string;
   checkPassword: string;
   nickname: string;
-  location: string;
   home: {
     lat: number;
     lng: number;
+    address: string;
   };
   ageGroup: string;
   type: string;
@@ -240,7 +241,7 @@ const SignupInputs: React.FC<{
         onClick={() =>
           moveToPage(PageUrls.SEARCH_LOCATION, { prevPage: "signup" })
         }
-        value={signupInfo.location}
+        value={signupInfo.home.address}
         isReadOnly
       />
     </>
@@ -290,11 +291,16 @@ const SignupPage = () => {
         home: {
           lng: signupInfo.home.lng,
           lat: signupInfo.home.lat,
+          address: signupInfo.home.address,
         },
         ageGroup: signupInfo.ageGroup,
       });
+      alert("회원가입이 완료되었습니다!");
       moveToPage(PageUrls.LOGIN);
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        alert(error.response?.data.message);
+      }
       console.error(error);
     } finally {
       resetSignupInfo();
