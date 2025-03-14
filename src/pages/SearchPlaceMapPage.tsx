@@ -73,12 +73,6 @@ const Map = () => {
       // 지도 위치 변경
       mapRef.current.setCenter(position);
 
-      // 마커 추가
-      const marker = new window.kakao.maps.Marker({
-        position,
-      });
-      marker.setMap(mapRef.current);
-
       console.log("선택된 장소:", locationName);
       console.log("좌표:", lng, lat);
 
@@ -86,11 +80,6 @@ const Map = () => {
       setAddPayInfo("locationName", locationName); // 장소 이름 저장
       setAddPayInfo("lat", String(lat)); // 위도 저장
       setAddPayInfo("lng", String(lng)); // 경도 저장
-
-      // 기존 마커 제거
-      if (markerRef.current) {
-        markerRef.current.setMap(null);
-      }
 
       // React 컴포넌트 렌더링할 DOM 요소 생성
       const container = document.createElement("div");

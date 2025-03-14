@@ -60,6 +60,8 @@ const usePageUpdate = () => {
       case PageUrls.SEARCH_PLACE:
       case PageUrls.SEARCH_PLACE_MAP:
       case PageUrls.BUDGET_SET:
+      case PageUrls.SIGNUP:
+      case PageUrls.SEARCH_LOCATION:
         setBackButton(true);
         break;
       default:
