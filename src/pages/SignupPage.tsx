@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import InputDefault from "../components/common/InputDefault";
 import PayTypeSection from "../components/sections/PayTypeSection";
 import { SaveButton } from "../components/common/Buttons";
@@ -21,20 +21,18 @@ export interface signupInfo {
   };
   ageGroup: string;
   type: string;
+  isMailCertified: boolean;
 }
 
 // 회원가입 입력, 인증 로직
 const SignupInputs: React.FC<{
   signupInfo: signupInfo;
   handleInputChange: (key: keyof signupInfo, value: string) => void;
-  setIsMailCertified: (value: boolean) => void;
-  isMailCertified: boolean;
-}> = ({
-  signupInfo,
-  handleInputChange,
-  setIsMailCertified,
-  isMailCertified,
-}) => {
+  setSignupInfo: (
+    key: keyof signupInfo,
+    value: string | object | boolean,
+  ) => void;
+}> = ({ signupInfo, handleInputChange, setSignupInfo }) => {
   const { moveToPage } = useMovePage();
   const [emailError, setEmailError] = React.useState("");
   const [countdown, setCountdown] = React.useState(0);
@@ -73,7 +71,7 @@ const SignupInputs: React.FC<{
   }, [countdown]);
 
   const handleClickCetifyMail = async () => {
-    if (isMailCertified) return; // 이미 인증 완료된 경우 클릭 불가
+    if (signupInfo.isMailCertified) return; // 이미 인증 완료된 경우 클릭 불가
     if (!signupInfo.email) {
       alert("이메일을 입력해주세요.");
       return;
@@ -100,9 +98,9 @@ const SignupInputs: React.FC<{
   };
 
   const handleClickCheckMail = async () => {
-    if (isMailCertified) return;
+    if (signupInfo.isMailCertified || !signupInfo.email) return;
     if (!signupInfo.email || !signupInfo.code) {
-      alert("이메일과 인증번호를 입력해주세요.");
+      alert("인증번호를 입력해주세요.");
       return;
     }
     try {
@@ -111,7 +109,7 @@ const SignupInputs: React.FC<{
         code: signupInfo.code,
       });
       if (res.data.result.check) {
-        setIsMailCertified(true);
+        setSignupInfo("isMailCertified", true);
         alert("인증되었습니다.");
       } else {
         alert("인증에 실패했습니다.");
@@ -125,23 +123,25 @@ const SignupInputs: React.FC<{
   return (
     <>
       <div className="relative gap-y-0">
-        <div className="flex items-end w-full gap-3">
+        <div className="flex w-full items-end gap-3">
           <InputDefault
-            style={`w-full ${isMailCertified ? "pointer-events-none" : ""}`}
+            style={`w-full ${signupInfo.isMailCertified ? "pointer-events-none" : ""}`}
             placeholder="이메일"
             type="email"
             value={signupInfo.email}
             onChange={(value) => {
-              if (isMailCertified) return;
+              if (signupInfo.isMailCertified) return;
               handleInputChange("email", value);
               setEmailError("");
             }}
-            isReadOnly={isMailCertified}
+            isReadOnly={signupInfo.isMailCertified}
           />
           <div
-            onClick={isMailCertified ? undefined : handleClickCetifyMail}
+            onClick={
+              signupInfo.isMailCertified ? undefined : handleClickCetifyMail
+            }
             className={`mb-5 grid h-10 w-16 shrink-0 place-items-center gap-3 rounded-lg font-medium text-white ${
-              isMailCertified
+              signupInfo.isMailCertified
                 ? "cursor-not-allowed bg-second-light"
                 : isEmailValid
                   ? "bg-main"
@@ -153,28 +153,34 @@ const SignupInputs: React.FC<{
         </div>
         {emailError && <div className="text-xs text-main">{emailError}</div>}
         {isSendingEmail && (
-          <div className="absolute bottom-0 text-xs">이메일 전송중...</div>
+          <div className="absolute bottom-0 text-xs text-main">
+            이메일 전송중...
+          </div>
         )}
       </div>
       <div className="relative gap-y-0">
-        <div className="flex items-end w-full gap-3">
+        <div className="flex w-full items-end gap-3">
           <InputDefault
             placeholder="이메일 인증번호"
-            style={`w-full ${isMailCertified ? "pointer-events-none" : ""}`}
+            style={`w-full ${signupInfo.isMailCertified ? "pointer-events-none" : ""}`}
             type="number"
             value={signupInfo.code}
             onChange={(value) => {
-              if (isMailCertified) return;
+              if (signupInfo.isMailCertified) return;
               handleInputChange("code", value);
             }}
-            isReadOnly={isMailCertified}
+            isReadOnly={signupInfo.isMailCertified}
           />
           <div
-            onClick={isMailCertified ? undefined : handleClickCheckMail}
+            onClick={
+              signupInfo.isMailCertified ? undefined : handleClickCheckMail
+            }
             className={`mb-5 grid h-10 w-16 shrink-0 ${
-              isMailCertified ? "cursor-not-allowed" : "cursor-pointer"
+              signupInfo.isMailCertified
+                ? "cursor-not-allowed"
+                : "cursor-pointer"
             } place-items-center gap-3 rounded-lg font-medium text-white ${
-              isMailCertified
+              signupInfo.isMailCertified
                 ? "bg-second-light"
                 : countdown > 0
                   ? "bg-main"
@@ -184,16 +190,10 @@ const SignupInputs: React.FC<{
             확인
           </div>
         </div>
-        {isMailCertified ? (
+        {!signupInfo.isMailCertified && countdown > 0 && (
           <div className="absolute bottom-0 text-xs text-main">
-            이메일 인증 완료
+            남은 시간 : {formatTime(countdown)}
           </div>
-        ) : (
-          countdown > 0 && (
-            <div className="absolute bottom-0 text-xs text-main">
-              남은 시간 : {formatTime(countdown)}
-            </div>
-          )
         )}
       </div>
 
@@ -225,7 +225,7 @@ const SignupInputs: React.FC<{
         />
         {signupInfo.checkPassword && password !== checkPassword && (
           <div className="absolute bottom-0 text-xs text-main">
-            비밀번호가 올바르지 않습니다.
+            비밀번호가 일치하지 않습니다.
           </div>
         )}
       </div>
@@ -237,7 +237,9 @@ const SignupInputs: React.FC<{
       <InputDefault
         placeholder="집 정보 입력"
         type="location"
-        onClick={() => moveToPage(PageUrls.SEARCH_LOCATION)}
+        onClick={() =>
+          moveToPage(PageUrls.SEARCH_LOCATION, { prevPage: "signup" })
+        }
         value={signupInfo.location}
         isReadOnly
       />
@@ -268,8 +270,6 @@ const SignupPage = () => {
   const { signupInfo, setSignupInfo, resetSignupInfo } = useSignupInfo();
   const { moveToPage } = useMovePage();
 
-  const [isMailCertified, setIsMailCertified] = React.useState(false);
-
   const isSignupInfoComplete = Object.values(signupInfo).every((value) => {
     if (typeof value === "object" && value !== null) {
       return Object.values(value).every((nestedValue) => nestedValue !== 0);
@@ -278,7 +278,7 @@ const SignupPage = () => {
   });
 
   const handleClickSignup = async () => {
-    if (!isMailCertified) return alert("메일 인증을 해주세요.");
+    if (!signupInfo.isMailCertified) return alert("메일 인증을 해주세요.");
     if (!isSignupInfoComplete) return alert("모든 정보를 입력해주세요.");
 
     try {
@@ -310,8 +310,7 @@ const SignupPage = () => {
         <SignupInputs
           signupInfo={signupInfo}
           handleInputChange={setSignupInfo}
-          setIsMailCertified={setIsMailCertified}
-          isMailCertified={isMailCertified}
+          setSignupInfo={setSignupInfo}
         />
         <SelectAgeGroup
           selectedAge={signupInfo.ageGroup}
