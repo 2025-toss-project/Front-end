@@ -45,7 +45,6 @@ const PayDetailPage = () => {
         } catch (error) {
           console.error(error);
         } finally {
-          resetAddPayInfo();
           setLoading(false);
         }
       };
@@ -72,18 +71,18 @@ const PayDetailPage = () => {
 
   const handleClickUpdate = async () => {
     console.log("update 이전 정보", spendingRecords);
-    console.log("update 할 정보", itemData);
+    console.log("update 할 정보", addpayInfo);
 
     try {
       const res = await api.post("/consumption/update", {
         id: id,
-        price: Number(itemData.price),
-        details: itemData.detail,
+        price: Number(addpayInfo.price),
+        detail: addpayInfo.detail,
         category: selectCategory,
-        lat: Number(itemData.lat),
-        lng: Number(itemData.lng),
-        locationName: itemData.locationName,
-        date: itemData.date,
+        lat: Number(addpayInfo.lat),
+        lng: Number(addpayInfo.lng),
+        locationName: addpayInfo.locationName,
+        date: addpayInfo.date,
       });
       console.log("update", res.data.result);
       setSpendingData(res.data.result);

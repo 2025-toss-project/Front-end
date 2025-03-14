@@ -12,7 +12,7 @@ import { isElement } from "lodash";
 interface payInfo {
   id: number;
   category: string;
-  detail: string;
+  details: string;
   locationName: string;
   lat: number;
   lng: number;
@@ -38,17 +38,20 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
   const isEditMode = Boolean(id); // 수정 모드 여부 판단
 
   useEffect(() => {
+    console.log("itemData", itemData);
     if (itemData) {
       // 부모에서 전달받은 데이터로 상태 초기화
       setAddPayInfo("price", String(itemData.price));
-      setAddPayInfo("detail", itemData.detail);
+      setAddPayInfo("detail", itemData.details);
       setAddPayInfo("date", itemData.date);
-      setAddPayInfo("lat", String(lat) || String(itemData.lat));
-      setAddPayInfo("lng", String(lng) || String(itemData.lng));
-      setAddPayInfo("locationName", locationName || itemData.locationName);
+      setAddPayInfo("lat", String(itemData.lat));
+      setAddPayInfo("lng", String(itemData.lng));
+      setAddPayInfo("locationName", itemData.locationName);
       setSelectCategory(itemData.category || "");
     }
-  }, [itemData, locationName, lat, lng]);
+  }, [locationName, lat, lng]);
+
+  console.log("update payinfo", addpayInfo);
 
   return (
     <div>
@@ -86,11 +89,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
         <InputDefault
           label="내용"
           placeholder="지출내용을 입력하세요"
-          value={
-            isEditMode
-              ? itemData?.detail || ""
-              : addpayInfo.detail || "내용없음"
-          }
+          value={itemData?.details || addpayInfo.detail || ""}
           onChange={(value) => setAddPayInfo("detail", value)}
         />
 

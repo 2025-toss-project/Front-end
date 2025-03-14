@@ -47,7 +47,7 @@ const AddPayPage = () => {
       console.log(addpayInfo, "seok");
       const res = await api.post("/consumption/create", {
         price: Number(addpayInfo.price),
-        details: addpayInfo.detail,
+        detail: addpayInfo.detail,
         category: selectCategory,
         lat: Number(addpayInfo.lat),
         lng: Number(addpayInfo.lng),
