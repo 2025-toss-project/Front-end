@@ -77,6 +77,18 @@ const PayList: React.FC<PayListProps> = ({
     moveToPage(`${PageUrls.PAY_DETAIL}?id=${id}`);
   };
 
+  const [listStartDate, setListStartDate] = useState<string>(startDate);
+  const [listEndDate, setListEndDate] = useState<string>(endDate);
+
+  // useEffect(() => {
+  //   if (activeDate) {
+  //     // activeDate가 변경되면 해당 월의 시작일과 종료일로 설정
+  //     const { startOfMonth, endOfMonth } = activeMonth(new Date(activeDate));
+  //     setListStartDate(startOfMonth);
+  //     setListEndDate(endOfMonth);
+  //   }
+  // }, [activeDate]);
+
   useEffect(() => {
     // 새로고침시 파라미터 제거
     if (refresh) {
@@ -88,13 +100,23 @@ const PayList: React.FC<PayListProps> = ({
   }, [refresh, navigate, location]);
 
   useEffect(() => {
+    setSelectCategory(""); // activeDate 변경 시 카테고리 선택 초기화
+
     const ReadConsumption = async () => {
       try {
         setLoading(true);
+        let effectiveStartDate = listStartDate || refresh;
+        let effectiveEndDate = listEndDate || refresh;
 
-        let effectiveStartDate = startDate || refresh;
-        let effectiveEndDate = endDate || refresh;
+        if (!effectiveStartDate || !effectiveEndDate) {
+          const { startOfMonth, endOfMonth } = activeMonth(
+            new Date(activeDate),
+          );
+          effectiveStartDate = startOfMonth;
+          effectiveEndDate = endOfMonth;
+        }
 
+        console.log("Active Date in PayList:", activeDate);
         if (!activeDate) {
           console.warn("activeDate가 없어서 API 호출을 중단합니다.");
           return;
@@ -162,7 +184,7 @@ const PayList: React.FC<PayListProps> = ({
       }
     };
     ReadConsumption();
-  }, [startDate, endDate, refresh, selectCategory, activeDate]);
+  }, [startDate, endDate, refresh, selectCategory, activeDate, validDates]);
 
   return (
     <div className="flex w-full flex-col">
