@@ -9,6 +9,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { activeMonth, formatDateWithWeekday } from "../utils/formatFunc";
 import useCalendarInfo from "../stores/CalendarInfo";
 import useAddPayInfo from "../stores/addpayInfo";
+import Loading from "./loading";
 
 interface PayDayProps {
   data: any; // 필요한 타입으로 수정
@@ -77,18 +78,6 @@ const PayList: React.FC<PayListProps> = ({
     moveToPage(`${PageUrls.PAY_DETAIL}?id=${id}`);
   };
 
-  const [listStartDate, setListStartDate] = useState<string>(startDate);
-  const [listEndDate, setListEndDate] = useState<string>(endDate);
-
-  // useEffect(() => {
-  //   if (activeDate) {
-  //     // activeDate가 변경되면 해당 월의 시작일과 종료일로 설정
-  //     const { startOfMonth, endOfMonth } = activeMonth(new Date(activeDate));
-  //     setListStartDate(startOfMonth);
-  //     setListEndDate(endOfMonth);
-  //   }
-  // }, [activeDate]);
-
   useEffect(() => {
     // 새로고침시 파라미터 제거
     if (refresh) {
@@ -105,8 +94,9 @@ const PayList: React.FC<PayListProps> = ({
     const ReadConsumption = async () => {
       try {
         setLoading(true);
-        let effectiveStartDate = listStartDate || refresh;
-        let effectiveEndDate = listEndDate || refresh;
+
+        let effectiveStartDate = startDate || refresh;
+        let effectiveEndDate = endDate || refresh;
 
         if (!effectiveStartDate || !effectiveEndDate) {
           const { startOfMonth, endOfMonth } = activeMonth(
@@ -116,38 +106,20 @@ const PayList: React.FC<PayListProps> = ({
           effectiveEndDate = endOfMonth;
         }
 
-        console.log("Active Date in PayList:", activeDate);
         if (!activeDate) {
           console.warn("activeDate가 없어서 API 호출을 중단합니다.");
+          setLoading(false);
           return;
         }
 
         if (!effectiveStartDate || !effectiveEndDate) {
           console.warn("start, end, refresh 모두 없음 → 해당 월 전체 조회");
+          setLoading(false);
           const { startOfMonth, endOfMonth } = activeMonth(
             new Date(activeDate),
           );
           effectiveStartDate = startOfMonth;
           effectiveEndDate = endOfMonth;
-        }
-
-        // 단일 선택 날짜일 때, 기록이 없으면 API 호출 중단
-        if (!refresh) {
-          if (effectiveStartDate === effectiveEndDate) {
-            if (!validDates.includes(effectiveStartDate)) {
-              console.warn("소비 기록이 없는 날짜 → API 호출 중단");
-              return;
-            }
-          }
-        }
-
-        if (
-          !refresh &&
-          effectiveStartDate === effectiveEndDate &&
-          !validDates.includes(effectiveStartDate)
-        ) {
-          console.warn("소비 기록이 없는 날짜 → API 호출 중단");
-          return;
         }
 
         const params = {
@@ -176,7 +148,6 @@ const PayList: React.FC<PayListProps> = ({
           );
 
         setFilteredRecords(filtered);
-        console.log("data", data);
       } catch (err) {
         console.error(err);
       } finally {

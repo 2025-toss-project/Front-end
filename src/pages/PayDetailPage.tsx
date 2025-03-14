@@ -12,6 +12,7 @@ import { LucideTrash2, LucideX } from "lucide-react";
 import useSpendingInfo, { ConsumptionInfo } from "../stores/spendingInfo";
 import PayInput from "../components/PayInput";
 import { formatDateToYMD } from "../utils/formatFunc";
+import Loading from "../components/loading";
 
 const PayDetailPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -56,7 +57,7 @@ const PayDetailPage = () => {
     };
   }, [id]);
 
-  if (loading) return <div>로딩 중...</div>;
+  if (loading) return <Loading />;
 
   const isAddpayInfoComplete = Object.values(addpayInfo).every((value) => {
     if (typeof value === "object" && value !== null) {

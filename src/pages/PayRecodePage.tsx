@@ -75,7 +75,7 @@ const PayRecodePage = () => {
   // `activeDate` 변경될 때 API 호출
   useEffect(() => {
     fetchCalendar();
-  }, [fetchCalendar]);
+  });
 
   return (
     <div className="flex w-full flex-col gap-2">
