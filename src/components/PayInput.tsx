@@ -104,7 +104,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
         <InputDefault
           label="카테고리"
           type="category"
-          value={itemData?.category || selectCategory || ""}
+          value={isEditMode ? itemData?.category : selectCategory || ""}
           placeholder="미선택"
           isReadOnly={true}
           onClick={toggle}

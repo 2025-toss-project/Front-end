@@ -1,5 +1,5 @@
 import { LucideChevronRight } from "lucide-react";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, use, useEffect, useState } from "react";
 import { SaveButton } from "../components/common/Buttons";
 import BarChart from "../components/charts/BarChart";
 import DoughnutChart from "../components/charts/DoughnutChart";
@@ -19,7 +19,7 @@ export interface AnalyticsData {
 
 const BoxWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
-    <div className="flex flex-col gap-2 rounded-2xl bg-white px-4 py-5 drop-shadow-10">
+    <div className="flex flex-col gap-2 px-4 py-5 bg-white rounded-2xl drop-shadow-10">
       {children}
     </div>
   );
@@ -69,12 +69,28 @@ const PrevMonthPayBox: React.FC<{
 }> = ({ monthPay, prevPay, twoMonthsAgoPay }) => {
   const { moveToPage } = useMovePage();
 
+  const sumItem = (data: any) => {
+    if (!data || !data.analyicsInfoDTOS) return 0;
+    return data.analyicsInfoDTOS.reduce(
+      (sum: number, item: any) => sum + (item.price || 0),
+      0
+    );
+  };
+
+  const monthTotal = sumItem(monthPay);
+  const prevTotal = sumItem(prevPay);
+  const diff = monthTotal - prevTotal; // 양수이면 지난 달보다 더 쓴 경우
+  
+  useEffect(() => {
+  }, [monthPay, prevPay]);
   return (
     <BoxWrapper>
       <div>지난 달보다</div>
       <div className="flex items-center justify-between">
-        <div className="text-xl font-medium text-main">200,000원</div>
-        <div>더 쓰고 있어요</div>
+        <div className="text-xl font-medium text-main">
+        {formatPrice(Math.abs(diff))} 원
+        </div>
+        <div>{diff > 0 ? "더 쓰고 있어요" : "덜 쓰고 있어요"}</div>
       </div>
       <div className="py-5">
         <BarChart
@@ -111,7 +127,7 @@ const PayOfCategory: React.FC<{ categoryPay: any }> = ({ categoryPay }) => {
       <div className="py-5">
         <DoughnutChart categoryPay={categoryPay} />
       </div>
-      <div className="flex flex-col gap-6 rounded-lg bg-second-bg px-6 py-3">
+      <div className="flex flex-col gap-6 px-6 py-3 rounded-lg bg-second-bg">
         {sortedCategoryPay.map((pay: AnalyticsData) => (
           <div
             key={pay.category}
@@ -124,7 +140,7 @@ const PayOfCategory: React.FC<{ categoryPay: any }> = ({ categoryPay }) => {
               {Math.floor((pay.price / totalPay) * 100)}%
             </div>
             <div className="font-normal">{pay.category}</div>
-            <div className="grow text-right text-base">{pay.price}원</div>
+            <div className="text-base text-right grow">{pay.price}원</div>
           </div>
         ))}
       </div>
@@ -203,16 +219,16 @@ const StatisticPage = () => {
   }, []);
 
   return (
-    <div className="flex w-full flex-col gap-5 py-6">
+    <div className="flex flex-col w-full gap-5 py-6">
       <MonthPayBox
         monthPay={budgetData.totalSpend}
         restBudget={budgetData.totalBudget - budgetData.totalSpend}
       />
       {analyticsData && (
         <PrevMonthPayBox
+          twoMonthsAgoPay={analyticsData[2] || []}
           monthPay={analyticsData[0] || []}
           prevPay={analyticsData[1] || []}
-          twoMonthsAgoPay={analyticsData[2] || []}
         />
       )}
       {analyticsData && <PayOfCategory categoryPay={analyticsData[0] || []} />}

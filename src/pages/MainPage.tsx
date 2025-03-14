@@ -118,7 +118,7 @@ const MainPage: React.FC = () => {
         ))}
         <IconHomeMakrer />
       </KakaoMap>
-      <div className="flex h-full w-full flex-col justify-between px-6 pb-5 pt-10">
+      <div className="flex flex-col justify-between w-full h-full px-6 pt-10 pb-5">
         <MapHeader />
         <MapBottom
           selectedData={selectedData}

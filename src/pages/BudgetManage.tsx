@@ -30,7 +30,7 @@ const BudgetManage = () => {
 
     getBudgetData();
   }, []);
-  // 여까지
+
   const categoryBudgets =
     budgetData?.budgetInfoList?.map(
       ({ category, budgetPrice, spendPrice, percentage }) => ({

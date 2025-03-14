@@ -23,13 +23,13 @@ const MyPage: React.FC = () => {
         console.error(error);
       }
     };
-    getUserData();
+    if (!userInfo.email) getUserData();
   }, []);
 
   const userType = findType(userInfo?.type ?? "");
 
   return (
-    <div className="flex flex-col w-full gap-2">
+    <div className="flex w-full flex-col gap-2">
       <div className="flex items-center gap-2 py-4">
         {userType?.icon && <div>{userType.icon({ size: 48 })}</div>}
         <div>

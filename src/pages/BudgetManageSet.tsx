@@ -1,48 +1,12 @@
-import React, {
-  useState,
-  useEffect,
-  Component,
-  ErrorInfo,
-  ReactNode,
-} from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { categoryList } from "../constants/category";
 import BarGraph from "../components/BarGraph";
 import { fetchBudgetInfo, BudgetInfo } from "../apis/BudgetInfo";
 import CategoryBudgetInput from "../components/CategoryBudgetInput";
-import BudgetUpdate, { updateBudgetInfo } from "../apis/BudgetUpdate";
+import { updateBudgetInfo } from "../apis/BudgetUpdate";
 import Loading from "../components/loading";
-
-// --- 에러 바운더리 ---
-interface ErrorBoundaryProps {
-  children: ReactNode;
-}
-
-interface ErrorBoundaryState {
-  hasError: boolean;
-}
-
-class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(_: Error): ErrorBoundaryState {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("Uncaught error:", error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <h1>Something went wrong.</h1>;
-    }
-    return this.props.children;
-  }
-}
+import { SaveButton } from "../components/common/Buttons";
 
 // --- 타입 정의 ---
 interface CategoryBudget {
@@ -158,7 +122,6 @@ const BudgetManageSet: React.FC = () => {
         const response = await fetchBudgetInfo(); // ✅ API 호출
         const data: BudgetInfo = response.result; // ✅ data.result 사용
         setLoading(true);
-        // await new Promise((resolve) => setTimeout(resolve, 3000));
 
         setTotalId(data.totalId ?? 0);
         setTotalBudget(data.totalBudget ?? 0);
@@ -222,7 +185,6 @@ const BudgetManageSet: React.FC = () => {
   const used = categoryBudgets.reduce((sum, c) => sum + c.budgetPrice, 0);
   const remain = totalBudget - used;
   const isOverBudget = remain < 0;
-  const isBudgetDepleted = remain == 0;
 
   return (
     <div className="flex h-full w-full flex-col bg-second-bg">
@@ -244,13 +206,11 @@ const BudgetManageSet: React.FC = () => {
             <div className="flex flex-col items-end pb-2.5 pt-2.5 text-base">
               남은예산
               <div
-                className={`font-bold text-marker-home ${isOverBudget ? "text-main" : isBudgetDepleted ? "text-black" : ""}`}
+                className={`font-bold ${isOverBudget ? "text-main" : "text-marker-home"}`}
               >
                 {isOverBudget
                   ? `${Math.abs(remain).toLocaleString()}원 초과`
-                  : isBudgetDepleted
-                    ? "소진"
-                    : `${remain.toLocaleString()}원 남음`}
+                  : `${remain.toLocaleString()}원 남음`}
               </div>
             </div>
           </div>
@@ -261,28 +221,10 @@ const BudgetManageSet: React.FC = () => {
           />
         </div>
       </div>
-      <div onClick={saveAndPost} className="cursor-pointer">
-        <BudgetUpdate
-          totalId={totalId}
-          totalBudget={totalBudget}
-          categoryBudgets={categoryBudgets}
-        />
-      </div>
+
+      <SaveButton title="저장하기" onClick={saveAndPost} />
     </div>
   );
 };
 
-// --- App 컴포넌트 (라우터 중첩 제거) ---
-// 만약 최상위 index.tsx에서 이미 <BrowserRouter>로 감싸고 있다면,
-// 여기서는 <Routes>만 사용하면 됩니다.
-const App: React.FC = () => {
-  return (
-    <ErrorBoundary>
-      <Routes>
-        <Route path="/" element={<BudgetManageSet />} />
-      </Routes>
-    </ErrorBoundary>
-  );
-};
-
-export default App;
+export default BudgetManageSet;

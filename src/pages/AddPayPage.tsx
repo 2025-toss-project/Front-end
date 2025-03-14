@@ -40,6 +40,7 @@ const AddPayPage = () => {
   const handleClickSubmit = async () => {
     if (!isAddpayInfoComplete) {
       console.log("입력 값", addpayInfo);
+      console.log("입력 카테고리", selectCategory);
       return alert("모든 정보를 입력해주세요.");
     }
 
