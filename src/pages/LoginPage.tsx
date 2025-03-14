@@ -54,7 +54,7 @@ const LoginAndSignUp: React.FC<{
   const { moveToPage } = useMovePage();
   const handleClickLoginBtn = async () => {
     if (loginInfo.email === "" || loginInfo.password === "") return;
-    console.log(loginInfo);
+
     try {
       const res = await apiWithoutAuth.post("/login", {
         email: loginInfo.email,
@@ -64,7 +64,6 @@ const LoginAndSignUp: React.FC<{
       localStorage.setItem("accessToken", res.data.accessToken);
       localStorage.setItem("refreshToken", res.data.refreshToken);
 
-    
       moveToPage(PageUrls.HOME);
     } catch (error) {
       console.error(error);
@@ -79,7 +78,7 @@ const LoginAndSignUp: React.FC<{
         회원이 아니신가요?
         <span
           onClick={() => moveToPage(PageUrls.SIGNUP)}
-          className="underline text-second underline-offset-2"
+          className="text-second underline underline-offset-2"
         >
           회원가입
         </span>

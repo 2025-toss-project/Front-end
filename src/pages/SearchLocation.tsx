@@ -7,7 +7,7 @@ import { useLocation } from "react-router-dom";
 import userStore from "../stores/user";
 
 const SearchLocation = () => {
-  const { moveToBack, moveToMyPage } = useMovePage();
+  const { moveToPage } = useMovePage();
   const { setSignupInfo } = useSignupInfo();
   const { setUserInfo } = userStore();
   const location = useLocation();
@@ -15,7 +15,6 @@ const SearchLocation = () => {
   const getCoordinates = async (address: string) => {
     const API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY;
     const url = `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURIComponent(address)}`;
-
 
     try {
       const response = await fetch(url, {
@@ -32,9 +31,12 @@ const SearchLocation = () => {
             ...currentUserInfo,
             home: { lat: parseFloat(y), lng: parseFloat(x), address: address },
           });
-        } else {
-          setSignupInfo("location", address);
-          setSignupInfo("home", { lat: parseFloat(y), lng: parseFloat(x) });
+        } else if (location.state && location.state.prevPage === "signup") {
+          setSignupInfo("home", {
+            lat: parseFloat(y),
+            lng: parseFloat(x),
+            address: address,
+          });
         }
       } else {
         console.error("주소를 찾을 수 없습니다.");
@@ -47,12 +49,14 @@ const SearchLocation = () => {
   const onComplete = async (data: any) => {
     await getCoordinates(data.address);
     if (location.state && location.state.prevPage === "mypage") {
-      moveToMyPage(PageUrls.MY_PAGE);
+      moveToPage(PageUrls.MY_PAGE);
+    } else if (location.state && location.state.prevPage === "signup") {
+      moveToPage(PageUrls.SIGNUP);
     }
   };
 
   return (
-    <div className="flex flex-col w-full h-full">
+    <div className="flex h-full w-full flex-col">
       <Header />
       <DaumPostcodeEmbed style={{ height: "100%" }} onComplete={onComplete} />
     </div>
