@@ -80,7 +80,7 @@ const InputDefault: React.FC<PayInputProps> = ({
             value={inputValue}
             onChange={handleChange}
             onClick={(e) => isReadOnly && e.preventDefault()}
-            className={`text-default w-full outline-none focus:outline-none focus:ring-0 ${style}`}
+            className="text-default w-full outline-none focus:outline-none focus:ring-0"
           />
         </div>
       </div>

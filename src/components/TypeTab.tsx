@@ -19,6 +19,7 @@ const TypeTab: React.FC<{ userData: userInfo }> = ({ userData }) => {
   const [originUserInfo, setOriginUserInfo] = useState(userData);
   const { setUserInfo } = userStore()
   
+  
   const handleSave = async () => {
     setLoading(true);
     setMessage("");
@@ -29,19 +30,23 @@ const TypeTab: React.FC<{ userData: userInfo }> = ({ userData }) => {
       type: selectedPayType,
     };
   
-
-    try {
-     
-      await updateProfileInfo(updatedData);
-      setUserInfo(updatedData);
-      setMessage("프로필 업데이트 성공!");
-    } catch (error) {
-      console.error(error);
-      setMessage("프로필 업데이트 실패!");
-    } finally {
-      setLoading(false);
+    const handleSave = async () => {
+      setMessage("프로필 저장중...");
     }
-  };
+
+  try {
+        await updateProfileInfo(originUserInfo);
+        setMessage("프로필 업데이트 완료!");
+        setUserInfo(originUserInfo);
+        setTimeout(() => {
+          setMessage("");
+        }, 1000);
+      } catch (error) {
+        setMessage("프로필 업데이트 실패!");
+      } finally {
+        setLoading(false); 
+      }
+    };
 
     
   return (
@@ -58,7 +63,13 @@ const TypeTab: React.FC<{ userData: userInfo }> = ({ userData }) => {
           setSelectedPayType={setSelectedPayType}
         />
       </div>
-      <SaveButton title="프로필 저장" onClick={handleSave} />
+       <SaveButton title="프로필 저장" onClick={handleSave} />
+      
+            {message && (
+              <div className="relative flex justify-center text-sm bottom-5">
+                {message}
+              </div>
+            )}
     </>
   );
 };

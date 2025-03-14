@@ -73,7 +73,7 @@ const PayRecodePage = () => {
   // `activeDate` 변경될 때 API 호출
   useEffect(() => {
     fetchCalendar();
-  }, [fetchCalendar]);
+  });
 
   // 카테고리 선택 처리
   const handleCategorySelect = (selectedCategory: string) => {

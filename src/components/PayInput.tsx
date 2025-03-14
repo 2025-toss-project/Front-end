@@ -8,6 +8,7 @@ import { InputformatPrice, inputFormatPriceCheck } from "../utils/formatFunc";
 import useLocationInfo from "../stores/locationInfo";
 import { isElement } from "lodash";
 import CustomDatePicker from "./common/CustomDatePicker";
+import { useCategoryInfo } from "../stores/categoryInfo";
 
 interface payInfo {
   id: number;
@@ -31,6 +32,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData, category }) => {
   const { moveToPage } = useMovePage();
   const { addpayInfo, setAddPayInfo, resetAddPayInfo } = useAddPayInfo();
   const { locationName, lat, lng } = useLocationInfo();
+  const { setSelectCategory, selectCategory } = useCategoryInfo();
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -38,17 +40,18 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData, category }) => {
   const isEditMode = Boolean(id); // 수정 모드 여부 판단
 
   useEffect(() => {
+    console.log("itemData", itemData);
     if (itemData) {
-      // 수정 값 || 부모에서 전달받은 데이터로 상태 초기화
+      // 부모에서 전달받은 데이터로 상태 초기화
       setAddPayInfo("price", String(itemData.price));
       setAddPayInfo("detail", itemData.details);
       setAddPayInfo("date", itemData.date);
-      setAddPayInfo("lat", String(lat) || String(itemData.lat));
-      setAddPayInfo("lng", String(lng) || String(itemData.lng));
-      setAddPayInfo("locationName", locationName || itemData.locationName);
-      setAddPayInfo("category", category || itemData.category);
+      setAddPayInfo("lat", String(itemData.lat));
+      setAddPayInfo("lng", String(itemData.lng));
+      setAddPayInfo("locationName", itemData.locationName);
+      setSelectCategory(itemData.category || "");
     }
-  }, [itemData, locationName, lat, lng]);
+  }, [locationName, lat, lng]);
 
   return (
     <div>
@@ -86,7 +89,7 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData, category }) => {
         <InputDefault
           label="내용"
           placeholder="지출내용을 입력하세요"
-          value={isEditMode ? itemData?.details || "" : addpayInfo.detail || ""}
+          value={itemData?.details || addpayInfo.detail || ""}
           onChange={(value) => setAddPayInfo("detail", value)}
         />
 

@@ -11,6 +11,8 @@ import { LucideTrash2, LucideX } from "lucide-react";
 import useSpendingInfo, { ConsumptionInfo } from "../stores/spendingInfo";
 import PayInput from "../components/PayInput";
 import { formatDateToYMD } from "../utils/formatFunc";
+import Loading from "../components/loading";
+import { useCategoryInfo } from "../stores/categoryInfo";
 
 const PayDetailPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -18,8 +20,8 @@ const PayDetailPage = () => {
   const { addpayInfo, setAddPayInfo, resetAddPayInfo } = useAddPayInfo();
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
   const { spendingRecords, setSpendingData } = useSpendingInfo();
-  const [isOpen, setIsOpen] = useState(false); // 카테고리 선택 창 상태
-  const [category, setCategory] = useState("");
+  const { isOpen, setIsOpen, selectCategory, setSelectCategory } =
+    useCategoryInfo();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");
@@ -34,15 +36,16 @@ const PayDetailPage = () => {
           });
 
           // 기존 itemData 값과 addpayInfo 값 병합
-          setItemData((prevItemData: any) => ({
+          setItemData(() => ({
             ...res.data.result,
             locationName:
-              addpayInfo.locationName || res.data.result.locationName, // addpayInfo.locationName이 있으면 우선 적용
+              addpayInfo.locationName || res.data.result.locationName,
+            lat: addpayInfo.lat || res.data.result.lat,
+            lng: addpayInfo.lng || res.data.result.lng, // addpayInfo.locationName이 있으면 우선 적용
           }));
         } catch (error) {
           console.error(error);
         } finally {
-          resetAddPayInfo();
           setLoading(false);
         }
       };
@@ -53,7 +56,7 @@ const PayDetailPage = () => {
     };
   }, [id]);
 
-  if (loading) return <div>로딩 중...</div>;
+  if (loading) return <Loading />;
 
   const isAddpayInfoComplete = Object.values(addpayInfo).every((value) => {
     if (typeof value === "object" && value !== null) {
@@ -92,7 +95,8 @@ const PayDetailPage = () => {
     } finally {
       const formattedDate = formatDateToYMD(new Date(addpayInfo.date));
       moveToPage(`${PageUrls.PAY_RECODE}?refresh=${formattedDate}`);
-      resetAddPayInfo();
+      //resetAddPayInfo();
+      setSelectCategory("");
     }
   };
 
@@ -135,7 +139,7 @@ const PayDetailPage = () => {
 
   // 카테고리 선택 처리
   const handleCategorySelect = (selectedCategory: string) => {
-    setCategory(selectedCategory);
+    setSelectCategory(selectedCategory);
     //setAddPayInfo("category", selectedCategory);
     setIsOpen(false); // 선택 후 닫기
   };
@@ -150,7 +154,7 @@ const PayDetailPage = () => {
           <LucideX />
         </div>
         <PayInput
-          category={category}
+          category={selectCategory}
           toggle={() => setIsOpen(!isOpen)}
           isOpen={isOpen}
           itemData={itemData}

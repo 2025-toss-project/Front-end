@@ -8,6 +8,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { activeMonth, formatDateWithWeekday } from "../utils/formatFunc";
 import useCalendarInfo from "../stores/CalendarInfo";
 import useAddPayInfo from "../stores/addpayInfo";
+import Loading from "./loading";
+import { useCategoryInfo } from "../stores/categoryInfo";
 
 interface PayDayProps {
   data: any; // 필요한 타입으로 수정
@@ -47,7 +49,6 @@ interface PayListProps {
   startDate: string;
   endDate: string;
   validDates: string[];
-  category: string;
 }
 
 // 전체 소비리스트
@@ -55,7 +56,6 @@ const PayList: React.FC<PayListProps> = ({
   startDate,
   endDate,
   validDates,
-  category,
 }) => {
   const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 관리
   const [filteredRecords, setFilteredRecords] = useState<
@@ -65,6 +65,7 @@ const PayList: React.FC<PayListProps> = ({
   const { setSpendingData, resetSpendingData } = useSpendingInfo();
   const { addpayInfo } = useAddPayInfo();
   const { activeDate } = useCalendarInfo();
+  const { selectCategory, setSelectCategory } = useCategoryInfo();
   const location = useLocation();
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
@@ -88,6 +89,8 @@ const PayList: React.FC<PayListProps> = ({
   }, [refresh, navigate, location]);
 
   useEffect(() => {
+    setSelectCategory(""); // activeDate 변경 시 카테고리 선택 초기화
+
     const ReadConsumption = async () => {
       try {
         setLoading(true);
@@ -95,13 +98,7 @@ const PayList: React.FC<PayListProps> = ({
         let effectiveStartDate = startDate || refresh;
         let effectiveEndDate = endDate || refresh;
 
-        if (!activeDate) {
-          console.warn("activeDate가 없어서 API 호출을 중단합니다.");
-          return;
-        }
-
         if (!effectiveStartDate || !effectiveEndDate) {
-          console.warn("start, end, refresh 모두 없음 → 해당 월 전체 조회");
           const { startOfMonth, endOfMonth } = activeMonth(
             new Date(activeDate),
           );
@@ -109,27 +106,24 @@ const PayList: React.FC<PayListProps> = ({
           effectiveEndDate = endOfMonth;
         }
 
-        // 단일 선택 날짜일 때, 기록이 없으면 API 호출 중단
-        if (!refresh) {
-          if (effectiveStartDate === effectiveEndDate) {
-            if (!validDates.includes(effectiveStartDate)) {
-              console.warn("소비 기록이 없는 날짜 → API 호출 중단");
-              return;
-            }
-          }
-        }
-
-        if (
-          !refresh &&
-          effectiveStartDate === effectiveEndDate &&
-          !validDates.includes(effectiveStartDate)
-        ) {
-          console.warn("소비 기록이 없는 날짜 → API 호출 중단");
+        if (!activeDate) {
+          console.warn("activeDate가 없어서 API 호출을 중단합니다.");
+          setLoading(false);
           return;
         }
 
+        if (!effectiveStartDate || !effectiveEndDate) {
+          console.warn("start, end, refresh 모두 없음 → 해당 월 전체 조회");
+          setLoading(false);
+          const { startOfMonth, endOfMonth } = activeMonth(
+            new Date(activeDate),
+          );
+          effectiveStartDate = startOfMonth;
+          effectiveEndDate = endOfMonth;
+        }
+
         const params = {
-          category: category || "",
+          category: selectCategory || "",
           startDate: effectiveStartDate,
           endDate: effectiveEndDate,
         };
@@ -142,10 +136,10 @@ const PayList: React.FC<PayListProps> = ({
           .map((record: ConsumptionInfoByDate) => ({
             ...record,
             consumptionInfoList:
-              category === "" // 선택된 카테고리가 없으면 필터링 없이 전체 유지
+              selectCategory === "" // 선택된 카테고리가 없으면 필터링 없이 전체 유지
                 ? record.consumptionInfoList
                 : record.consumptionInfoList.filter(
-                    (item) => item.category === category,
+                    (item) => item.category === selectCategory,
                   ),
           }))
           .filter(
@@ -161,7 +155,7 @@ const PayList: React.FC<PayListProps> = ({
       }
     };
     ReadConsumption();
-  }, [startDate, endDate, refresh, category, activeDate, addpayInfo]);
+  }, [startDate, endDate, refresh, selectCategory, activeDate, validDates]);
 
   return (
     <div className="flex w-full flex-col">

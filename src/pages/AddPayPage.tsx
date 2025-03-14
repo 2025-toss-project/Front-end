@@ -8,6 +8,7 @@ import PageUrls from "../constants/PageUrls";
 import { useMovePage } from "../hooks/useMovePage";
 import PayInput from "../components/PayInput";
 import { add } from "lodash";
+import { useLocation } from "react-router-dom";
 
 export interface addpayInfo {
   price: number;
@@ -16,7 +17,6 @@ export interface addpayInfo {
   locationName: string;
   lat: number;
   lng: number;
-  category: string;
 }
 
 const AddPayPage = () => {
@@ -24,6 +24,14 @@ const AddPayPage = () => {
   const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
   const [isOpen, setIsOpen] = useState(false); // 카테고리 선택 창 상태
   const [category, setCategory] = useState("");
+
+  const location = useLocation();
+
+  useEffect(() => {
+    return () => {
+      resetAddPayInfo(); // 언마운트될 때 초기화
+    };
+  }, [location]);
 
   const isAddpayInfoComplete = Object.values(addpayInfo).every((value) => {
     if (typeof value === "object" && value !== null) {
@@ -39,15 +47,15 @@ const AddPayPage = () => {
   // API 호출
   const handleClickSubmit = async () => {
     if (!isAddpayInfoComplete) {
-      console.log("입력 값", addpayInfo);
-      return alert("모든 정보를 입력해주세요.");
+      console.warn("모든 정보를 입력해주세요.");
+      return;
     }
 
     try {
       const res = await api.post("/consumption/create", {
         price: Number(addpayInfo.price),
         detail: addpayInfo.detail,
-        category: addpayInfo.category,
+        category: SelectCategory,
         lat: Number(addpayInfo.lat),
         lng: Number(addpayInfo.lng),
         locationName: addpayInfo.locationName,
