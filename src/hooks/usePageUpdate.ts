@@ -62,6 +62,7 @@ const usePageUpdate = () => {
       case PageUrls.BUDGET_SET:
       case PageUrls.SIGNUP:
       case PageUrls.SEARCH_LOCATION:
+      case PageUrls.PAY_DETAIL:
         setBackButton(true);
         break;
       default:
