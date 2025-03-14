@@ -5,6 +5,7 @@ import PayList from "../components/PayList";
 import SelectCategory from "../components/SelectCategory";
 import { api } from "../utils/api";
 import useCalendarInfo, { calenderInfoDTOS } from "../stores/CalendarInfo";
+import { useCategoryInfo } from "../stores/categoryInfo";
 
 const PayRecodePage = () => {
   const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 관리
@@ -12,8 +13,8 @@ const PayRecodePage = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const { activeDate, setDayData } = useCalendarInfo();
-  const [category, setCategory] = useState<string>("");
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { isOpen, setIsOpen, selectCategory, setSelectCategory } =
+    useCategoryInfo();
 
   // 캘린더 변경(구간 변경)
   const handleDateChange = (startDate: string, endDate: string) => {
@@ -77,7 +78,7 @@ const PayRecodePage = () => {
 
   // 카테고리 선택 처리
   const handleCategorySelect = (selectedCategory: string) => {
-    setCategory(selectedCategory);
+    setSelectCategory(selectedCategory);
     //setAddPayInfo("category", selectedCategory);
     setIsOpen(false); // 선택 후 닫기
   };
@@ -87,7 +88,7 @@ const PayRecodePage = () => {
       <CustomCalendar onDateChange={handleDateChange} />
       <div className="mt-5 flex w-full flex-col rounded-lg bg-white">
         <DropButton
-          title={category || "전체 항목"}
+          title={selectCategory || "전체 항목"}
           toggle={() => setIsOpen(!isOpen)}
           isOpen={isOpen}
         />
@@ -102,7 +103,6 @@ const PayRecodePage = () => {
           startDate={startDate}
           endDate={endDate}
           validDates={validDates}
-          category={category}
         />
       </div>
     </div>

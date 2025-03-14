@@ -82,7 +82,7 @@ const PayDetailPage = () => {
         id: id,
         price: Number(addpayInfo.price),
         detail: addpayInfo.detail,
-        category: addpayInfo.category,
+        category: selectCategory,
         lat: Number(addpayInfo.lat),
         lng: Number(addpayInfo.lng),
         locationName: addpayInfo.locationName,
