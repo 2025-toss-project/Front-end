@@ -82,11 +82,6 @@ const Map = () => {
       console.log("선택된 장소:", locationName);
       console.log("좌표:", lng, lat);
 
-      // addPayInfo에 장소 정보 저장
-      setAddPayInfo("locationName", locationName); // 장소 이름 저장
-      setAddPayInfo("lat", String(lat)); // 위도 저장
-      setAddPayInfo("lng", String(lng)); // 경도 저장
-
       // 기존 마커 제거
       if (markerRef.current) {
         markerRef.current.setMap(null);

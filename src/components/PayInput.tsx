@@ -51,8 +51,6 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
     }
   }, [locationName, lat, lng]);
 
-  console.log("update payinfo", addpayInfo);
-
   return (
     <div>
       <form className="flex flex-col gap-2 pt-3">
