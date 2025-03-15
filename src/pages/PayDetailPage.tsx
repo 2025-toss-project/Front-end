@@ -58,16 +58,17 @@ const PayDetailPage = () => {
 
   if (loading) return <Loading />;
 
-  const isAddpayInfoComplete = Object.values(addpayInfo).every((value) => {
-    if (typeof value === "object" && value !== null) {
-      // 내부 객체가 있을 경우, 그 값들에 대해서 다시 검사
-      return Object.values(value).every(
-        (nestedValue) => nestedValue !== 0 && nestedValue !== "",
-      );
-    }
-    // 빈 문자열도 유효하지 않게 체크
-    return value !== "" && value !== 0;
-  });
+  const isAddpayInfoComplete =
+    Object.values(addpayInfo).every((value) => {
+      if (typeof value === "object" && value !== null) {
+        // 내부 객체가 있을 경우, 그 값들에 대해서 다시 검사
+        return Object.values(value).every(
+          (nestedValue) => nestedValue !== 0 && nestedValue !== "",
+        );
+      }
+      // 빈 문자열도 유효하지 않게 체크
+      return value !== "" && value !== 0;
+    }) && selectCategory !== ""; // 카테고리 유효성 추가;
 
   const handleClickUpdate = async () => {
     if (!isAddpayInfoComplete) {
