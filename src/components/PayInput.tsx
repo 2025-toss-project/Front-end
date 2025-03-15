@@ -54,20 +54,6 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
     <div>
       <form className="flex flex-col gap-2 pt-3">
         <InputDefault
-          label="금액"
-          type="price"
-          value={
-            isEditMode
-              ? inputFormatPriceCheck(itemData?.price || "")
-              : inputFormatPriceCheck(addpayInfo.price) || ""
-          }
-          placeholder="금액을 입력하세요"
-          onChange={(value) =>
-            setAddPayInfo("price", String(InputformatPrice(value)))
-          }
-        />
-
-        <InputDefault
           label="장소"
           placeholder="장소를 입력하세요"
           value={
@@ -80,6 +66,20 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
             moveToPage(
               `${PageUrls.SEARCH_PLACE}?mode=${isEditMode ? "edit" : "add"}&id=${id || ""}`,
             )
+          }
+        />
+
+        <InputDefault
+          label="금액"
+          type="price"
+          value={
+            isEditMode
+              ? inputFormatPriceCheck(itemData?.price || "")
+              : inputFormatPriceCheck(addpayInfo.price) || ""
+          }
+          placeholder="금액을 입력하세요"
+          onChange={(value) =>
+            setAddPayInfo("price", String(InputformatPrice(value)))
           }
         />
 
