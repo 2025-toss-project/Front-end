@@ -25,26 +25,25 @@ const AddPayPage = () => {
   const { addpayInfo, resetAddPayInfo } = useAddPayInfo();
   const { selectCategory, setSelectCategory } = useCategoryInfo();
 
-  const isAddpayInfoComplete = Object.values(addpayInfo).every((value) => {
-    if (typeof value === "object" && value !== null) {
-      // 내부 객체가 있을 경우, 그 값들에 대해서 다시 검사
-      return Object.values(value).every(
-        (nestedValue) => nestedValue !== 0 && nestedValue !== "",
-      );
-    }
-    // 빈 문자열도 유효하지 않게 체크
-    return value !== "" && value !== 0;
-  });
+  const isAddpayInfoComplete =
+    Object.values(addpayInfo).every((value) => {
+      if (typeof value === "object" && value !== null) {
+        // 내부 객체가 있을 경우, 그 값들에 대해서 다시 검사
+        return Object.values(value).every(
+          (nestedValue) => nestedValue !== 0 && nestedValue !== "",
+        );
+      }
+      // 빈 문자열도 유효하지 않게 체크
+      return value !== "" && value !== 0;
+    }) && selectCategory !== ""; // 카테고리 유효성 추가
 
   // API 호출
   const handleClickSubmit = async () => {
     if (!isAddpayInfoComplete) {
-      console.log("입력 값", addpayInfo);
       return alert("모든 정보를 입력해주세요.");
     }
 
     try {
-      console.log(addpayInfo, "seok");
       const res = await api.post("/consumption/create", {
         price: Number(addpayInfo.price),
         details: addpayInfo.details,
@@ -60,9 +59,15 @@ const AddPayPage = () => {
     } finally {
       moveToPage(`${PageUrls.PAY_RECODE}?refresh=${addpayInfo.date}`);
       resetAddPayInfo();
-      //setSelectCategory("");
     }
   };
+
+  useEffect(() => {
+    return () => {
+      setSelectCategory(""); // 페이지 벗어나면 선택 카테고리 초기화
+      resetAddPayInfo();
+    };
+  }, []);
 
   return (
     <div className="flex w-full flex-col">

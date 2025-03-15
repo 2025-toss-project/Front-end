@@ -88,9 +88,12 @@ const PayList: React.FC<PayListProps> = ({
     }
   }, [refresh, navigate, location]);
 
+  // activeDate 변경 시 카테고리 선택 초기화
   useEffect(() => {
-    setSelectCategory(""); // activeDate 변경 시 카테고리 선택 초기화
+    setSelectCategory("");
+  }, [activeDate]);
 
+  useEffect(() => {
     const ReadConsumption = async () => {
       try {
         setLoading(true);
