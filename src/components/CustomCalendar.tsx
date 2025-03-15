@@ -1,4 +1,4 @@
-import { LucidePlus, LucideTriangle } from "lucide-react";
+import { LucideLoader2, LucidePlus, LucideTriangle } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import useCalendarInfo from "../stores/CalendarInfo";
 import { useMovePage } from "../hooks/useMovePage";
@@ -199,8 +199,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
     totalPrice,
     calenderInfoDTOS = [],
   } = useCalendarInfo();
-  const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
 
+  const { moveToPage } = useMovePage(); // 페이지 이동 핸들러
   const [tripDate, setTripDate] = useState({
     startDate: `${String(selectedYear)}-${String(selectedMonth).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`,
     endDate: "",
@@ -223,6 +223,10 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
         setSelectedMonth((prev) => prev + 1);
       }
     }
+  };
+
+  const reloadList = () => {
+    window.location.reload(); // 새로고침
   };
 
   useEffect(() => {
@@ -286,8 +290,13 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
           <div className="text-xl font-bold">
             {totalPrice.toLocaleString()} 원
           </div>
-          <div onClick={() => moveToPage(PageUrls.ADD_PAY)}>
-            <LucidePlus size={24} color="#333" />
+          <div className="flex gap-2">
+            <div onClick={() => reloadList()}>
+              <LucideLoader2 size={22} color="#333" />
+            </div>
+            <div onClick={() => moveToPage(PageUrls.ADD_PAY)}>
+              <LucidePlus size={24} color="#333" />
+            </div>
           </div>
         </div>
         <DaysOfWeek />
