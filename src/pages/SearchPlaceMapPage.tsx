@@ -42,7 +42,6 @@ const Map = () => {
     // Kakao API 로드 확인
     const checkKakao = setInterval(() => {
       if (window.kakao && window.kakao.maps) {
-        console.log("Kakao Maps API 로드 완료");
         setLoaded(true);
         clearInterval(checkKakao);
       }
@@ -56,7 +55,6 @@ const Map = () => {
 
     if (!mapRef.current) {
       // 처음 한 번만 지도 생성
-      console.log("지도 생성!");
       const container = document.getElementById("map");
       const options = {
         center: new window.kakao.maps.LatLng(33.450701, 126.570667), // 기본 좌표
@@ -72,9 +70,6 @@ const Map = () => {
 
       // 지도 위치 변경
       mapRef.current.setCenter(position);
-
-      console.log("선택된 장소:", locationName);
-      console.log("좌표:", lng, lat);
 
       // addPayInfo에 장소 정보 저장
       setAddPayInfo("locationName", locationName); // 장소 이름 저장

@@ -38,11 +38,10 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
   const isEditMode = Boolean(id); // 수정 모드 여부 판단
 
   useEffect(() => {
-    console.log("itemData", itemData);
     if (itemData) {
       // 부모에서 전달받은 데이터로 상태 초기화
       setAddPayInfo("price", String(itemData.price));
-      setAddPayInfo("detail", itemData.details);
+      setAddPayInfo("details", itemData.details);
       setAddPayInfo("date", itemData.date);
       setAddPayInfo("lat", String(itemData.lat));
       setAddPayInfo("lng", String(itemData.lng));
@@ -51,25 +50,9 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
     }
   }, [locationName, lat, lng]);
 
-  console.log("update payinfo", addpayInfo);
-
   return (
     <div>
       <form className="flex flex-col gap-2 pt-3">
-        <InputDefault
-          label="금액"
-          type="price"
-          value={
-            isEditMode
-              ? inputFormatPriceCheck(itemData?.price || "")
-              : inputFormatPriceCheck(addpayInfo.price) || ""
-          }
-          placeholder="금액을 입력하세요"
-          onChange={(value) =>
-            setAddPayInfo("price", String(InputformatPrice(value)))
-          }
-        />
-
         <InputDefault
           label="장소"
           placeholder="장소를 입력하세요"
@@ -87,10 +70,24 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
         />
 
         <InputDefault
+          label="금액"
+          type="price"
+          value={
+            isEditMode
+              ? inputFormatPriceCheck(itemData?.price || "")
+              : inputFormatPriceCheck(addpayInfo.price) || ""
+          }
+          placeholder="금액을 입력하세요"
+          onChange={(value) =>
+            setAddPayInfo("price", String(InputformatPrice(value)))
+          }
+        />
+
+        <InputDefault
           label="내용"
           placeholder="지출내용을 입력하세요"
-          value={itemData?.details || addpayInfo.detail || ""}
-          onChange={(value) => setAddPayInfo("detail", value)}
+          value={itemData?.details || addpayInfo.details || ""}
+          onChange={(value) => setAddPayInfo("details", value)}
         />
 
         <InputDefault

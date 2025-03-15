@@ -58,37 +58,33 @@ const PayDetailPage = () => {
 
   if (loading) return <Loading />;
 
-  const isAddpayInfoComplete = Object.values(addpayInfo).every((value) => {
-    if (typeof value === "object" && value !== null) {
-      // 내부 객체가 있을 경우, 그 값들에 대해서 다시 검사
-      return Object.values(value).every(
-        (nestedValue) => nestedValue !== 0 && nestedValue !== "",
-      );
-    }
-    // 빈 문자열도 유효하지 않게 체크
-    return value !== "" && value !== 0;
-  });
+  const isAddpayInfoComplete =
+    Object.values(addpayInfo).every((value) => {
+      if (typeof value === "object" && value !== null) {
+        // 내부 객체가 있을 경우, 그 값들에 대해서 다시 검사
+        return Object.values(value).every(
+          (nestedValue) => nestedValue !== 0 && nestedValue !== "",
+        );
+      }
+      // 빈 문자열도 유효하지 않게 체크
+      return value !== "" && value !== 0;
+    }) && selectCategory !== ""; // 카테고리 유효성 추가;
 
   const handleClickUpdate = async () => {
     if (!isAddpayInfoComplete) {
-      console.log("입력 값", addpayInfo);
       return alert("모든 정보를 입력해주세요.");
     }
-    console.log("update 이전 정보", spendingRecords);
-    console.log("update 할 정보", addpayInfo);
-
     try {
       const res = await api.post("/consumption/update", {
         id: id,
         price: Number(addpayInfo.price),
-        detail: addpayInfo.detail,
+        details: addpayInfo.details,
         category: selectCategory,
         lat: Number(addpayInfo.lat),
         lng: Number(addpayInfo.lng),
         locationName: addpayInfo.locationName,
         date: addpayInfo.date,
       });
-      console.log("update", res.data.result);
       setSpendingData(res.data.result);
     } catch (error) {
       console.error(error);
@@ -117,7 +113,6 @@ const PayDetailPage = () => {
 
     try {
       const res = await api.delete(`consumption/delete?consumptionId=${id}`);
-      console.log("삭제 성공:", res.data);
     } catch (error) {
       console.error("삭제 실패:", error);
     } finally {

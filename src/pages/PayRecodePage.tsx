@@ -67,21 +67,13 @@ const PayRecodePage = () => {
       console.error(err);
     } finally {
       setLoading(false);
-      //setSelectCategory("");
     }
   }, [activeDate, setDayData]); // useCallback으로 불필요한 재생성 방지
 
   // `activeDate` 변경될 때 API 호출
   useEffect(() => {
     fetchCalendar();
-  });
-
-  // 카테고리 선택 처리
-  const handleCategorySelect = (selectedCategory: string) => {
-    setSelectCategory(selectedCategory);
-    //setAddPayInfo("category", selectedCategory);
-    setIsOpen(false); // 선택 후 닫기
-  };
+  }, [activeDate, setDayData]);
 
   return (
     <div className="flex w-full flex-col gap-2">
@@ -92,13 +84,8 @@ const PayRecodePage = () => {
           toggle={() => setIsOpen(!isOpen)}
           isOpen={isOpen}
         />
-        {isOpen && (
-          <SelectCategory
-            style={isOpen ? "block" : "hidden"}
-            closeCategory={() => setIsOpen(false)}
-            onSelectCategory={handleCategorySelect}
-          />
-        )}
+
+        {isOpen && <SelectCategory classname={isOpen ? "block" : "hidden"} />}
         <PayList
           startDate={startDate}
           endDate={endDate}

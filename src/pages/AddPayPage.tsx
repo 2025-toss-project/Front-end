@@ -12,7 +12,7 @@ import { add } from "lodash";
 
 export interface addpayInfo {
   price: number;
-  detail: string;
+  details: string;
   date: string;
   locationName: string;
   lat: number;
@@ -25,44 +25,66 @@ const AddPayPage = () => {
   const { addpayInfo, resetAddPayInfo } = useAddPayInfo();
   const { selectCategory, setSelectCategory } = useCategoryInfo();
 
-  const isAddpayInfoComplete = Object.values(addpayInfo).every((value) => {
-    if (typeof value === "object" && value !== null) {
-      // 내부 객체가 있을 경우, 그 값들에 대해서 다시 검사
-      return Object.values(value).every(
-        (nestedValue) => nestedValue !== 0 && nestedValue !== "",
-      );
-    }
-    // 빈 문자열도 유효하지 않게 체크
-    return value !== "" && value !== 0;
-  });
+  const isAddpayInfoComplete =
+    Object.values(addpayInfo).every((value) => {
+      if (typeof value === "object" && value !== null) {
+        // 내부 객체가 있을 경우, 그 값들에 대해서 다시 검사
+        return Object.values(value).every(
+          (nestedValue) => nestedValue !== 0 && nestedValue !== "",
+        );
+      }
+      // 빈 문자열도 유효하지 않게 체크
+      return value !== "" && value !== 0;
+    }) && selectCategory !== ""; // 카테고리 유효성 추가
 
   // API 호출
   const handleClickSubmit = async () => {
     if (!isAddpayInfoComplete) {
-      console.log("입력 값", addpayInfo);
       return alert("모든 정보를 입력해주세요.");
     }
 
     try {
-      console.log(addpayInfo, "seok");
       const res = await api.post("/consumption/create", {
         price: Number(addpayInfo.price),
-        detail: addpayInfo.detail,
+        details: addpayInfo.details,
         category: selectCategory,
         lat: Number(addpayInfo.lat),
         lng: Number(addpayInfo.lng),
         locationName: addpayInfo.locationName,
         date: addpayInfo.date,
       });
-      console.log(res.data);
     } catch (error) {
       console.error(error);
     } finally {
       moveToPage(`${PageUrls.PAY_RECODE}?refresh=${addpayInfo.date}`);
       resetAddPayInfo();
-      //setSelectCategory("");
     }
   };
+
+  // 페이지 떠날 때 addpayInfo 리셋
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // 뒤로 가기나 페이지 떠날 때만 리셋
+      resetAddPayInfo();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [resetAddPayInfo]);
+
+  const handleNavigateToSearchPage = () => {
+    // 장소 검색 페이지로 이동할 때는 리셋하지 않음
+    moveToPage(PageUrls.SEARCH_LOCATION);
+  };
+
+  useEffect(() => {
+    return () => {
+      setSelectCategory(""); // 페이지 벗어나면 선택 카테고리 초기화
+      resetAddPayInfo();
+    };
+  }, []);
 
   return (
     <div className="flex w-full flex-col">
