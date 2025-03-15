@@ -72,12 +72,8 @@ const PayDetailPage = () => {
 
   const handleClickUpdate = async () => {
     if (!isAddpayInfoComplete) {
-      console.log("입력 값", addpayInfo);
       return alert("모든 정보를 입력해주세요.");
     }
-    console.log("update 이전 정보", spendingRecords);
-    console.log("update 할 정보", addpayInfo);
-
     try {
       const res = await api.post("/consumption/update", {
         id: id,
@@ -89,7 +85,6 @@ const PayDetailPage = () => {
         locationName: addpayInfo.locationName,
         date: addpayInfo.date,
       });
-      console.log("update", res.data.result);
       setSpendingData(res.data.result);
     } catch (error) {
       console.error(error);
@@ -118,7 +113,6 @@ const PayDetailPage = () => {
 
     try {
       const res = await api.delete(`consumption/delete?consumptionId=${id}`);
-      console.log("삭제 성공:", res.data);
     } catch (error) {
       console.error("삭제 실패:", error);
     } finally {

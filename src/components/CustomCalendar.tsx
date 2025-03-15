@@ -251,7 +251,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateChange }) => {
       prevTripDateRef.current.startDate !== formattedStartDate ||
       prevTripDateRef.current.endDate !== formattedEndDate
     ) {
-      console.log("onDateChange :", formattedStartDate, formattedEndDate);
       onDateChange(formattedStartDate, formattedEndDate);
       prevTripDateRef.current = {
         startDate: formattedStartDate,

@@ -53,7 +53,6 @@ const AddPayPage = () => {
         locationName: addpayInfo.locationName,
         date: addpayInfo.date,
       });
-      console.log(res.data);
     } catch (error) {
       console.error(error);
     } finally {

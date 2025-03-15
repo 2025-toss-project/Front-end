@@ -73,7 +73,6 @@ const PayList: React.FC<PayListProps> = ({
 
   // 소비 기록 클릭 시 상세 페이지로 이동
   const clickDetails = (id: number) => {
-    console.log(id);
     // 페이지 이동 시 id를 URL 쿼리로 전달
     moveToPage(`${PageUrls.PAY_DETAIL}?id=${id}`);
   };

@@ -38,7 +38,6 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
   const isEditMode = Boolean(id); // 수정 모드 여부 판단
 
   useEffect(() => {
-    console.log("itemData", itemData);
     if (itemData) {
       // 부모에서 전달받은 데이터로 상태 초기화
       setAddPayInfo("price", String(itemData.price));
@@ -50,8 +49,6 @@ const PayInput: React.FC<PayInputProps> = ({ toggle, itemData }) => {
       setSelectCategory(itemData.category || "");
     }
   }, [locationName, lat, lng]);
-
-  console.log("update payinfo", addpayInfo);
 
   return (
     <div>
