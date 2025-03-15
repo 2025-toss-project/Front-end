@@ -29,9 +29,9 @@ const BarChart: React.FC<{
 
   const categories = useMemo(() => {
     const allCategories = [
-      ...twoMonthsAgoPay.map((d) => d.category),
-      ...prevPay.map((d) => d.category),
       ...monthPay.map((d) => d.category),
+      ...prevPay.map((d) => d.category),
+      ...twoMonthsAgoPay.map((d) => d.category),
     ];
     return [...new Set(allCategories)];
   }, [monthPay, prevPay, twoMonthsAgoPay]);
@@ -51,9 +51,9 @@ const BarChart: React.FC<{
   );
 
   const labels = [
-    twoMonthsAgoPay[0]?.date,
-    prevPay[0]?.date,
     monthPay[0]?.date,
+    prevPay[0]?.date,
+    twoMonthsAgoPay[0]?.date,
   ].filter(Boolean);
 
   const data = {
@@ -61,9 +61,9 @@ const BarChart: React.FC<{
     datasets: categories.map((category) => ({
       label: category,
       data: [
-        getCategoryData(category, twoMonthsAgoPay),
-        getCategoryData(category, prevPay),
         getCategoryData(category, monthPay),
+        getCategoryData(category, prevPay),
+        getCategoryData(category, twoMonthsAgoPay),
       ],
       backgroundColor: findCategory(category)?.border || "#ccc",
     })),
@@ -83,19 +83,10 @@ const BarChart: React.FC<{
     scales: {
       x: {
         stacked: true,
-        type: "category",
       },
       y: {
         stacked: true,
-        type: "linear",
         min: 0,
-        // 최대값의 105%로 설정해 위쪽에 여유 공간 확보
-        max: maxStackValue * 1.05,
-        ticks: {
-          callback: (value) => 
-            `${Number(value)}`, 
-          font: { size: 10 },
-        },
       },
     },
   };
