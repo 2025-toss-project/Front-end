@@ -1,16 +1,18 @@
 import React, { useState } from "react";
-import IconNoPayType from "../assets/payTypeIcons/IconNoPayType";
 import InputDefault from "../components/common/InputDefault";
 import { SaveButton } from "../components/common/Buttons";
 import { useMovePage } from "../hooks/useMovePage";
 import PageUrls from "../constants/PageUrls";
 import { apiWithoutAuth } from "../utils/api";
+import IconLogo from "../assets/IconLogo";
 
 const Logo = () => {
   return (
-    <div className="flex items-center justify-start gap-5 py-14">
-      <IconNoPayType />
-      <div className="text-3xl font-bold text-main">PayRoad</div>
+    <div className="flex items-end justify-center py-14">
+      <IconLogo width={80} />
+      <div className="-translate-x-8 translate-y-2 text-end text-5xl font-bold text-main">
+        ayRoad
+      </div>
     </div>
   );
 };
