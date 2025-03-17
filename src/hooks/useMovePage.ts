@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import PageUrls from "../constants/PageUrls";
+import useSignupInfo from "../stores/signupInfo";
 
 export const useMovePage = () => {
   const navigate = useNavigate();
+  const { resetSignupInfo } = useSignupInfo();
 
   const moveToPage = (path: string, info?: any, replace?: boolean) => {
     navigate(path, {
@@ -13,6 +15,7 @@ export const useMovePage = () => {
 
   const moveToBack = () => {
     if (location.pathname === PageUrls.SIGNUP) {
+      resetSignupInfo();
       return navigate(PageUrls.LOGIN);
     }
     navigate(-1);
