@@ -9,6 +9,7 @@ import { useMovePage } from "../hooks/useMovePage";
 import PayInput from "../components/PayInput";
 import { useCategoryInfo } from "../stores/categoryInfo";
 import { add } from "lodash";
+import { useLocation } from "react-router-dom";
 
 export interface addpayInfo {
   price: number;
@@ -24,6 +25,10 @@ const AddPayPage = () => {
   const { isOpen, setIsOpen } = useCategoryInfo();
   const { addpayInfo, resetAddPayInfo } = useAddPayInfo();
   const { selectCategory, setSelectCategory } = useCategoryInfo();
+  const location = useLocation();
+  useEffect(() => {
+    if (location.state != "add") resetAddPayInfo();
+  }, [location]);
 
   const isAddpayInfoComplete =
     Object.values(addpayInfo).every((value) => {
@@ -60,31 +65,6 @@ const AddPayPage = () => {
       resetAddPayInfo();
     }
   };
-
-  // 페이지 떠날 때 addpayInfo 리셋
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      // 뒤로 가기나 페이지 떠날 때만 리셋
-      resetAddPayInfo();
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [resetAddPayInfo]);
-
-  const handleNavigateToSearchPage = () => {
-    // 장소 검색 페이지로 이동할 때는 리셋하지 않음
-    moveToPage(PageUrls.SEARCH_LOCATION);
-  };
-
-  useEffect(() => {
-    return () => {
-      setSelectCategory(""); // 페이지 벗어나면 선택 카테고리 초기화
-      resetAddPayInfo();
-    };
-  }, []);
 
   return (
     <div className="flex w-full flex-col">

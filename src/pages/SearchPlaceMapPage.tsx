@@ -132,7 +132,7 @@ const MapInfo = () => {
       <SaveButton
         title={buttonText}
         style="px-6"
-        onClick={() => moveToPage(targetUrl)}
+        onClick={() => moveToPage(targetUrl, mode)}
       />
     </div>
   );
