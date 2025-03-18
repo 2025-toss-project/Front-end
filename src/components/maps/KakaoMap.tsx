@@ -162,7 +162,7 @@ const KakaoMap: React.FC<{
   }, []);
 
   return myLocation.lat === 0 && myLocation.lng === 0 ? (
-    <div className="absolute inset-0 z-[100] grid h-screen w-screen place-items-center bg-black/20">
+    <div className="absolute inset-0 z-[100] grid h-screen w-screen max-w-[500px] place-items-center bg-black/20">
       <Loading />
     </div>
   ) : (
